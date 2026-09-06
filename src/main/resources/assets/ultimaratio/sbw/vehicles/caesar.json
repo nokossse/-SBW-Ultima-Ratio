@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/caesar.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/caesar.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/caesar.png"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
+  "entity.ultimaratio.caesar": "CAESAR Mk1",
+  "tips.ultimaratio.caesar.body_tilted": "Tir impossible : le véhicule est incliné",
+  "tips.ultimaratio.caesar.not_stabilized": "Tir impossible : déploie d'abord les bêches",
+  "tips.ultimaratio.caesar.stabilizing": "Stabilisation en cours...",
+  "tips.ultimaratio.caesar.packing": "Repli en cours..."
+}
