@@ -12,7 +12,7 @@ import org.joml.Vector3f;
 public class CaesarRenderer extends GeoVehicleRenderer<CaesarEntity> {
     /** SBW caps rudder at ~0.6 rad (~34°). Mild extra lock on the front wheels. */
     private static final float STEER_LOCK_MULT = 1.35F;
-    private static final float VOLANT_TURNS = 8.0F;
+    private static final float VOLANT_TURNS = 12.0F;
 
     /**
      * Absolute Blockbench pivots (geo Y/Z). Same YZ for left and right rams.

@@ -179,7 +179,8 @@ public class CaesarEntity extends SpArtilleryEntity {
         }
 
         if (this.isStabilized()) {
-            this.setLockTurret(gunner == null);
+            // Stay unlocked so Artillery Indicator can slew like the FH77 when unmanned.
+            this.setLockTurret(false);
             return;
         }
 

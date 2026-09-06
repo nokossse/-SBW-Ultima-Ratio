@@ -8,8 +8,8 @@
     -3.16688
   ],
   "TurretTurnSpeed": [
-    1.5,
-    1.5
+    0.75,
+    0.375
   ],
   "TurretPitchRange": [
     0,
@@ -49,21 +49,23 @@
       }
     },
     {
-      "HidePassenger": true,
-      "Transform": "Turret",
+      "HidePassenger": false,
+      "Transform": "Vehicle",
       "Position": [
+        2.4,
         0.0,
-        0.72,
-        0.25
+        -3.55
       ],
-      "IsEnclosed": true,
+      "IsEnclosed": false,
+      "RotateWithVehicle": true,
+      "Pose": "Stand",
       "CameraPos": {
         "Transform": "Barrel",
         "UseFixedCameraPos": true,
         "Position": [
           0.42,
-          0.55,
-          0.75
+          1.65,
+          0.1
         ],
         "ZoomPosition": [
           -0.00375,
@@ -85,9 +87,9 @@
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [
-          2.1,
+          2.4,
           0.25,
-          -3.1
+          -3.55
         ]
       },
       "HasThermalImaging": true,
