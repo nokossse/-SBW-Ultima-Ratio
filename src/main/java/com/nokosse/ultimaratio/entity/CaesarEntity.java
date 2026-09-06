@@ -6,26 +6,15 @@ import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInsta
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
 import com.atsuishio.superbwarfare.tools.VectorTool;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.UUID;
 
 public class CaesarEntity extends SpArtilleryEntity {
     public static final EntityDataAccessor<Boolean> STABILIZED =
@@ -34,6 +23,8 @@ public class CaesarEntity extends SpArtilleryEntity {
             SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> PACKING =
             SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Float> STAB_BLEND =
+            SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.FLOAT);
 
     private static final String STAB_ANIM = "stabilization";
     private static final String PACK_ANIM = "stabilization_pack";
@@ -48,7 +39,6 @@ public class CaesarEntity extends SpArtilleryEntity {
     private boolean wasStabilized;
     private boolean wasPacking;
     private boolean wasReloading;
-    private UUID lastShooterUuid;
 
     public CaesarEntity(EntityType<? extends CaesarEntity> type, Level level) {
         super(type, level);
@@ -78,6 +68,10 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.entityData.set(PACKING, value);
     }
 
+    public float getStabBlend() {
+        return this.entityData.get(STAB_BLEND);
+    }
+
     public boolean blocksDriving() {
         return this.isStabilized() || this.isStabilizing() || this.isPacking();
     }
@@ -88,6 +82,7 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.entityData.define(STABILIZED, false);
         this.entityData.define(STABILIZING, false);
         this.entityData.define(PACKING, false);
+        this.entityData.define(STAB_BLEND, 0.0F);
     }
 
     @Override
@@ -148,6 +143,7 @@ public class CaesarEntity extends SpArtilleryEntity {
     public void baseTick() {
         super.baseTick();
         this.tickStabilization();
+        this.updateStabBlend();
         if (this.level().isClientSide) {
             this.tickStabilizationAnimation();
             this.tickReloadAnimation();
@@ -192,6 +188,23 @@ public class CaesarEntity extends SpArtilleryEntity {
         if (!this.level().isClientSide && gunner != null && this.gunnerWantsToAim(gunner)) {
             this.startStabilization();
         }
+    }
+
+    private void updateStabBlend() {
+        if (this.level().isClientSide) {
+            return;
+        }
+        float blend;
+        if (this.isPacking()) {
+            blend = this.packTicks / (float) STAB_DURATION_TICKS;
+        } else if (this.isStabilizing()) {
+            blend = 1.0F - this.stabilizeTicks / (float) STAB_DURATION_TICKS;
+        } else if (this.isStabilized()) {
+            blend = 1.0F;
+        } else {
+            blend = 0.0F;
+        }
+        this.entityData.set(STAB_BLEND, blend);
     }
 
     /** Slew barrel/yaw back to travel rest (0°) like the FH77 when packing up. */
@@ -311,111 +324,5 @@ public class CaesarEntity extends SpArtilleryEntity {
     @Override
     public float getTurretTurnYSpeed() {
         return this.getLockTurret() ? 0.0F : super.getTurretTurnYSpeed();
-    }
-
-    @Override
-    public boolean hurt(DamageSource source, float amount) {
-        if (this.isSelfFire(source)) {
-            return false;
-        }
-        return super.hurt(source, amount);
-    }
-
-    /** Ignore our own shells and blast, including crowbar fire from outside. */
-    private boolean isSelfFire(DamageSource source) {
-        if (this.isOwnShooter(source.getEntity())) {
-            return true;
-        }
-        Entity direct = source.getDirectEntity();
-        if (direct instanceof Projectile projectile) {
-            return this.isOwnShooter(projectile.getOwner());
-        }
-        return this.isOwnShooter(direct);
-    }
-
-    private boolean isOwnShooter(Entity entity) {
-        if (entity == null) {
-            return false;
-        }
-        if (entity == this) {
-            return true;
-        }
-        if (this.lastShooterUuid != null && this.lastShooterUuid.equals(entity.getUUID())) {
-            return true;
-        }
-        return entity.getVehicle() == this || this.hasPassenger(entity) || this.hasIndirectPassenger(entity);
-    }
-
-    private void markSelfShot(LivingEntity shooter) {
-        if (shooter != null) {
-            this.lastShooterUuid = shooter.getUUID();
-        }
-    }
-
-    @Override
-    public boolean canShoot(LivingEntity shooter) {
-        return this.readyToFire(shooter) && super.canShoot(shooter);
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity shooter, String weaponName, Vec3 targetPos) {
-        if (!this.readyToFire(shooter)) {
-            return;
-        }
-        this.markSelfShot(shooter);
-        super.vehicleShoot(shooter, weaponName, targetPos);
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity shooter, UUID shooterUuid, Vec3 targetPos) {
-        if (!this.readyToFire(shooter)) {
-            return;
-        }
-        this.markSelfShot(shooter);
-        super.vehicleShoot(shooter, shooterUuid, targetPos);
-    }
-
-    @Override
-    public InteractionResult onCrowbarInteract(ItemStack stack, Player player, InteractionHand hand) {
-        if (!this.readyToFire(player)) {
-            return InteractionResult.SUCCESS;
-        }
-        this.markSelfShot(player);
-        return super.onCrowbarInteract(stack, player, hand);
-    }
-
-    @Override
-    public void vehicleShoot(LivingEntity shooter, String weaponName, UUID shooterUuid, Vec3 targetPos) {
-        if (!this.readyToFire(shooter)) {
-            return;
-        }
-        this.markSelfShot(shooter);
-        super.vehicleShoot(shooter, weaponName, shooterUuid, targetPos);
-    }
-
-    private boolean readyToFire(LivingEntity shooter) {
-        if (VectorTool.calculateAngle(this.getUpVec(1.0F), new Vec3(0.0, 1.0, 0.0)) > 1.0) {
-            this.warn(shooter, "tips.ultimaratio.caesar.body_tilted");
-            return false;
-        }
-        if (this.getDeltaMovement().lengthSqr() > 0.001 || this.isPacking()) {
-            this.warn(shooter, this.isPacking()
-                    ? "tips.ultimaratio.caesar.packing"
-                    : "tips.superbwarfare.fh77bw.not_stopped");
-            return false;
-        }
-        if (!this.isStabilized()) {
-            this.warn(shooter, this.isStabilizing()
-                    ? "tips.ultimaratio.caesar.stabilizing"
-                    : "tips.ultimaratio.caesar.not_stabilized");
-            return false;
-        }
-        return true;
-    }
-
-    private void warn(LivingEntity shooter, String key) {
-        if (shooter instanceof Player player) {
-            player.displayClientMessage(Component.translatable(key).withStyle(ChatFormatting.RED), true);
-        }
     }
 }

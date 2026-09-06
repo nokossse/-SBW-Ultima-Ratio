@@ -30,8 +30,8 @@
       "Transform": "Vehicle",
       "Position": [
         0.375,
-        1.05,
-        2.00
+        1.2375,
+        2.125
       ],
       "IsEnclosed": true,
       "RotateWithVehicle": true,
@@ -98,7 +98,7 @@
       "Transform": "Vehicle",
       "Position": [
         0.375,
-        1.05,
+        1.2375,
         1.18
       ],
       "IsEnclosed": true,
@@ -124,7 +124,7 @@
       "Transform": "Vehicle",
       "Position": [
         -0.825,
-        1.05,
+        1.2375,
         1.18
       ],
       "IsEnclosed": true,
@@ -150,7 +150,7 @@
       "AvailableFireModes": "Semi",
       "Projectile": "superbwarfare:cannon_shell",
       "Magazine": 1,
-      "EmptyReloadTime": 100,
+      "EmptyReloadTime": 143,
       "DefaultZoom": 3,
       "Velocity": 24.5,
       "Gravity": 0.06,
@@ -177,7 +177,7 @@
         "Fire3PFar": "superbwarfare:plz_05_far",
         "Fire3PVeryFar": "superbwarfare:plz_05_veryfar",
         "VehicleReload3p": "superbwarfare:bl_132_reload",
-        "VehicleReloadSoundTime": 28,
+        "VehicleReloadSoundTime": 43,
         "CancellableSounds": [
           "superbwarfare:plz_05_reload"
         ]

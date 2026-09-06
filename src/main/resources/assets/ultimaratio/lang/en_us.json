@@ -1,8 +1,4 @@
 {
   "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
-  "entity.ultimaratio.caesar": "CAESAR Mk1",
-  "tips.ultimaratio.caesar.body_tilted": "Cannot fire: vehicle is tilted",
-  "tips.ultimaratio.caesar.not_stabilized": "Cannot fire: lower the spades first",
-  "tips.ultimaratio.caesar.stabilizing": "Stabilizing...",
-  "tips.ultimaratio.caesar.packing": "Packing up..."
+  "entity.ultimaratio.caesar": "CAESAR Mk1"
 }
