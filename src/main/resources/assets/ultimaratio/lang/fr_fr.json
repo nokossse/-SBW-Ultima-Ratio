@@ -1,4 +1,7 @@
 {
   "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
-  "entity.ultimaratio.caesar": "CAESAR Mk1"
+  "entity.ultimaratio.caesar": "CAESAR Mk1",
+  "entity.ultimaratio.mamba": "SAMP/T MAMBA",
+  "weapon.ultimaratio.aster_30": "ASTER-30",
+  "tips.ultimaratio.mamba.not_ready": "Déployez le lanceur avant de tirer"
 }

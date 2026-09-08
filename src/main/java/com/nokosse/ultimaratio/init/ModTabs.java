@@ -19,8 +19,10 @@ public class ModTabs {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("item_group.ultimaratio.main"))
                     .icon(() -> new ItemStack(ModItems.CONTAINER.get()))
-                    .displayItems((params, output) ->
-                            output.accept(ContainerBlockItem.createInstance(ModEntities.CAESAR.get())))
+                    .displayItems((params, output) -> {
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.CAESAR.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.MAMBA.get()));
+                    })
                     .build()
     );
 }

@@ -10,5 +10,6 @@ public class ModContainers {
     @SubscribeEvent
     public static void onRegisterContainers(RegisterContainersEvent event) {
         event.add(ModEntities.CAESAR);
+        event.add(ModEntities.MAMBA);
     }
 }

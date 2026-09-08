@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/mamba.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/mamba.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/mamba.png"
+    }
+  ]
+}
