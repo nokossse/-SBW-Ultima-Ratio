@@ -186,7 +186,7 @@
   "ThirdPersonCameraPos": [0.0, 2.8, 3.6],
   "RotateOffsetHeight": 2.2,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
-  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/civilian.png",
+  "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "VehicleContainerType": "Medium",
   "Type": "AA",
   "CollisionLevel": {

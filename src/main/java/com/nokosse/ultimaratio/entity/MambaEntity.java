@@ -5,9 +5,7 @@ import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationConte
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
-import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,7 +13,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -271,16 +268,7 @@ public class MambaEntity extends SpArtilleryEntity {
 
     @Override
     public boolean canShoot(@Nullable LivingEntity living) {
-        if (!this.isReadyToFire()) {
-            if (living instanceof Player player) {
-                player.displayClientMessage(
-                        Component.translatable("tips.ultimaratio.mamba.not_ready").withStyle(ChatFormatting.RED),
-                        true
-                );
-            }
-            return false;
-        }
-        return super.canShoot(living);
+        return this.isReadyToFire() && super.canShoot(living);
     }
 
     @Override

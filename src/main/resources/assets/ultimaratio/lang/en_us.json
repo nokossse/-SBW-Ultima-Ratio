@@ -3,5 +3,6 @@
   "entity.ultimaratio.caesar": "CAESAR Mk1",
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
   "weapon.ultimaratio.aster_30": "ASTER-30",
-  "tips.ultimaratio.mamba.not_ready": "Deploy the launcher before firing"
+  "info.ultimaratio.mamba": "The SAMP/T MAMBA is a Franco-Italian long-range air defense system designed to protect strategic sites and troops against airborne threats. Mounted on heavy truck chassis like the Renault Kerax, it fires Aster 30 missiles capable of intercepting aircraft, drones, cruise missiles, and ballistic missiles.",
+  "info.ultimaratio.caesar": "The CAESAR Mk1 is a French highly mobile self-propelled artillery system featuring a 155mm/52-caliber howitzer mounted on a 6x6 truck chassis. Known for its \"shoot-and-scoot\" capability, it can fire up to six rounds per minute at targets over 10k blocks away before quickly repositioning to avoid counter-battery fire."
 }
