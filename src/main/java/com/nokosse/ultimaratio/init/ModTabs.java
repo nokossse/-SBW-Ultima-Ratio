@@ -22,6 +22,7 @@ public class ModTabs {
                     .displayItems((params, output) -> {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.CAESAR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.MAMBA.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR.get()));
                     })
                     .build()
     );

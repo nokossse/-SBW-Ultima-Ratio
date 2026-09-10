@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/vbmr.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/vbmr.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/vbmr.png"
+    }
+  ]
+}

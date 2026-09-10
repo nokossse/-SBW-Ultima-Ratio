@@ -11,5 +11,6 @@ public class ModContainers {
     public static void onRegisterContainers(RegisterContainersEvent event) {
         event.add(ModEntities.CAESAR);
         event.add(ModEntities.MAMBA);
+        event.add(ModEntities.VBMR);
     }
 }

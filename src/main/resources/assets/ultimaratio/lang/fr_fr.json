@@ -2,7 +2,10 @@
   "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
   "entity.ultimaratio.caesar": "CAESAR Mk1",
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
+  "entity.ultimaratio.vbmr": "VBMR Griffon",
   "weapon.ultimaratio.aster_30": "ASTER-30",
+  "weapon.ultimaratio.mg_12_7": "12,7 mm",
   "info.ultimaratio.mamba": "Le SAMP/T MAMBA est un système de défense aérienne franco-italien à longue portée conçu pour protéger les sites stratégiques et les troupes contre les menaces aériennes. Monté sur un châssis de camion lourd comme le Renault Kerax, il tire des missiles Aster 30 capables d'intercepter avions, drones, missiles de croisière et missiles balistiques.",
-  "info.ultimaratio.caesar": "Le CAESAR Mk1 est un système d'artillerie automotrice français très mobile, avec un obusier de 155 mm/52 calibres monté sur un châssis 6x6. Connu pour sa capacité « shoot-and-scoot », il peut tirer jusqu'à six coups par minute sur des cibles à plus de 10 000 blocs avant de se repositionner rapidement pour éviter les tirs de contre-batterie."
+  "info.ultimaratio.caesar": "Le CAESAR Mk1 est un système d'artillerie automotrice français très mobile, avec un obusier de 155 mm/52 calibres monté sur un châssis 6x6. Connu pour sa capacité « shoot-and-scoot », il peut tirer jusqu'à six coups par minute sur des cibles à plus de 10 000 blocs avant de se repositionner rapidement pour éviter les tirs de contre-batterie.",
+  "info.ultimaratio.vbmr": "Le VBMR Griffon est un véhicule blindé de combat d'infanterie 6x6 français conçu pour transporter une section à l'abri. Une mitrailleuse 12,7 mm téléopérée sur le toit couvre le véhicule sans exposer le tireur."
 }
