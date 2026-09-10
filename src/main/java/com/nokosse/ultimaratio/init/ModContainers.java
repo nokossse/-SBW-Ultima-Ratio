@@ -12,5 +12,6 @@ public class ModContainers {
         event.add(ModEntities.CAESAR);
         event.add(ModEntities.MAMBA);
         event.add(ModEntities.VBMR);
+        event.add(ModEntities.VBMR_MEPAC);
     }
 }

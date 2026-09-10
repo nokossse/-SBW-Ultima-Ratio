@@ -1,6 +1,7 @@
 package com.nokosse.ultimaratio.network;
 
 import com.nokosse.ultimaratio.entity.VbmrEntity;
+import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -20,6 +21,12 @@ public class VbmrDecoyMessage {
         ctx.enqueueWork(() -> {
             ServerPlayer player = ctx.getSender();
             if (player == null) {
+                return;
+            }
+            if (player.getVehicle() instanceof VbmrMepacEntity mepac) {
+                if (mepac.getSeatIndex(player) == VbmrMepacEntity.MACHINE_GUN_SEAT) {
+                    mepac.setDecoyInputDown(true);
+                }
                 return;
             }
             if (!(player.getVehicle() instanceof VbmrEntity vbmr)) {

@@ -3,6 +3,7 @@ package com.nokosse.ultimaratio.init;
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.CaesarEntity;
 import com.nokosse.ultimaratio.entity.MambaEntity;
+import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -36,6 +37,15 @@ public class ModEntities {
     public static final RegistryObject<EntityType<VbmrEntity>> VBMR = register(
             "vbmr",
             EntityType.Builder.<VbmrEntity>of(VbmrEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.0F, 3.2F)
+    );
+
+    public static final RegistryObject<EntityType<VbmrMepacEntity>> VBMR_MEPAC = register(
+            "vbmr_mepac",
+            EntityType.Builder.<VbmrMepacEntity>of(VbmrMepacEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .fireImmune()

@@ -3,6 +3,7 @@ package com.nokosse.ultimaratio.init;
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.client.renderer.CaesarRenderer;
 import com.nokosse.ultimaratio.client.renderer.MambaRenderer;
+import com.nokosse.ultimaratio.client.renderer.VbmrMepacRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrRenderer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
@@ -16,5 +17,6 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.CAESAR.get(), CaesarRenderer::new);
         event.registerEntityRenderer(ModEntities.MAMBA.get(), MambaRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR.get(), VbmrRenderer::new);
+        event.registerEntityRenderer(ModEntities.VBMR_MEPAC.get(), VbmrMepacRenderer::new);
     }
 }

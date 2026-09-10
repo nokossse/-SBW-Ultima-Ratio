@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
+  "inputs": [
+    "10 #forge:storage_blocks/steel",
+    "superbwarfare:light_armament_module",
+    "superbwarfare:medium_battery_pack",
+    "6 superbwarfare:wheel",
+    "superbwarfare:large_motor",
+    "superbwarfare:mortar_barrel",
+    "8 superbwarfare:mortar_shell"
+  ],
+  "result": {
+    "entity": "ultimaratio:vbmr_mepac"
+  }
+}

@@ -3,6 +3,7 @@ package com.nokosse.ultimaratio.client;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
+import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import com.nokosse.ultimaratio.network.VbmrDecoyMessage;
 import net.minecraft.client.Minecraft;
@@ -28,7 +29,16 @@ public class VbmrClientEvents {
             return;
         }
         Player player = Minecraft.getInstance().player;
-        if (player == null || !(player.getVehicle() instanceof VbmrEntity vbmr)) {
+        if (player == null) {
+            return;
+        }
+        if (player.getVehicle() instanceof VbmrMepacEntity mepac) {
+            if (mepac.getSeatIndex(player) == VbmrMepacEntity.MACHINE_GUN_SEAT) {
+                ModNetwork.CHANNEL.sendToServer(new VbmrDecoyMessage());
+            }
+            return;
+        }
+        if (!(player.getVehicle() instanceof VbmrEntity vbmr)) {
             return;
         }
         if (vbmr.getSeatIndex(player) != vbmr.getTurretControllerIndex()) {
