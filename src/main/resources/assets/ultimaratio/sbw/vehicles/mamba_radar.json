@@ -1,0 +1,13 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/mamba_radar.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/mamba_radar.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/mamba_radar.png"
+    }
+  ],
+  "Sponsor": {
+    "Name": "DarkMistyk",
+    "Color": "0x7DEA79"
+  }
+}

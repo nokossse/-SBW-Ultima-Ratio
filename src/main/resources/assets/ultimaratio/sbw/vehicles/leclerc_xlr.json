@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/leclerc_xlr.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/leclerc_xlr.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/leclerc_xlr.png"
+    }
+  ]
+}

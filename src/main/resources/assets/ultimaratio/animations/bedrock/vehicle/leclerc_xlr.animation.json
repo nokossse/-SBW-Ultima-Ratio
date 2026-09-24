@@ -1,0 +1,75 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.cannon.idle": {
+			"loop": true,
+			"bones": {
+				"flare2": {
+					"scale": 0
+				}
+			}
+		},
+		"animation.cannon.fire": {
+			"animation_length": 1.5,
+			"bones": {
+				"canon": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0417": [0, 0, 28],
+						"0.6667": [0, 0, 4.87],
+						"1.0": [0, 0, 0]
+					}
+				},
+				"bar": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.0417": [-5, 0, 0],
+						"0.125": [-6, 0, 0],
+						"0.5": [0, 0, 0],
+						"0.625": [1, 0, 0],
+						"0.8333": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.passenger_machine_gun.fire": {
+			"animation_length": 0.2083,
+			"bones": {
+				"cannon": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0417": [0, 0, 3],
+						"0.2083": [0, 0, 0]
+					}
+				},
+				"mg": {
+					"rotation": {
+						"0.0": [0, 0, 0],
+						"0.0417": [0, 0, 0],
+						"0.0833": [-5, 0, 0],
+						"0.2083": [0, 0, 0]
+					}
+				}
+			}
+		},
+		"animation.passenger_machine_gun.idle": {
+			"loop": true,
+			"bones": {
+				"flare": {
+					"scale": 0
+				}
+			}
+		},
+		"animation.machine_gun.fire": {
+			"loop": true
+		},
+		"animation.machine_gun.idle": {
+			"loop": true,
+			"bones": {
+				"flare2": {
+					"scale": 0
+				}
+			}
+		}
+	}
+}

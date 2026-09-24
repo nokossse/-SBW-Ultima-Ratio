@@ -1,0 +1,10 @@
+{
+  "mortar_fire": {
+    "sounds": [
+      {
+        "name": "ultimaratio:mortar_fire",
+        "stream": false
+      }
+    ]
+  }
+}

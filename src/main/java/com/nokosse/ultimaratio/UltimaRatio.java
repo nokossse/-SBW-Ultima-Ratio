@@ -2,6 +2,7 @@ package com.nokosse.ultimaratio;
 
 import com.mojang.logging.LogUtils;
 import com.nokosse.ultimaratio.init.ModEntities;
+import com.nokosse.ultimaratio.init.ModSounds;
 import com.nokosse.ultimaratio.init.ModTabs;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -17,6 +18,7 @@ public class UltimaRatio {
     public UltimaRatio(FMLJavaModLoadingContext context) {
         IEventBus bus = context.getModEventBus();
         ModEntities.REGISTRY.register(bus);
+        ModSounds.REGISTRY.register(bus);
         ModTabs.TABS.register(bus);
         ModNetwork.register();
     }

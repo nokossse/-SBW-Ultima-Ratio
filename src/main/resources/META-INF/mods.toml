@@ -43,3 +43,10 @@ mandatory = true
 versionRange = "[2.5.1,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[dependencies."${mod_id}"]]
+modId = "srs"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
