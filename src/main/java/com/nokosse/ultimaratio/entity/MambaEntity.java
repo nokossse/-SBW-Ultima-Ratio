@@ -22,6 +22,8 @@ public class MambaEntity extends SpArtilleryEntity {
             SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> PHASE_TICKS =
             SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> DEPLOYED =
+            SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final int PHASE_IDLE = 0;
     public static final int PHASE_STAB = 1;
@@ -51,6 +53,7 @@ public class MambaEntity extends SpArtilleryEntity {
 
     public void setPhase(int phase) {
         this.entityData.set(PHASE, phase);
+        this.entityData.set(DEPLOYED, phase == PHASE_READY);
     }
 
     public int getPhaseTicks() {
@@ -62,11 +65,21 @@ public class MambaEntity extends SpArtilleryEntity {
     }
 
     public boolean isReadyToFire() {
-        return this.getPhase() == PHASE_READY;
+        return this.isDeployed();
+    }
+
+    /** Fully deployed battery: cannot drive, can fire. Same as PHASE_READY. */
+    public boolean isDeployed() {
+        return this.entityData.get(DEPLOYED);
+    }
+
+    /** Packed for travel: can drive, cannot fire. Same as PHASE_IDLE. */
+    public boolean isUndeployed() {
+        return this.getPhase() == PHASE_IDLE;
     }
 
     public boolean blocksDriving() {
-        return this.getPhase() != PHASE_IDLE;
+        return !this.isUndeployed();
     }
 
     @Override
@@ -74,6 +87,7 @@ public class MambaEntity extends SpArtilleryEntity {
         super.defineSynchedData();
         this.entityData.define(PHASE, PHASE_IDLE);
         this.entityData.define(PHASE_TICKS, 0);
+        this.entityData.define(DEPLOYED, false);
     }
 
     @Override
@@ -81,6 +95,8 @@ public class MambaEntity extends SpArtilleryEntity {
         super.addAdditionalSaveData(compound);
         compound.putInt("Phase", this.getPhase());
         compound.putInt("PhaseTicks", this.getPhaseTicks());
+        compound.putBoolean("Deployed", this.isDeployed());
+        compound.putBoolean("Undeployed", this.isUndeployed());
     }
 
     @Override
@@ -268,7 +284,7 @@ public class MambaEntity extends SpArtilleryEntity {
 
     @Override
     public boolean canShoot(@Nullable LivingEntity living) {
-        return this.isReadyToFire() && super.canShoot(living);
+        return this.isDeployed() && super.canShoot(living);
     }
 
     @Override

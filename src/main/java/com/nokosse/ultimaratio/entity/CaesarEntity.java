@@ -29,7 +29,7 @@ public class CaesarEntity extends SpArtilleryEntity {
     private static final String STAB_ANIM = "stabilization";
     private static final String PACK_ANIM = "stabilization_pack";
     private static final String RELOAD_ANIM = "animation.main.reload";
-    private static final int STAB_DURATION_TICKS = 60;
+    private static final int STAB_DURATION_TICKS = 100;
     private static final double AIM_START_DEGREES = 2.0;
     private static final float TURRET_HOME_SPEED = 1.5F;
 

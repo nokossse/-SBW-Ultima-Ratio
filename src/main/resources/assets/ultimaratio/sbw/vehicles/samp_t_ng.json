@@ -1,0 +1,13 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/samp_t_ng.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/samp_t_ng.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/samp_t_ng.png"
+    }
+  ],
+  "Sponsor": {
+    "Name": "DarkMistyk",
+    "Color": "0x7DEA79"
+  }
+}

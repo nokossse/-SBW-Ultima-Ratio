@@ -22,10 +22,15 @@ public class ModTabs {
                     .displayItems((params, output) -> {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.CAESAR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.MAMBA.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.HADES.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.MAMBA_RADAR.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.SAMP_T_NG.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.THUNDART.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.RENAULT_KERAX.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR_MEPAC.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.LECLERC_XLR.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.LECLERC_AZUR.get()));
                     })
                     .build()
     );

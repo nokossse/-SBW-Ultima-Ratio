@@ -2,12 +2,19 @@ package com.nokosse.ultimaratio.init;
 
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.CaesarEntity;
+import com.nokosse.ultimaratio.entity.HadesEntity;
+import com.nokosse.ultimaratio.entity.KeraxEntity;
 import com.nokosse.ultimaratio.entity.MambaEntity;
 import com.nokosse.ultimaratio.entity.MambaRadarEntity;
+import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
 import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
+import com.nokosse.ultimaratio.entity.SampTNgEntity;
+import com.nokosse.ultimaratio.entity.ThundartEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
+import com.nokosse.ultimaratio.entity.projectile.HadesMissileEntity;
+import com.nokosse.ultimaratio.entity.projectile.ThundartRocketEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -37,9 +44,45 @@ public class ModEntities {
                     .sized(4.5F, 3.4F)
     );
 
+    public static final RegistryObject<EntityType<HadesEntity>> HADES = register(
+            "hades",
+            EntityType.Builder.<HadesEntity>of(HadesEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.5F, 3.4F)
+    );
+
     public static final RegistryObject<EntityType<MambaRadarEntity>> MAMBA_RADAR = register(
             "mamba_radar",
             EntityType.Builder.<MambaRadarEntity>of(MambaRadarEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.5F, 3.4F)
+    );
+
+    public static final RegistryObject<EntityType<SampTNgEntity>> SAMP_T_NG = register(
+            "samp_t_ng",
+            EntityType.Builder.<SampTNgEntity>of(SampTNgEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.5F, 3.4F)
+    );
+
+    public static final RegistryObject<EntityType<ThundartEntity>> THUNDART = register(
+            "thundart",
+            EntityType.Builder.<ThundartEntity>of(ThundartEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.5F, 3.4F)
+    );
+
+    public static final RegistryObject<EntityType<KeraxEntity>> RENAULT_KERAX = register(
+            "renault_kerax",
+            EntityType.Builder.<KeraxEntity>of(KeraxEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .fireImmune()
@@ -73,6 +116,15 @@ public class ModEntities {
                     .sized(5.2F, 3.5F)
     );
 
+    public static final RegistryObject<EntityType<LeclercAzurEntity>> LECLERC_AZUR = register(
+            "leclerc_azur",
+            EntityType.Builder.<LeclercAzurEntity>of(LeclercAzurEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(5.6F, 3.5F)
+    );
+
     public static final RegistryObject<EntityType<Aster30MissileEntity>> ASTER_30_MISSILE = register(
             "aster_30_missile",
             EntityType.Builder.<Aster30MissileEntity>of(Aster30MissileEntity::new, MobCategory.MISC)
@@ -81,6 +133,26 @@ public class ModEntities {
                     .setShouldReceiveVelocityUpdates(true)
                     .fireImmune()
                     .sized(0.5F, 0.5F)
+    );
+
+    public static final RegistryObject<EntityType<ThundartRocketEntity>> THUNDART_ROCKET = register(
+            "thundart_rocket",
+            EntityType.Builder.<ThundartRocketEntity>of(ThundartRocketEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .fireImmune()
+                    .sized(0.6F, 0.6F)
+    );
+
+    public static final RegistryObject<EntityType<HadesMissileEntity>> HADES_MISSILE = register(
+            "hades_missile",
+            EntityType.Builder.<HadesMissileEntity>of(HadesMissileEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .fireImmune()
+                    .sized(1.0F, 1.0F)
     );
 
     private static <T extends Entity> RegistryObject<EntityType<T>> register(

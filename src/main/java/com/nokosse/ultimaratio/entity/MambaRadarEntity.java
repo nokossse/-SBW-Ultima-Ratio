@@ -18,6 +18,8 @@ import java.util.HashMap;
 public class MambaRadarEntity extends VehicleEntity {
     public static final EntityDataAccessor<Boolean> DEPLOYED =
             SynchedEntityData.defineId(MambaRadarEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> POWERED =
+            SynchedEntityData.defineId(MambaRadarEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final int OPERATOR_SEAT_A = 2;
     public static final int OPERATOR_SEAT_B = 3;
@@ -25,8 +27,12 @@ public class MambaRadarEntity extends VehicleEntity {
     /** Kept for SRS: play this clip, do not retarget it. */
     public static final String DEPLOY_ANIM = "animation.samp-t.deploy";
     public static final String FOLD_ANIM = "fold";
+    public static final int DEPLOY_ANIM_TICKS = 160;
 
     private boolean clientDeployed;
+    private int clientDeployStartTick = -1;
+    private boolean clientPowered;
+    private int clientPowerStartTick = -1;
 
     public MambaRadarEntity(EntityType<? extends MambaRadarEntity> type, Level level) {
         super(type, level);
@@ -45,18 +51,31 @@ public class MambaRadarEntity extends VehicleEntity {
 
     public void setRadarDeployed(boolean deployed) {
         this.entityData.set(DEPLOYED, deployed);
+        if (!deployed) {
+            this.setRadarPowered(false);
+        }
+    }
+
+    public boolean isRadarPowered() {
+        return this.entityData.get(POWERED);
+    }
+
+    public void setRadarPowered(boolean powered) {
+        this.entityData.set(POWERED, powered);
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DEPLOYED, false);
+        this.entityData.define(POWERED, false);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("RadarDeployed", this.isRadarDeployed());
+        compound.putBoolean("RadarPowered", this.isRadarPowered());
     }
 
     @Override
@@ -65,13 +84,20 @@ public class MambaRadarEntity extends VehicleEntity {
         if (compound.contains("RadarDeployed")) {
             this.setRadarDeployed(compound.getBoolean("RadarDeployed"));
         }
+        if (compound.contains("RadarPowered")) {
+            this.setRadarPowered(compound.getBoolean("RadarPowered"));
+        }
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
         if (!this.level().isClientSide) {
-            this.tickFallbackDeploy();
+            if (!isSrsLoaded()) {
+                this.tickFallbackDeploy();
+            }
+        } else if (isSrsLoaded()) {
+            this.tickSrsPowerClient();
         } else {
             this.tickDeployAnimation();
         }
@@ -87,6 +113,15 @@ public class MambaRadarEntity extends VehicleEntity {
     private boolean hasRadarOperator() {
         return this.getNthEntity(OPERATOR_SEAT_A) != null
                 || this.getNthEntity(OPERATOR_SEAT_B) != null;
+    }
+
+    private void tickSrsPowerClient() {
+        boolean powered = this.isRadarPowered();
+        if (powered == this.clientPowered) {
+            return;
+        }
+        this.clientPowered = powered;
+        this.clientPowerStartTick = powered ? this.tickCount : -1;
     }
 
     private void tickDeployAnimation() {
@@ -105,11 +140,35 @@ public class MambaRadarEntity extends VehicleEntity {
         if (deployed) {
             this.stopClip(context, FOLD_ANIM, 2);
             this.playClip(context, DEPLOY_ANIM, AnimationPlayType.PLAY_ONCE_HOLD, 2);
+            this.clientDeployStartTick = this.tickCount;
         } else {
             this.stopClip(context, DEPLOY_ANIM, 2);
             this.playClip(context, FOLD_ANIM, AnimationPlayType.PLAY_ONCE_HOLD, 2);
+            this.clientDeployStartTick = -1;
         }
         this.clientDeployed = deployed;
+    }
+
+    public boolean isRadarDishSpinning() {
+        if (isSrsLoaded()) {
+            return this.isRadarDeployed() && this.isRadarPowered();
+        }
+        return this.isRadarDeployed()
+                && this.clientDeployStartTick >= 0
+                && this.tickCount - this.clientDeployStartTick >= DEPLOY_ANIM_TICKS;
+    }
+
+    public float getRadarDishYawRad(float partialTick) {
+        if (!this.isRadarDishSpinning()) {
+            return 0.0F;
+        }
+        int startTick = isSrsLoaded() ? this.clientPowerStartTick : this.clientDeployStartTick;
+        float delay = isSrsLoaded() ? 0.0F : DEPLOY_ANIM_TICKS;
+        if (startTick < 0) {
+            return 0.0F;
+        }
+        float age = this.tickCount - startTick - delay + partialTick;
+        return Math.max(0.0F, age) * ((float) Math.PI / 10.0F);
     }
 
     private void playClip(

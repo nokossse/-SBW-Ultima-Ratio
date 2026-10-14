@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import com.mojang.math.Axis;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4d;
+import org.joml.Quaterniond;
 
 import java.util.UUID;
 
@@ -45,16 +48,23 @@ public class VbmrMepacEntity extends SpArtilleryEntity {
     private static final String DEPLOY_ANIM = "vmbr-mortar-deploy";
     private static final String SHOOT_ANIM = "vbmr-mortar-shoot";
     private static final String RELOAD_ANIM = "vbmr-mortar-reload";
+    private static final String HMG_YAW_TRANSFORM = "HmgYaw";
+    private static final String HMG_PITCH_TRANSFORM = "HmgPitch";
+    private static final Vec3 HMG_YAW_PIVOT = new Vec3(-0.7625, 3.0875, 1.84991);
+    private static final Vec3 HMG_PITCH_OFFSET = new Vec3(0.0125, 0.71875, 0.325);
     private static final int SHOOT_ANIM_TICKS = 20;
+    private static final int TRAP_OPEN_TICKS = 150;
     private static final float AIM_MIN_PITCH = 45.0F;
 
     private boolean wasClose = true;
     private boolean wasOut;
     private boolean wasReloading;
     private int clientShootTicks;
+    private int trapOpenTicks;
 
     public VbmrMepacEntity(EntityType<? extends VbmrMepacEntity> type, Level level) {
         super(type, level);
+        this.registerHmgTransforms();
     }
 
     public boolean getClose() {
@@ -144,11 +154,12 @@ public class VbmrMepacEntity extends SpArtilleryEntity {
 
     @Override
     public void baseTick() {
-        super.baseTick();
         this.captureMachineGunPose();
+        super.baseTick();
         boolean tryMove = this.forwardInputDown() || this.backInputDown();
         Entity gunner = this.getNthEntity(this.getTurretControllerIndex());
         if (gunner == null) {
+            this.trapOpenTicks = 0;
             if (this.getDeltaMovement().horizontalDistanceSqr() > 0.007 || tryMove) {
                 this.setTurretXRot(Mth.approach(this.getTurretXRot(), 0.0F, 2.5F));
                 this.setTurretYRot(Mth.approach(this.getTurretYRot(), 0.0F, 2.5F));
@@ -162,10 +173,18 @@ public class VbmrMepacEntity extends SpArtilleryEntity {
             }
             this.setOpened(false);
         } else {
-            this.setLockTurret(false);
-            this.setClose(false);
-            if (this.getOpened()) {
-                this.setOut(true);
+            if (this.getClose()) {
+                this.setClose(false);
+                this.trapOpenTicks = TRAP_OPEN_TICKS;
+            }
+            if (this.trapOpenTicks > 0) {
+                this.trapOpenTicks--;
+                this.setLockTurret(true);
+            } else {
+                this.setLockTurret(false);
+                if (this.getOpened()) {
+                    this.setOut(true);
+                }
             }
         }
         if (gunner != null && VectorTool.calculateAngle(gunner.getLookAngle(), this.getShootVec("Main", 1.0F)) > 25.0) {
@@ -199,6 +218,39 @@ public class VbmrMepacEntity extends SpArtilleryEntity {
                 -VehicleVecUtils.getXRotFromVector(targetVec) + VehicleVecUtils.getXRotFromVector(defaultVec));
         this.setMgYaw(-diffY);
         this.setMgPitch(-diffX);
+    }
+
+    private void registerHmgTransforms() {
+        this.getPositionTransform().put(HMG_YAW_TRANSFORM, this::hmgYawMatrix);
+        this.getPositionTransform().put(HMG_PITCH_TRANSFORM, this::hmgPitchMatrix);
+        this.getRotationTransform().put(HMG_YAW_TRANSFORM, this::hmgYawRotation);
+        this.getRotationTransform().put(HMG_PITCH_TRANSFORM, this::hmgPitchRotation);
+    }
+
+    private Matrix4d hmgYawMatrix(Float ticks) {
+        Matrix4d matrix = new Matrix4d(this.getVehicleTransformWithCustomPitch(ticks));
+        matrix.translate(HMG_YAW_PIVOT.x, HMG_YAW_PIVOT.y, HMG_YAW_PIVOT.z);
+        matrix.rotate(Axis.YP.rotationDegrees(this.getMgYaw()));
+        return matrix;
+    }
+
+    private Matrix4d hmgPitchMatrix(Float ticks) {
+        Matrix4d matrix = this.hmgYawMatrix(ticks);
+        matrix.translate(HMG_PITCH_OFFSET.x, HMG_PITCH_OFFSET.y, HMG_PITCH_OFFSET.z);
+        matrix.rotate(Axis.XP.rotationDegrees(-this.getMgPitch()));
+        return matrix;
+    }
+
+    private Quaterniond hmgYawRotation(Float ticks) {
+        Quaterniond rotation = new Quaterniond(VectorTool.combineRotations(ticks, this));
+        rotation.mul(new Quaterniond(Axis.YP.rotationDegrees(this.getMgYaw())));
+        return rotation;
+    }
+
+    private Quaterniond hmgPitchRotation(Float ticks) {
+        Quaterniond rotation = this.hmgYawRotation(ticks);
+        rotation.mul(new Quaterniond(Axis.XP.rotationDegrees(-this.getMgPitch())));
+        return rotation;
     }
 
     private void tickCoverAnimation() {

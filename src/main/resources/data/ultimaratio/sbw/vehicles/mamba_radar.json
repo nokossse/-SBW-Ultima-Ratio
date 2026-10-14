@@ -151,7 +151,7 @@
     "SympatheticDetonationForce": 1.3,
     "SympatheticDetonationChance": 0.3
   },
-  "HudType": "@Land",
+  "HudType": "@Empty",
   "InertiaRotateRate": 0.3,
   "HasDecoy": true,
   "OBB": [

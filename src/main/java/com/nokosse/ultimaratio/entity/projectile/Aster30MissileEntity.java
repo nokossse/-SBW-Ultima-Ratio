@@ -1,7 +1,11 @@
 package com.nokosse.ultimaratio.entity.projectile;
 
 import com.atsuishio.superbwarfare.entity.projectile.Ru9m100MissileEntity;
+import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -10,12 +14,31 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 public class Aster30MissileEntity extends Ru9m100MissileEntity {
-    private static final double MIN_SPEED = 48.0;
-    private static final double SPEED_MARGIN = 20.0;
+    private static final ResourceLocation MODEL =
+            new ResourceLocation("ultimaratio", "projectile/aster_30_missile");
+    private static final int BOOST_TICKS = 18;
+    private static final double MAX_SPEED = 13.5;
+    private static final double SPEED_MARGIN = 1.5;
+    private static final double ACCEL = 0.27;
+    private static final double TURN = 0.22;
     private static final double PROXIMITY = 6.0;
 
     public Aster30MissileEntity(EntityType<? extends Aster30MissileEntity> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    public BakedModelInstance getModelInstance() {
+        BakedBedrockModel baked = ProjectileModelReloadListener.INSTANCE.getModel(MODEL);
+        if (baked == null) {
+            return super.getModelInstance();
+        }
+        return baked.createInstance();
+    }
+
+    @Override
+    public int getHiddenTicks() {
+        return 0;
     }
 
     @Override
@@ -38,22 +61,8 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         this.setLost(false);
         this.setTargetUUID(uuid);
 
-        Vec3 here = this.position();
-        Vec3 there = target.position();
-        Vec3 targetVel = target.getDeltaMovement();
-        double speed = Math.max(MIN_SPEED, targetVel.length() + SPEED_MARGIN);
-        double range = here.distanceTo(there);
-        double eta = speed > 1.0E-4 ? range / speed : 0.0;
-        Vec3 intercept = there.add(targetVel.scale(eta));
-        Vec3 delta = intercept.subtract(here);
-        if (delta.lengthSqr() < 1.0E-8) {
-            delta = there.subtract(here);
-        }
-        if (delta.lengthSqr() > 1.0E-8) {
-            Vec3 motion = delta.normalize().scale(speed);
-            this.setDeltaMovement(motion);
-            this.hasImpulse = true;
-            this.updateRotation();
+        if (this.tickCount > BOOST_TICKS) {
+            this.steerToIntercept(target);
         }
 
         if (this.tickCount <= this.getNoHitTicks()) {
@@ -65,6 +74,45 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
             this.causeExplode(closest.point);
             this.discard();
         }
+    }
+
+    private void steerToIntercept(Entity target) {
+        Vec3 here = this.position();
+        Vec3 there = target.position();
+        Vec3 targetVel = target.getDeltaMovement();
+        Vec3 current = this.getDeltaMovement();
+        double currentSpeed = current.length();
+        double desired = Math.min(MAX_SPEED, Math.max(currentSpeed, targetVel.length() + SPEED_MARGIN));
+        double speed = Math.min(desired, currentSpeed + ACCEL);
+
+        double range = here.distanceTo(there);
+        double eta = speed > 1.0E-4 ? range / speed : 0.0;
+        Vec3 intercept = there.add(targetVel.scale(eta));
+        Vec3 want = intercept.subtract(here);
+        if (want.lengthSqr() < 1.0E-8) {
+            want = there.subtract(here);
+        }
+        if (want.lengthSqr() < 1.0E-8) {
+            return;
+        }
+        Vec3 dir = want.normalize();
+        Vec3 blended = dir;
+        if (currentSpeed > 1.0E-4) {
+            Vec3 curDir = current.normalize();
+            blended = new Vec3(
+                    Mth.lerp(TURN, curDir.x, dir.x),
+                    Mth.lerp(TURN, curDir.y, dir.y),
+                    Mth.lerp(TURN, curDir.z, dir.z)
+            );
+            if (blended.lengthSqr() < 1.0E-8) {
+                blended = dir;
+            } else {
+                blended = blended.normalize();
+            }
+        }
+        this.setDeltaMovement(blended.scale(speed));
+        this.hasImpulse = true;
+        this.updateRotation();
     }
 
     private static Closest closestPoints(Vec3 p1, Vec3 q1, Vec3 p2, Vec3 q2) {

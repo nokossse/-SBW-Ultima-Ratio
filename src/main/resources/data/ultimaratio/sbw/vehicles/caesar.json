@@ -169,7 +169,7 @@
       ],
       "Spread": 0.06,
       "ProjectileLife": 1000,
-      "ShootAnimationTime": 30,
+      "ShootAnimationTime": 40,
       "Crosshair": "@VehicleRuApc",
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.cannon_ap",

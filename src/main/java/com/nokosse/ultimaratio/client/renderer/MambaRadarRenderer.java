@@ -56,6 +56,14 @@ public class MambaRadarRenderer extends GeoVehicleRenderer<MambaRadarEntity> {
             volant.rotation.set(volant.definition().bindRotation());
             volant.rotation.rotateZ(-VOLANT_TURNS * steer);
         }
+
+        BoneState dish = instance.getBone("arabel_rot");
+        if (dish != null && dish.rotation != null) {
+            dish.rotation.set(dish.definition().bindRotation());
+            if (entity.isRadarDishSpinning()) {
+                dish.rotation.rotateY(entity.getRadarDishYawRad(partialTicks));
+            }
+        }
     }
 
     private void hideBone(VehicleModelInstance instance, String name) {

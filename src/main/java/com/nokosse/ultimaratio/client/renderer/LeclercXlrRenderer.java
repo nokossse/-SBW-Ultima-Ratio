@@ -4,11 +4,11 @@ import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance;
 import com.atsuishio.superbwarfare.client.renderer.entity.GeoVehicleRenderer;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
 
-public class LeclercXlrRenderer extends GeoVehicleRenderer<LeclercXlrEntity> {
+public class LeclercXlrRenderer extends GeoVehicleRenderer<VehicleEntity> {
     public LeclercXlrRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -20,7 +20,7 @@ public class LeclercXlrRenderer extends GeoVehicleRenderer<LeclercXlrEntity> {
 
     @Override
     public void transformCustomModelPart(
-            LeclercXlrEntity entity,
+            VehicleEntity entity,
             VehicleModelInstance instance,
             PoseStack poseStack,
             float entityYaw,
@@ -32,9 +32,14 @@ public class LeclercXlrRenderer extends GeoVehicleRenderer<LeclercXlrEntity> {
         this.hideBone(instance, "hull_hitbox");
         this.hideBone(instance, "tracks_hitbox");
         this.hideBone(instance, "turret_hitbox");
+        this.hideBone(instance, "driver_camera_hitbox");
+        BoneState rws = instance.getBone("passengerWeaponStation");
+        if (rws != null) {
+            rws.visible = true;
+        }
     }
 
-    private void hideBone(VehicleModelInstance instance, String name) {
+    protected void hideBone(VehicleModelInstance instance, String name) {
         BoneState bone = instance.getBone(name);
         if (bone == null) {
             return;

@@ -139,9 +139,9 @@ repositories {
 
     // If you have mod jar dependencies in ./libs, you can declare them as a repository like so.
     // See https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:flat_dir_resolver
-    // flatDir {
-    //     dir 'libs'
-    // }
+    flatDir {
+        dir 'libs'
+    }
 
     maven {
         url "https://cursemaven.com"
@@ -166,6 +166,14 @@ repositories {
     maven {
         url = "https://api.modrinth.com/maven"
     }
+
+    maven {
+        name = 'Kotlin for Forge'
+        url = 'https://thedarkcolour.github.io/KotlinForForge/'
+        content {
+            includeGroup "thedarkcolour"
+        }
+    }
 }
 
 dependencies {
@@ -181,7 +189,9 @@ dependencies {
 
     implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.20.1:4.4.6')
     implementation fg.deobf("maven.modrinth:superb-warfare:0.8.9.1-hotfix")
-    compileOnly files("libs/simplebedrockmodel-2.5.1.jar", "libs/mae-1.1.4.jar")
+    implementation "thedarkcolour:kotlinforforge:4.11.0"
+    implementation fg.deobf("blank:simplebedrockmodel:2.5.1")
+    compileOnly "blank:mae:1.1.4"
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime

@@ -204,21 +204,22 @@
       "Name": "weapon.ultimaratio.mg_12_7",
       "AmmoType": "@HeavyAmmo",
       "ShootPos": {
-        "Transform": "Vehicle",
+        "Transform": "HmgPitch",
+        "DefaultTransform": "Vehicle",
         "Positions": [
           [
-            -0.75,
-            3.95625,
-            3.39366
+            0.0,
+            0.15,
+            1.32
           ]
         ],
         "Directions": [
           "Passenger"
         ],
         "ViewPosition": [
-          -0.75,
-          3.95625,
-          3.39366
+          0.0,
+          0.15,
+          1.32
         ],
         "DefaultBarrelDirection": [
           0,
@@ -263,10 +264,8 @@
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.ultimaratio.mortar_81",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:mortar_fire",
-        "Fire3P": "superbwarfare:mortar_fire",
-        "Fire3PFar": "superbwarfare:mortar_distant",
-        "VehicleReload": "superbwarfare:mortar_load",
+        "Fire1P": "ultimaratio:mortar_fire",
+        "Fire3P": "ultimaratio:mortar_fire",
         "Change": "superbwarfare:into_cannon"
       },
       "SoundRadius": 32,
@@ -470,27 +469,31 @@
       ]
     },
     {
+      "Transform": "HmgYaw",
+      "Rotation": "HmgYaw",
       "Size": [
         0.65625,
         0.34375,
         0.65625
       ],
       "Position": [
-        -0.78125,
-        3.40625,
-        1.90625
+        -0.01875,
+        0.31875,
+        0.05634
       ]
     },
     {
+      "Transform": "HmgPitch",
+      "Rotation": "HmgPitch",
       "Size": [
         0.21875,
         0.125,
         1.09375
       ],
       "Position": [
-        -0.78125,
-        3.9375,
-        2.34375
+        -0.03125,
+        0.13125,
+        0.16884
       ]
     },
     {

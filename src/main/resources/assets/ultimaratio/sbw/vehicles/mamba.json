@@ -5,5 +5,9 @@
       "Model": "ultimaratio:models/bedrock/vehicle/mamba.geo.json",
       "Texture": "ultimaratio:textures/bedrock/vehicle/mamba.png"
     }
-  ]
+  ],
+  "Sponsor": {
+    "Name": "DarkMistyk",
+    "Color": "0x7DEA79"
+  }
 }

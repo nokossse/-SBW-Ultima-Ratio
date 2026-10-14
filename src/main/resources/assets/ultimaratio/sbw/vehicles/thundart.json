@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/thundart.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/thundart.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/thundart.png"
+    }
+  ]
+}
