@@ -1,0 +1,114 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.machine_gun.idle": {
+			"loop": true,
+			"bones": {
+				"flare": {
+					"scale": 0
+				}
+			},
+			"animation_length": 0.1
+		},
+		"animation.machine_gun.fire": {
+			"animation_length": 0.125,
+			"bones": {
+				"cannon": {
+					"position": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.0417": [
+							0,
+							0,
+							5
+						],
+						"0.125": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"flare": {
+					"scale": {
+						"0.0": [
+							1,
+							1,
+							1
+						],
+						"0.0417": [
+							0,
+							0,
+							0
+						],
+						"0.0833": [
+							2,
+							2,
+							2
+						],
+						"0.125": [
+							1,
+							1,
+							1
+						]
+					}
+				}
+			}
+		},
+		"animation.stairs_down": {
+			"animation_length": 1,
+			"bones": {
+				"escalier": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"1.0": [
+							-90,
+							0,
+							0
+						]
+					}
+				}
+			}
+		},
+		"animation.stairs_up": {
+			"animation_length": 1,
+			"bones": {
+				"escalier": {
+					"rotation": {
+						"0.0": [
+							-90,
+							0,
+							0
+						],
+						"1.0": [
+							0,
+							0,
+							0
+						]
+					}
+				}
+			}
+		},
+		"animation.rams": {
+			"animation_length": 0.05,
+			"bones": {
+				"volant": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						]
+					}
+				}
+			}
+		}
+	}
+}

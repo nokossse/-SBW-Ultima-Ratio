@@ -1,0 +1,16 @@
+{
+  "type": "superbwarfare:vehicle_assembling",
+  "category": "land",
+  "inputs": [
+    "8 #forge:storage_blocks/steel",
+    "superbwarfare:light_armament_module",
+    "superbwarfare:medium_battery_pack",
+    "4 superbwarfare:wheel",
+    "superbwarfare:large_motor",
+    "12 superbwarfare:heavy_ammo",
+    "4 superbwarfare:medium_anti_air_missile"
+  ],
+  "result": {
+    "entity": "ultimaratio:serval_dsa"
+  }
+}

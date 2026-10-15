@@ -29,6 +29,8 @@ public class ModTabs {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.RENAULT_KERAX.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR_MEPAC.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.SERVAL.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.SERVAL_DSA.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.LECLERC_XLR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.LECLERC_AZUR.get()));
                     })

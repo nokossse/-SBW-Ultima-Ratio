@@ -10,6 +10,9 @@
   "entity.ultimaratio.thundart_rocket": "THUNDART rocket",
   "entity.ultimaratio.renault_kerax": "Renault Kerax",
   "entity.ultimaratio.vbmr": "VBMR Griffon",
+  "entity.ultimaratio.serval_dsa": "VBMR-L Serval DSA",
+  "weapon.ultimaratio.mistral": "Mistral",
+  "entity.ultimaratio.serval": "VBMR-L Serval",
   "entity.ultimaratio.vbmr_mepac": "VBMR Griffon MEPAC",
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
   "entity.ultimaratio.leclerc_azur": "Leclerc AZUR",
@@ -29,6 +32,8 @@
   "info.ultimaratio.renault_kerax": "The Renault Kerax is a French 8x8 heavy truck. This unarmed civilian chassis is the same cab used by the SAMP/T battery.",
   "info.ultimaratio.caesar": "The CAESAR Mk1 is a French highly mobile self-propelled artillery system featuring a 155mm/52-caliber howitzer mounted on a 6x6 truck chassis. Known for its \"shoot-and-scoot\" capability, it can fire up to six rounds per minute at targets over 10k blocks away before quickly repositioning to avoid counter-battery fire.",
   "info.ultimaratio.vbmr": "The VBMR Griffon is a French 6x6 armored personnel carrier designed to transport an infantry squad under protection. A remotely operated 12.7 mm machine gun on the roof covers the vehicle without exposing the gunner.",
+  "info.ultimaratio.serval_dsa": "The VBMR-L Serval DSA is the short-range air defence version of the Serval, with two Mistral missiles in launch tubes on the roof turret and a 7.62 mm machine gun. The rear stairs lower when stopped.",
+  "info.ultimaratio.serval": "The VBMR-L Serval is a French 4x4 light armored vehicle carrying a squad of up to six. A roof-mounted remote 12.7 mm weapon station covers the vehicle without exposing the gunner.",
   "info.ultimaratio.vbmr_mepac": "The VBMR Griffon MEPAC is a mortar carrier on the Griffon chassis. A 2R2M 81 mm mortar fires from the rear compartment once the roof hatches are open, while the remote 12.7 mm gun still covers the vehicle.",
   "info.ultimaratio.leclerc_xlr": "The Leclerc XLR is the latest French main battle tank, with a 120 mm CN120-26 cannon, a coaxial machine gun and a remote 12.7 mm weapon station. Three crew: gunner, commander and driver.",
   "info.ultimaratio.leclerc_azur": "The Leclerc AZUR is an urban-combat kit for the Leclerc: extra slat armor at the rear and a remote 7.62 mm weapon station. The 120 mm CN120-26 and coaxial 7.62 mm stay. Three crew: gunner, commander and driver."

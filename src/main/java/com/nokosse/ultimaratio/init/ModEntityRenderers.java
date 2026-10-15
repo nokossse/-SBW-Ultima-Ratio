@@ -38,6 +38,8 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.THUNDART.get(), ThundartRenderer::new);
         event.registerEntityRenderer(ModEntities.RENAULT_KERAX.get(), KeraxRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR.get(), VbmrRenderer::new);
+        event.registerEntityRenderer(ModEntities.SERVAL.get(), VbmrRenderer::new);
+        event.registerEntityRenderer(ModEntities.SERVAL_DSA.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR_MEPAC.get(), VbmrMepacRenderer::new);
         event.registerEntityRenderer(ModEntities.LECLERC_XLR.get(), LeclercXlrRenderer::new);
         event.registerEntityRenderer(ModEntities.LECLERC_AZUR.get(), LeclercAzurRenderer::new);

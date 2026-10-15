@@ -10,6 +10,8 @@ import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
 import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
 import com.nokosse.ultimaratio.entity.SampTNgEntity;
 import com.nokosse.ultimaratio.entity.ThundartEntity;
+import com.nokosse.ultimaratio.entity.ServalDsaEntity;
+import com.nokosse.ultimaratio.entity.ServalEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
@@ -96,6 +98,24 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(4.0F, 3.2F)
+    );
+
+    public static final RegistryObject<EntityType<ServalEntity>> SERVAL = register(
+            "serval",
+            EntityType.Builder.<ServalEntity>of(ServalEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.6F, 3.0F)
+    );
+
+    public static final RegistryObject<EntityType<ServalDsaEntity>> SERVAL_DSA = register(
+            "serval_dsa",
+            EntityType.Builder.<ServalDsaEntity>of(ServalDsaEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.6F, 3.0F)
     );
 
     public static final RegistryObject<EntityType<VbmrMepacEntity>> VBMR_MEPAC = register(

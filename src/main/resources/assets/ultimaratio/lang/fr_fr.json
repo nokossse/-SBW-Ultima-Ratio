@@ -10,6 +10,9 @@
   "entity.ultimaratio.thundart_rocket": "Roquette THUNDART",
   "entity.ultimaratio.renault_kerax": "Renault Kerax",
   "entity.ultimaratio.vbmr": "VBMR Griffon",
+  "entity.ultimaratio.serval_dsa": "VBMR-L Serval DSA",
+  "weapon.ultimaratio.mistral": "Mistral",
+  "entity.ultimaratio.serval": "VBMR-L Serval",
   "entity.ultimaratio.vbmr_mepac": "VBMR Griffon MEPAC",
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
   "entity.ultimaratio.leclerc_azur": "Leclerc AZUR",
@@ -29,6 +32,8 @@
   "info.ultimaratio.renault_kerax": "Le Renault Kerax est un camion lourd français 8x8. Ce châssis civil non armé est la même cabine que celle de la batterie SAMP/T.",
   "info.ultimaratio.caesar": "Le CAESAR Mk1 est un système d'artillerie automotrice français très mobile, avec un obusier de 155 mm/52 calibres monté sur un châssis 6x6. Connu pour sa capacité « shoot-and-scoot », il peut tirer jusqu'à six coups par minute sur des cibles à plus de 10 000 blocs avant de se repositionner rapidement pour éviter les tirs de contre-batterie.",
   "info.ultimaratio.vbmr": "Le VBMR Griffon est un véhicule blindé de combat d'infanterie 6x6 français conçu pour transporter une section à l'abri. Une mitrailleuse 12,7 mm téléopérée sur le toit couvre le véhicule sans exposer le tireur.",
+  "info.ultimaratio.serval_dsa": "Le VBMR-L Serval DSA est la version défense sol-air à courte portée du Serval, avec deux missiles Mistral en tubes sur la tourelle de toit et une mitrailleuse de 7,62 mm. L'escalier arrière se déploie à l'arrêt.",
+  "info.ultimaratio.serval": "Le VBMR-L Serval est un véhicule blindé léger 4x4 français qui transporte jusqu'à six soldats. Une tourelleau téléopéré de 12,7 mm sur le toit couvre le véhicule sans exposer le tireur.",
   "info.ultimaratio.vbmr_mepac": "Le VBMR Griffon MEPAC est un Griffon porte-mortier. Un mortier 2R2M de 81 mm tire depuis le compartiment arrière une fois les trappes ouvertes, tandis que la 12,7 mm téléopérée couvre toujours le véhicule.",
   "info.ultimaratio.leclerc_xlr": "Le Leclerc XLR est le char de combat français actuel, avec un canon CN120-26 de 120 mm, une mitrailleuse coaxiale et un tourelleau téléopéré 12,7 mm. Trois membres d'équipage : tireur, chef de char et pilote.",
   "info.ultimaratio.leclerc_azur": "Le Leclerc AZUR est un kit de combat urbain pour le Leclerc : grillage additionnel à l'arrière et tourelleau téléopéré 7,62 mm. Le canon CN120-26 de 120 mm et la coaxiale 7,62 mm sont conservés. Trois membres d'équipage : tireur, chef de char et pilote."

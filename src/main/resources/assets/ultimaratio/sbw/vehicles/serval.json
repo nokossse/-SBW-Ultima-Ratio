@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/serval.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/serval.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/serval.png"
+    }
+  ]
+}

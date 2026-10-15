@@ -67,13 +67,18 @@
       "HasThermalImaging": true,
       "CameraPos": {
         "Transform": "Barrel",
-        "UseFixedCameraPos": false,
+        "UseFixedCameraPos": true,
+        "Position": [
+          -0.45,
+          0.25,
+          0.5
+        ],
         "ZoomPosition": [
-          0.0,
-          0.05,
+          -0.12,
+          0.18,
           0.15
         ],
-        "ZoomDirection": "Barrel"
+        "Direction": "Barrel"
       },
       "DismountInfo": {
         "Transform": "Vehicle",
@@ -275,8 +280,7 @@
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
       "Spread": 0.25,
-      "Crosshair": "@NoCross",
-      "CrosshairZooming": "@VehicleUsApc",
+      "Crosshair": "@VehicleCommonGun",
       "CrosshairColor": "0x66FF00",
       "Projectile": "superbwarfare:projectile",
       "RPM": 450,
