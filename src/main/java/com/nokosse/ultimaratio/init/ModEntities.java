@@ -15,6 +15,7 @@ import com.nokosse.ultimaratio.entity.ServalEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
+import com.nokosse.ultimaratio.entity.projectile.MicaEntity;
 import com.nokosse.ultimaratio.entity.projectile.HadesMissileEntity;
 import com.nokosse.ultimaratio.entity.projectile.ThundartRocketEntity;
 import net.minecraft.world.entity.Entity;
@@ -148,6 +149,16 @@ public class ModEntities {
     public static final RegistryObject<EntityType<Aster30MissileEntity>> ASTER_30_MISSILE = register(
             "aster_30_missile",
             EntityType.Builder.<Aster30MissileEntity>of(Aster30MissileEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .fireImmune()
+                    .sized(0.5F, 0.5F)
+    );
+
+    public static final RegistryObject<EntityType<MicaEntity>> MICA = register(
+            "mica",
+            EntityType.Builder.<MicaEntity>of(MicaEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .setShouldReceiveVelocityUpdates(true)

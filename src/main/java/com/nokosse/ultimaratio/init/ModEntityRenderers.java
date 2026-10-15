@@ -2,6 +2,7 @@ package com.nokosse.ultimaratio.init;
 
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.client.renderer.Aster30MissileRenderer;
+import com.nokosse.ultimaratio.client.renderer.MicaRenderer;
 import com.nokosse.ultimaratio.client.renderer.CaesarRenderer;
 import com.nokosse.ultimaratio.client.renderer.HadesMissileRenderer;
 import com.nokosse.ultimaratio.client.renderer.HadesRenderer;
@@ -44,6 +45,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.LECLERC_XLR.get(), LeclercXlrRenderer::new);
         event.registerEntityRenderer(ModEntities.LECLERC_AZUR.get(), LeclercAzurRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTER_30_MISSILE.get(), Aster30MissileRenderer::new);
+        event.registerEntityRenderer(ModEntities.MICA.get(), MicaRenderer::new);
         event.registerEntityRenderer(ModEntities.THUNDART_ROCKET.get(), ThundartRocketRenderer::new);
         event.registerEntityRenderer(ModEntities.HADES_MISSILE.get(), HadesMissileRenderer::new);
     }
