@@ -16,6 +16,7 @@ import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
 import com.nokosse.ultimaratio.entity.projectile.MicaEntity;
+import com.nokosse.ultimaratio.entity.projectile.ScalpEgEntity;
 import com.nokosse.ultimaratio.entity.projectile.HadesMissileEntity;
 import com.nokosse.ultimaratio.entity.projectile.ThundartRocketEntity;
 import net.minecraft.world.entity.Entity;
@@ -179,6 +180,16 @@ public class ModEntities {
     public static final RegistryObject<EntityType<HadesMissileEntity>> HADES_MISSILE = register(
             "hades_missile",
             EntityType.Builder.<HadesMissileEntity>of(HadesMissileEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .fireImmune()
+                    .sized(1.0F, 1.0F)
+    );
+
+    public static final RegistryObject<EntityType<ScalpEgEntity>> SCALP_EG = register(
+            "scalp_eg",
+            EntityType.Builder.<ScalpEgEntity>of(ScalpEgEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .setShouldReceiveVelocityUpdates(true)
