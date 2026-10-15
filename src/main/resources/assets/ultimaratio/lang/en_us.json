@@ -1,5 +1,6 @@
 {
   "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
+  "block.ultimaratio.gf300": "Thales GF300",
   "entity.ultimaratio.caesar": "CAESAR Mk1",
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
   "entity.ultimaratio.hades": "HADES prototype (2026)",
@@ -40,5 +41,8 @@
   "info.ultimaratio.serval": "The VBMR-L Serval is a French 4x4 light armored vehicle carrying a squad of up to six. A roof-mounted remote 12.7 mm weapon station covers the vehicle without exposing the gunner.",
   "info.ultimaratio.vbmr_mepac": "The VBMR Griffon MEPAC is a mortar carrier on the Griffon chassis. A 2R2M 81 mm mortar fires from the rear compartment once the roof hatches are open, while the remote 12.7 mm gun still covers the vehicle.",
   "info.ultimaratio.leclerc_xlr": "The Leclerc XLR is the latest French main battle tank, with a 120 mm CN120-26 cannon, a coaxial machine gun and a remote 12.7 mm weapon station. Three crew: gunner, commander and driver.",
-  "info.ultimaratio.leclerc_azur": "The Leclerc AZUR is an urban-combat kit for the Leclerc: extra slat armor at the rear and a remote 7.62 mm weapon station. The 120 mm CN120-26 and coaxial 7.62 mm stay. Three crew: gunner, commander and driver."
+  "info.ultimaratio.leclerc_azur": "The Leclerc AZUR is an urban-combat kit for the Leclerc: extra slat armor at the rear and a remote 7.62 mm weapon station. The 120 mm CN120-26 and coaxial 7.62 mm stay. Three crew: gunner, commander and driver.",
+  "entity.ultimaratio.rafale_c": "Dassault Rafale C F3",
+  "weapon.ultimaratio.defa_30mm": "30 mm DEFA 791B",
+  "info.ultimaratio.rafale_c": "The Dassault Rafale C is the French Air and Space Force single-seat multirole fighter, in F3 standard. Twin-engine delta-canard airframe, roughly twice as fast as the A-10. Weapons: 30 mm DEFA cannon (1), MICA air-to-air missiles (2), Mk 82 bombs (3), Mk 84 bombs (4), SCALP-EG cruise missile (5). Sprint for afterburner; press the gear key to retract the landing gear."
 }

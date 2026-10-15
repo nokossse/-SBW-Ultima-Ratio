@@ -1,5 +1,6 @@
 {
   "item_group.ultimaratio.main": "[SBW] Ultima Ratio",
+  "block.ultimaratio.gf300": "Thales GF300",
   "entity.ultimaratio.caesar": "CAESAR Mk1",
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
   "entity.ultimaratio.hades": "HADES prototype (2026)",
@@ -40,5 +41,8 @@
   "info.ultimaratio.serval": "Le VBMR-L Serval est un véhicule blindé léger 4x4 français qui transporte jusqu'à six soldats. Une tourelleau téléopéré de 12,7 mm sur le toit couvre le véhicule sans exposer le tireur.",
   "info.ultimaratio.vbmr_mepac": "Le VBMR Griffon MEPAC est un Griffon porte-mortier. Un mortier 2R2M de 81 mm tire depuis le compartiment arrière une fois les trappes ouvertes, tandis que la 12,7 mm téléopérée couvre toujours le véhicule.",
   "info.ultimaratio.leclerc_xlr": "Le Leclerc XLR est le char de combat français actuel, avec un canon CN120-26 de 120 mm, une mitrailleuse coaxiale et un tourelleau téléopéré 12,7 mm. Trois membres d'équipage : tireur, chef de char et pilote.",
-  "info.ultimaratio.leclerc_azur": "Le Leclerc AZUR est un kit de combat urbain pour le Leclerc : grillage additionnel à l'arrière et tourelleau téléopéré 7,62 mm. Le canon CN120-26 de 120 mm et la coaxiale 7,62 mm sont conservés. Trois membres d'équipage : tireur, chef de char et pilote."
+  "info.ultimaratio.leclerc_azur": "Le Leclerc AZUR est un kit de combat urbain pour le Leclerc : grillage additionnel à l'arrière et tourelleau téléopéré 7,62 mm. Le canon CN120-26 de 120 mm et la coaxiale 7,62 mm sont conservés. Trois membres d'équipage : tireur, chef de char et pilote.",
+  "entity.ultimaratio.rafale_c": "Dassault Rafale C F3",
+  "weapon.ultimaratio.defa_30mm": "30 mm DEFA 791B",
+  "info.ultimaratio.rafale_c": "Le Dassault Rafale C est le chasseur multirôle monoplace de l’Armée de l’Air et de l’Espace, au standard F3. Cellule bimoteur delta-canard, environ deux fois plus rapide que l’A-10. Armement : canon DEFA de 30 mm (1), missiles air-air MICA (2), bombes Mk 82 (3), bombes Mk 84 (4), missile de croisière SCALP-EG (5). Sprint pour la postcombustion ; touche de train pour rentrer le train d’atterrissage."
 }

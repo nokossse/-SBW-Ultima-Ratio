@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/rafale_c.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/rafale_c.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/rafale_c.png"
+    }
+  ]
+}

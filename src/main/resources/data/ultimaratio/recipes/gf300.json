@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["aba", "cdc", "eee"],
+  "key": {
+    "a": { "item": "minecraft:iron_bars" },
+    "b": { "item": "minecraft:observer" },
+    "c": { "item": "superbwarfare:motor" },
+    "d": { "item": "superbwarfare:cell" },
+    "e": { "tag": "forge:storage_blocks/steel" }
+  },
+  "result": { "item": "ultimaratio:gf300" }
+}

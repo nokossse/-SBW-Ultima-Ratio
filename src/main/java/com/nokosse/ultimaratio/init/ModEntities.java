@@ -5,6 +5,7 @@ import com.nokosse.ultimaratio.entity.CaesarEntity;
 import com.nokosse.ultimaratio.entity.HadesEntity;
 import com.nokosse.ultimaratio.entity.KeraxEntity;
 import com.nokosse.ultimaratio.entity.MambaEntity;
+import com.nokosse.ultimaratio.entity.RafaleEntity;
 import com.nokosse.ultimaratio.entity.MambaRadarEntity;
 import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
 import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
@@ -145,6 +146,15 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(5.6F, 3.5F)
+    );
+
+    public static final RegistryObject<EntityType<RafaleEntity>> RAFALE_C = register(
+            "rafale_c",
+            EntityType.Builder.<RafaleEntity>of(RafaleEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.375F, 2.625F)
     );
 
     public static final RegistryObject<EntityType<Aster30MissileEntity>> ASTER_30_MISSILE = register(
