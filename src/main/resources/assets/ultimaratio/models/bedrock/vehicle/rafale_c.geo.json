@@ -24023,7 +24023,7 @@
      ]
     },
     {
-     "name": "vitre",
+     "name": "move_translucent",
      "parent": "cockpit",
      "pivot": [
       6.83553,

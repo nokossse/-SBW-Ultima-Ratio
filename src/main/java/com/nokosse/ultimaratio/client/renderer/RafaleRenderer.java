@@ -23,6 +23,8 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
     private static final ResourceLocation COMMANDS_TEXTURE =
             new ResourceLocation("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
 
+    private static final String GLASS_BONE = "move_translucent";
+
     private BakedBedrockModel commandsBaked;
     private BakedModelInstance commandsInstance;
 
@@ -39,6 +41,11 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
             float partialTicks
     ) {
         super.transformCustomModelPart(entity, instance, poseStack, entityYaw, partialTicks);
+
+        BoneState glass = instance.getBone(GLASS_BONE);
+        if (glass != null) {
+            glass.visible = false;
+        }
 
         if (entity.isWreck()) {
             return;
@@ -78,22 +85,55 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
         super.renderCustomPart(entity, instance, poseStack, entityYaw, partialTicks, buffer, packedLight);
 
         BakedBedrockModel baked = VehicleModelReloadListener.INSTANCE.getModel(COMMANDS_MODEL);
-        if (baked == null) {
+        if (baked != null) {
+            if (baked != this.commandsBaked) {
+                this.commandsBaked = baked;
+                this.commandsInstance = baked.createInstance();
+            }
+            // Same pose stack as the airframe (vehicle axis + scale), so it sits exactly where it was in the Rafale model.
+            this.commandsInstance.resetPose();
+            this.hideBone(this.commandsInstance, GLASS_BONE);
+            this.commandsInstance.renderToBuffer(
+                    poseStack,
+                    buffer,
+                    RenderType.entityTranslucent(COMMANDS_TEXTURE),
+                    BedrockModelRenderTypes.polyMeshCutout(COMMANDS_TEXTURE),
+                    packedLight,
+                    OverlayTexture.NO_OVERLAY
+            );
+        }
+
+        // Glass and HUD planes last, in a translucent pass that does not write depth.
+        this.glass(instance, this.getTextureLocation(entity), poseStack, buffer, packedLight);
+        if (this.commandsInstance != null) {
+            this.glass(this.commandsInstance, COMMANDS_TEXTURE, poseStack, buffer, packedLight);
+        }
+    }
+
+    private void hideBone(BakedModelInstance instance, String name) {
+        BoneState bone = instance.getBone(name);
+        if (bone != null) {
+            bone.visible = false;
+        }
+    }
+
+    private void glass(BakedModelInstance instance, ResourceLocation texture, PoseStack poseStack, MultiBufferSource buffer, int packedLight) {
+        BoneState bone = instance.getBone(GLASS_BONE);
+        if (bone == null) {
             return;
         }
-        if (baked != this.commandsBaked) {
-            this.commandsBaked = baked;
-            this.commandsInstance = baked.createInstance();
-        }
-        // Same pose stack as the airframe (vehicle axis + scale), so it sits exactly where it was in the Rafale model.
-        this.commandsInstance.renderToBuffer(
+        bone.visible = true;
+        instance.renderSingleBonePass(
                 poseStack,
-                buffer,
-                RenderType.entityTranslucent(COMMANDS_TEXTURE),
-                BedrockModelRenderTypes.polyMeshCutout(COMMANDS_TEXTURE),
+                instance.getIndex(GLASS_BONE),
+                buffer.getBuffer(UrRenderTypes.GLASS.apply(texture)),
                 packedLight,
-                OverlayTexture.NO_OVERLAY
+                OverlayTexture.NO_OVERLAY,
+                1F, 1F, 1F, 1F,
+                true,
+                false
         );
+        bone.visible = false;
     }
 
     private void spin(VehicleModelInstance instance, String name, float radians) {
