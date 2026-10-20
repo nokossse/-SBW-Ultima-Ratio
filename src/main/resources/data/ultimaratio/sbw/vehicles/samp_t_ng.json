@@ -1,6 +1,6 @@
 {
   "MaxHealth": 300,
-  "MaxEnergy": 5000000,
+  "MaxEnergy": 10000000,
   "UpStep": 1.5,
   "Seats": [
     {
@@ -133,7 +133,7 @@
   "RotateOffsetHeight": 2.2,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "VehicleContainerType": "Medium",
+  "VehicleContainerType": "Mini",
   "Type": "AA",
   "CollisionLevel": {
     "Level": 4,

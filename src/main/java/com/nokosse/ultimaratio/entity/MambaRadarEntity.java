@@ -29,6 +29,7 @@ public class MambaRadarEntity extends VehicleEntity {
     public static final String FOLD_ANIM = "fold";
     public static final int DEPLOY_ANIM_TICKS = 160;
 
+    private final MobileRadar mobileRadar = new MobileRadar();
     private boolean clientDeployed;
     private int clientDeployStartTick = -1;
     private boolean clientPowered;
@@ -93,6 +94,7 @@ public class MambaRadarEntity extends VehicleEntity {
     public void baseTick() {
         super.baseTick();
         if (!this.level().isClientSide) {
+            this.mobileRadar.tick(this);
             if (!isSrsLoaded()) {
                 this.tickFallbackDeploy();
             }
