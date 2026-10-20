@@ -30,7 +30,7 @@ public class ThundartHud {
     private static final ResourceLocation FRAME =
             new ResourceLocation(UltimaRatio.MODID, "textures/overlay/gunner.png");
     private static final ResourceLocation SBW_MAIN_WEAPON_HUD =
-            new ResourceLocation("superbwarfare", "vehicle_main_weapon_hud");
+            new ResourceLocation("superbwarfare", "superbwarfare_vehicle_main_weapon_hud");
 
     /** Pre = just before SBW draws its land HUD, so the compass / ammo / rangefinder end up on top. */
     @SubscribeEvent
