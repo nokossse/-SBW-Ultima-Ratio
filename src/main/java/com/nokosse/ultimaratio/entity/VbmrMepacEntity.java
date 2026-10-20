@@ -108,13 +108,13 @@ public class VbmrMepacEntity extends SpArtilleryEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(CLOSE, true);
-        this.entityData.define(OPENED, false);
-        this.entityData.define(OUT, false);
-        this.entityData.define(MG_YAW, 0.0F);
-        this.entityData.define(MG_PITCH, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(CLOSE, true);
+        builder.define(OPENED, false);
+        builder.define(OUT, false);
+        builder.define(MG_YAW, 0.0F);
+        builder.define(MG_PITCH, 0.0F);
     }
 
     @Override

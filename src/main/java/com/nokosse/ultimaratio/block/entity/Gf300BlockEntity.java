@@ -11,7 +11,7 @@ import com.nokosse.ultimaratio.block.Gf300Block;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import com.nokosse.ultimaratio.inventory.Gf300Menu;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -30,13 +30,9 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,7 +50,6 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
     private static final double SWEEP_ANGLE = 150.0;
 
     private final EnergyStorage energy = new EnergyStorage(FuMO25BlockEntity.MAX_ENERGY);
-    private LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
 
     private FuncType funcType = FuncType.NORMAL;
     private boolean powered;
@@ -203,36 +198,23 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
 
     // --- energie : toute la couche au sol relaie vers le controleur ---------------------------------------------
 
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap != ForgeCapabilities.ENERGY) return super.getCapability(cap, side);
+    /** Capacite energie exposee sur toute la couche au sol : les cellules relaient vers l'energie du controleur. */
+    public @Nullable IEnergyStorage getEnergyCapability() {
         BlockState state = this.getBlockState();
-        if (Gf300Block.isController(state)) return energyCap.cast();
+        if (Gf300Block.isController(state)) return energy;
         if (this.level != null && state.getBlock() instanceof Gf300Block
                 && this.level.getBlockEntity(Gf300Block.controllerPos(this.worldPosition, state)) instanceof Gf300BlockEntity ctrl) {
-            return ctrl.energyCap.cast();
+            return ctrl.energy;
         }
-        return LazyOptional.empty();
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        this.energyCap.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        this.energyCap = LazyOptional.of(() -> energy);
+        return null;
     }
 
     // --- NBT / sync --------------------------------------------------------------------------------------------
 
     @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("Energy")) this.energy.deserializeNBT(tag.get("Energy"));
+    protected void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        if (tag.contains("Energy")) this.energy.deserializeNBT(registries, tag.get("Energy"));
         this.funcType = FuncType.values()[Math.max(0, Math.min(tag.getInt("Type"), FuncType.values().length - 1))];
         this.powered = tag.getBoolean("Powered");
         this.tick = tag.getInt("Tick");
@@ -240,9 +222,9 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Energy", this.energy.serializeNBT());
+    protected void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("Energy", this.energy.serializeNBT(registries));
         tag.putInt("Type", this.funcType.ordinal());
         tag.putBoolean("Powered", this.powered);
         tag.putInt("Tick", this.tick);
@@ -250,20 +232,14 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
     }
 
     @Override
-    public @NotNull CompoundTag getUpdateTag() {
+    public @NotNull CompoundTag getUpdateTag(@NotNull HolderLookup.Provider registries) {
         CompoundTag tag = new CompoundTag();
-        this.saveAdditional(tag);
+        this.saveAdditional(tag, registries);
         return tag;
     }
 
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
-    }
-
-    /** Le modele depasse largement la case du controleur : sans ca il disparait des que celle-ci quitte l'ecran. */
-    @Override
-    public @NotNull AABB getRenderBoundingBox() {
-        return new AABB(this.worldPosition).inflate(8);
     }
 }

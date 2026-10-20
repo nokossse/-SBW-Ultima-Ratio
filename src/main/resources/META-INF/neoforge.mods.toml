@@ -10,50 +10,29 @@ authors = "${mod_authors}"
 description = '''${mod_description}'''
 
 [[dependencies."${mod_id}"]]
-modId = "forge"
-mandatory = true
-versionRange = "${forge_version_range}"
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies."${mod_id}"]]
 modId = "minecraft"
-mandatory = true
+type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies."${mod_id}"]]
 modId = "superbwarfare"
-mandatory = true
+type = "required"
 versionRange = "[0.8.9,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies."${mod_id}"]]
-modId = "kotlinforforge"
-mandatory = true
-versionRange = "[4.11.0,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies."${mod_id}"]]
-modId = "geckolib"
-mandatory = true
-versionRange = "[4.4.6,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies."${mod_id}"]]
 modId = "simplebedrockmodel"
-mandatory = true
-versionRange = "[2.5.1,)"
+type = "required"
+versionRange = "[2.5.1.1,)"
 ordering = "NONE"
 side = "CLIENT"
-
-[[dependencies."${mod_id}"]]
-modId = "srs"
-mandatory = false
-versionRange = "*"
-ordering = "NONE"
-side = "BOTH"

@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Aster30MissileEntity extends Ru9m100MissileEntity {
     private static final ResourceLocation MODEL =
-            new ResourceLocation("ultimaratio", "projectile/aster_30_missile");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/aster_30_missile");
     private static final int BOOST_TICKS = 18;
     private static final double MAX_SPEED = 13.5;
     private static final double SPEED_MARGIN = 1.5;

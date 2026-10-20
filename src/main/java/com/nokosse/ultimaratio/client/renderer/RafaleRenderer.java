@@ -19,9 +19,9 @@ import net.minecraft.util.Mth;
 public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
     // Cockpit dashboard: separate model + x128 texture so the airframe texture stays small.
     private static final ResourceLocation COMMANDS_MODEL =
-            new ResourceLocation("ultimaratio", "models/bedrock/vehicle/rafale_commands.geo.json");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "models/bedrock/vehicle/rafale_commands.geo.json");
     private static final ResourceLocation COMMANDS_TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
 
     private static final String GLASS_BONE = "move_translucent";
 
