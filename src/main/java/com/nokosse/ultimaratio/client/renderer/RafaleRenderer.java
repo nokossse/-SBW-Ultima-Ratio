@@ -2,13 +2,30 @@ package com.nokosse.ultimaratio.client.renderer;
 
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance;
 import com.atsuishio.superbwarfare.client.renderer.entity.GeoVehicleRenderer;
+import com.atsuishio.superbwarfare.resource.model.VehicleModelReloadListener;
+import com.github.mcmodderanchor.simplebedrockmodel.v1.client.renderer.BedrockModelRenderTypes;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
+import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.nokosse.ultimaratio.entity.RafaleEntity;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
+    // Cockpit dashboard: separate model + x128 texture so the airframe texture stays small.
+    private static final ResourceLocation COMMANDS_MODEL =
+            new ResourceLocation("ultimaratio", "models/bedrock/vehicle/rafale_commands.geo.json");
+    private static final ResourceLocation COMMANDS_TEXTURE =
+            new ResourceLocation("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
+
+    private BakedBedrockModel commandsBaked;
+    private BakedModelInstance commandsInstance;
+
     public RafaleRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -46,6 +63,37 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
             rudder.rotation.set(rudder.definition().bindRotation());
             rudder.rotation.rotateZ(yaw * Mth.DEG_TO_RAD);
         }
+    }
+
+    @Override
+    public void renderCustomPart(
+            RafaleEntity entity,
+            VehicleModelInstance instance,
+            PoseStack poseStack,
+            float entityYaw,
+            float partialTicks,
+            MultiBufferSource buffer,
+            int packedLight
+    ) {
+        super.renderCustomPart(entity, instance, poseStack, entityYaw, partialTicks, buffer, packedLight);
+
+        BakedBedrockModel baked = VehicleModelReloadListener.INSTANCE.getModel(COMMANDS_MODEL);
+        if (baked == null) {
+            return;
+        }
+        if (baked != this.commandsBaked) {
+            this.commandsBaked = baked;
+            this.commandsInstance = baked.createInstance();
+        }
+        // Same pose stack as the airframe (vehicle axis + scale), so it sits exactly where it was in the Rafale model.
+        this.commandsInstance.renderToBuffer(
+                poseStack,
+                buffer,
+                RenderType.entityTranslucent(COMMANDS_TEXTURE),
+                BedrockModelRenderTypes.polyMeshCutout(COMMANDS_TEXTURE),
+                packedLight,
+                OverlayTexture.NO_OVERLAY
+        );
     }
 
     private void spin(VehicleModelInstance instance, String name, float radians) {
