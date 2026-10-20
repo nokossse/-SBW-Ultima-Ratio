@@ -243,7 +243,88 @@
       }
     },
     "MICA": {
-      "AmmoType": "superbwarfare:medium_anti_air_missile",
+      "AmmoType": [
+        {
+          "Ammo": "superbwarfare:medium_anti_air_missile"
+        },
+        {
+          "Ammo": "superbwarfare:large_anti_air_missile",
+          "AmmoSlot": "Meteor",
+          "Override": {
+            "Projectile": "ultimaratio:meteor",
+            "Name": "weapon.ultimaratio.meteor",
+            "DefaultFireMode": "Semi",
+            "Gravity": 0,
+            "Damage": 700,
+            "ExplosionDamage": 300,
+            "ExplosionRadius": 9,
+            "ProjectileLife": 1800,
+            "Velocity": 4,
+            "ShootDelayTime": 2,
+            "SeekWeaponInfo": {
+              "SeekDirection": "Default",
+              "CanGuidedByRadar": true,
+              "AffectedByStealthTarget": true,
+              "MaxGuidedRange": 30000,
+              "SeekRange": 2048,
+              "SeekAngle": 30,
+              "SeekTime": 15,
+              "MinTargetSize": 0.1,
+              "OnlyLockEntity": true
+            },
+            "ProjectileDummyInfo": {
+              "Offset": [
+                0,
+                0,
+                0
+              ],
+              "Rotate": [
+                0,
+                0,
+                0
+              ],
+              "Scale": [
+                0.6,
+                0.6,
+                0.6
+              ],
+              "HideDummyWhileZooming": false
+            },
+            "ShootPos": {
+              "Transform": "Vehicle",
+              "ShootPositionForHud": [
+                0,
+                1.189,
+                0
+              ],
+              "Positions": [
+                [
+                  -1.925,
+                  0.451,
+                  -1.437
+                ],
+                [
+                  1.925,
+                  0.451,
+                  -1.437
+                ]
+              ],
+              "BoundUpWithAmmoAmount": true
+            },
+            "SoundInfo": {
+              "Fire1P": "superbwarfare:happiest_ghast_missile_fire",
+              "Fire3P": "superbwarfare:happiest_ghast_missile_fire",
+              "VehicleReload3p": "superbwarfare:bomb_reload",
+              "VehicleReloadSoundTime": 11,
+              "Change": "superbwarfare:into_missile",
+              "Locking": "superbwarfare:missile_locking",
+              "Locked": "superbwarfare:missile_locked"
+            },
+            "Crosshair": "@VehicleCommonSeekMissile",
+            "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_9m100.png"
+          }
+        }
+      ],
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/ru_9m100.png",
       "DefaultZoom": 1.5,
       "DefaultFireMode": "Semi",
@@ -499,22 +580,6 @@
         {
           "Ammo": "superbwarfare:extra_large_anti_ground_missile",
           "ShouldUnload": false
-        },
-        {
-          "Ammo": "superbwarfare:extra_large_anti_ground_missile",
-          "ShouldUnload": false,
-          "Override": {
-            "SeekWeaponInfo": {
-              "SeekDirection": "ClientCamera",
-              "SeekRange": 512,
-              "SeekAngle": 20,
-              "SeekTime": 10,
-              "MaxTargetHeight": 32,
-              "MinTargetSize": 0.9,
-              "OnlyLockBlock": true,
-              "MaxGuidedRange": 200000
-            }
-          }
         },
         {
           "Ammo": "superbwarfare:extra_large_anti_ground_missile",

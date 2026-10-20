@@ -16,6 +16,7 @@ import com.nokosse.ultimaratio.entity.ServalEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
+import com.nokosse.ultimaratio.entity.projectile.MeteorEntity;
 import com.nokosse.ultimaratio.entity.projectile.MicaEntity;
 import com.nokosse.ultimaratio.entity.projectile.ScalpEgEntity;
 import com.nokosse.ultimaratio.entity.projectile.HadesMissileEntity;
@@ -170,6 +171,16 @@ public class ModEntities {
     public static final RegistryObject<EntityType<MicaEntity>> MICA = register(
             "mica",
             EntityType.Builder.<MicaEntity>of(MicaEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .setShouldReceiveVelocityUpdates(true)
+                    .fireImmune()
+                    .sized(0.5F, 0.5F)
+    );
+
+    public static final RegistryObject<EntityType<MeteorEntity>> METEOR = register(
+            "meteor",
+            EntityType.Builder.<MeteorEntity>of(MeteorEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .setShouldReceiveVelocityUpdates(true)

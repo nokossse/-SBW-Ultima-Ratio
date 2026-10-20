@@ -21,6 +21,8 @@
   "entity.ultimaratio.aster_30_missile": "ASTER-30",
   "entity.ultimaratio.mica": "MICA",
   "weapon.ultimaratio.mica": "MICA",
+  "entity.ultimaratio.meteor": "METEOR",
+  "weapon.ultimaratio.meteor": "METEOR",
   "entity.ultimaratio.scalp_eg": "SCALP-EG",
   "weapon.ultimaratio.scalp_eg": "SCALP-EG",
   "entity.ultimaratio.hades_missile": "HADES",
@@ -44,5 +46,5 @@
   "info.ultimaratio.leclerc_azur": "The Leclerc AZUR is an urban-combat kit for the Leclerc: extra slat armor at the rear and a remote 7.62 mm weapon station. The 120 mm CN120-26 and coaxial 7.62 mm stay. Three crew: gunner, commander and driver.",
   "entity.ultimaratio.rafale_c": "Dassault Rafale C F3",
   "weapon.ultimaratio.defa_30mm": "30 mm DEFA 791B",
-  "info.ultimaratio.rafale_c": "The Dassault Rafale C is the French Air and Space Force single-seat multirole fighter, in F3 standard. Twin-engine delta-canard airframe, roughly twice as fast as the A-10. Weapons: 30 mm DEFA cannon (1), MICA air-to-air missiles (2), Mk 82 bombs (3), Mk 84 bombs (4), SCALP-EG cruise missile (5). Sprint for afterburner; press the gear key to retract the landing gear."
+  "info.ultimaratio.rafale_c": "The Dassault Rafale C is the French Air and Space Force single-seat multirole fighter, in F3 standard. Twin-engine delta-canard airframe, roughly twice as fast as the A-10. Weapons: 30 mm DEFA cannon (1), MICA or METEOR long-range air-to-air missiles (2, switch with N), Mk 82 bombs (3), Mk 84 bombs (4), SCALP-EG cruise missile (5). Sprint for afterburner; press the gear key to retract the landing gear."
 }
