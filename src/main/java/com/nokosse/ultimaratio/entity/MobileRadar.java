@@ -16,7 +16,7 @@ final class MobileRadar {
     private static final double RANGE_MULT = 1.25;
     private static final double SWEEP_ANGLE = 150.0;
 
-    private static final int OPERATOR_SEAT = 2;
+    private static final int OPERATOR_SEAT = 1;
 
     private boolean active;
 

@@ -20,8 +20,7 @@ public class SampTNgEntity extends VehicleEntity {
     public static final EntityDataAccessor<Boolean> POWERED =
             SynchedEntityData.defineId(SampTNgEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public static final int OPERATOR_SEAT_A = 2;
-    public static final int OPERATOR_SEAT_B = 3;
+    public static final int OPERATOR_SEAT = 1;
 
     public static final String DEPLOY_ANIM = "deploy_radar";
     public static final String FOLD_ANIM = "fold_radar";
@@ -108,8 +107,7 @@ public class SampTNgEntity extends VehicleEntity {
     }
 
     private boolean hasRadarOperator() {
-        return this.getNthEntity(OPERATOR_SEAT_A) != null
-                || this.getNthEntity(OPERATOR_SEAT_B) != null;
+        return this.getNthEntity(OPERATOR_SEAT) != null;
     }
 
     private void tickSrsPowerClient() {

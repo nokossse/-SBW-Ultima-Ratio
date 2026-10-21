@@ -21,8 +21,7 @@ public class MambaRadarEntity extends VehicleEntity {
     public static final EntityDataAccessor<Boolean> POWERED =
             SynchedEntityData.defineId(MambaRadarEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public static final int OPERATOR_SEAT_A = 2;
-    public static final int OPERATOR_SEAT_B = 3;
+    public static final int OPERATOR_SEAT = 1;
 
     /** Kept for SRS: play this clip, do not retarget it. */
     public static final String DEPLOY_ANIM = "animation.samp-t.deploy";
@@ -113,8 +112,7 @@ public class MambaRadarEntity extends VehicleEntity {
     }
 
     private boolean hasRadarOperator() {
-        return this.getNthEntity(OPERATOR_SEAT_A) != null
-                || this.getNthEntity(OPERATOR_SEAT_B) != null;
+        return this.getNthEntity(OPERATOR_SEAT) != null;
     }
 
     private void tickSrsPowerClient() {
