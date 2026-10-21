@@ -17,11 +17,14 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
     private static final ResourceLocation MODEL =
             new ResourceLocation("ultimaratio", "projectile/aster_30_missile");
     private static final int BOOST_TICKS = 18;
-    private static final double MAX_SPEED = 13.5;
-    private static final double SPEED_MARGIN = 1.5;
-    private static final double ACCEL = 0.27;
-    private static final double TURN = 0.22;
-    private static final double PROXIMITY = 6.0;
+    // blocs/tick: Kalibr/Scalp/Hades volent jusqu'a ~25 b/t (Mach 1.5), l'Aster doit les depasser
+    private static final double MAX_SPEED = 40.0;
+    private static final double ACCEL = 2.0;
+    private static final double TURN = 0.35;
+    private static final double PROXIMITY = 8.0;
+
+    // la classe parente reecrit la vitesse a chaque tick, on garde la notre
+    private double speed;
 
     public Aster30MissileEntity(EntityType<? extends Aster30MissileEntity> type, Level level) {
         super(type, level);
@@ -72,6 +75,8 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         Closest closest = closestPoints(from, this.position(), targetFrom, target.position());
         if (closest.distance <= PROXIMITY) {
             this.causeExplode(closest.point);
+            // l'explosion ne suffit pas a stopper un missile a 25 b/t: on le detruit sans sa charge
+            target.discard();
             this.discard();
         }
     }
@@ -82,11 +87,10 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         Vec3 targetVel = target.getDeltaMovement();
         Vec3 current = this.getDeltaMovement();
         double currentSpeed = current.length();
-        double desired = Math.min(MAX_SPEED, Math.max(currentSpeed, targetVel.length() + SPEED_MARGIN));
-        double speed = Math.min(desired, currentSpeed + ACCEL);
+        this.speed = Math.min(MAX_SPEED, Math.max(this.speed, currentSpeed) + ACCEL);
 
         double range = here.distanceTo(there);
-        double eta = speed > 1.0E-4 ? range / speed : 0.0;
+        double eta = this.speed > 1.0E-4 ? range / this.speed : 0.0;
         Vec3 intercept = there.add(targetVel.scale(eta));
         Vec3 want = intercept.subtract(here);
         if (want.lengthSqr() < 1.0E-8) {
@@ -110,7 +114,7 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
                 blended = blended.normalize();
             }
         }
-        this.setDeltaMovement(blended.scale(speed));
+        this.setDeltaMovement(blended.scale(this.speed));
         this.hasImpulse = true;
         this.updateRotation();
     }

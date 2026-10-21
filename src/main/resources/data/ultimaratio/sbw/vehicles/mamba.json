@@ -76,7 +76,7 @@
       "DefaultFireMode": "Semi",
       "AvailableFireModes": ["Semi"],
       "Magazine": 8,
-      "EmptyReloadTime": 400,
+      "EmptyReloadTime": 1200,
       "Projectile": "ultimaratio:aster_30_missile",
       "Name": "weapon.ultimaratio.aster_30",
       "ProjectileLife": 1600,
@@ -92,7 +92,7 @@
         "MaxGuidedRange": 15000,
         "SeekRange": 1024,
         "SeekAngle": 20,
-        "SeekTime": 20,
+        "SeekTime": 30,
         "MinTargetHeight": 32,
         "MinTargetSize": 0.1,
         "OnlyLockEntity": true
