@@ -32,6 +32,8 @@ public class CaesarEntity extends SpArtilleryEntity {
     private static final int STAB_DURATION_TICKS = 100;
     private static final double AIM_START_DEGREES = 2.0;
     private static final float TURRET_HOME_SPEED = 1.5F;
+    /** Travel rest elevation: SBW turretXRot is negative upward, so -10 = barrel 10° up. */
+    private static final float REST_TURRET_X_ROT = -10.0F;
 
     private int stabilizeTicks;
     private int packTicks;
@@ -208,9 +210,9 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.entityData.set(STAB_BLEND, blend);
     }
 
-    /** Slew barrel/yaw back to travel rest (0°) like the FH77 when packing up. */
+    /** Slew barrel/yaw back to travel rest (10° up) like the FH77 when packing up. */
     private void homeTurret() {
-        this.setTurretXRot(Mth.approach(this.getTurretXRot(), 0.0F, TURRET_HOME_SPEED));
+        this.setTurretXRot(Mth.approach(this.getTurretXRot(), REST_TURRET_X_ROT, TURRET_HOME_SPEED));
         this.setTurretYRot(Mth.approach(this.getTurretYRot(), 0.0F, TURRET_HOME_SPEED));
     }
 
@@ -250,7 +252,7 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.setStabilized(false);
         this.packTicks = 0;
         this.stabilizeTicks = 0;
-        this.setTurretXRot(0.0F);
+        this.setTurretXRot(REST_TURRET_X_ROT);
         this.setTurretYRot(0.0F);
         this.setLockTurret(true);
     }

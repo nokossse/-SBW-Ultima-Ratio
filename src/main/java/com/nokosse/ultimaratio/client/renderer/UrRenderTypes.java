@@ -26,4 +26,20 @@ public class UrRenderTypes extends RenderType {
                 .createCompositeState(true);
         return RenderType.create("ultimaratio_glass", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, state);
     });
+
+    /** Full-bright additive colour quads (vanilla lightning blend) for engine flames; no depth write so layers stack. */
+    public static final RenderType AFTERBURNER = RenderType.create(
+            "ultimaratio_afterburner",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            8192,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_LIGHTNING_SHADER)
+                    .setTransparencyState(LIGHTNING_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)
+    );
 }

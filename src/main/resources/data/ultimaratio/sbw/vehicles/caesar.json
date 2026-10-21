@@ -12,8 +12,8 @@
     0.375
   ],
   "TurretPitchRange": [
-    0,
-    55
+    10,
+    65
   ],
   "TurretYawRange": [
     -17,
@@ -154,7 +154,7 @@
       "Magazine": 1,
       "EmptyReloadTime": 143,
       "DefaultZoom": 3,
-      "Velocity": 24.5,
+      "Velocity": 12.25,
       "Gravity": 0.06,
       "ApDurability": 200,
       "Damage": 1050,
@@ -174,8 +174,8 @@
       "CrosshairColor": "0x00ff66",
       "Name": "weapon.superbwarfare.cannon_ap",
       "SoundInfo": {
-        "Fire1P": "superbwarfare:fh_77bw_fire_1p",
-        "Fire3P": "superbwarfare:fh_77bw_fire_3p",
+        "Fire1P": "ultimaratio:caesar_fire",
+        "Fire3P": "ultimaratio:caesar_fire",
         "Fire3PFar": "superbwarfare:plz_05_far",
         "Fire3PVeryFar": "superbwarfare:plz_05_veryfar",
         "VehicleReload3p": "superbwarfare:bl_132_reload",
@@ -229,9 +229,9 @@
         "Transform": "Barrel",
         "Positions": [
           [
-            -0.00375,
-            1.80525,
-            10.1625
+            0.0,
+            0.025,
+            11.4
           ]
         ],
         "Directions": [
@@ -292,7 +292,7 @@
   ],
   "VehicleIcon": "ultimaratio:textures/vehicle_icon/caesar_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "VehicleContainerType": "Medium",
+  "VehicleContainerType": "Small",
   "Type": "Tank",
   "CollisionLevel": {
     "Level": 4,
@@ -514,14 +514,14 @@
       "Transform": "Barrel",
       "Rotation": "Barrel",
       "Size": [
-        0.61192,
-        0.65079,
-        1.72629
+        0.625,
+        0.4375,
+        1.59375
       ],
       "Position": [
-        0.26692,
-        -0.14367,
-        0.58881
+        0.0,
+        0.06251,
+        1.09375
       ]
     },
     {
@@ -529,14 +529,14 @@
       "Transform": "Barrel",
       "Rotation": "Barrel",
       "Size": [
-        0.36375,
-        0.28564,
-        0.62693
+        0.1875,
+        0.1875,
+        3.84375
       ],
       "Position": [
-        0.20035,
-        -0.3934,
-        -1.14818
+        0.0,
+        0.02501,
+        6.53125
       ]
     },
     {

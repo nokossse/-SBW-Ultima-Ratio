@@ -183,10 +183,10 @@
     "MachineGun": {
       "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/gun_12_7mm.png",
       "BoundBonesYaw": [
-        "move_hmgYaw"
+        "passengerWeaponStationYaw"
       ],
       "BoundBonesPitch": [
-        "move_hmgPitch"
+        "passengerWeaponStationPitch"
       ],
       "DefaultFireMode": "Auto",
       "AvailableFireModes": "Auto",
@@ -309,8 +309,9 @@
   "TowForceFactor": 2.0,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/lav_150_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "VehicleContainerType": "Medium",
+  "VehicleContainerType": "Small",
   "Type": "APC",
+  "HUDColor": "0x00ff66",
   "HudType": "@Land",
   "HasDecoy": true,
   "SmokeDecoy": true,

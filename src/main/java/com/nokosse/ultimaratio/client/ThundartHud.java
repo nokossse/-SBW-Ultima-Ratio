@@ -7,7 +7,9 @@ import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.atsuishio.superbwarfare.tools.FormatTool;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.nokosse.ultimaratio.UltimaRatio;
+import com.nokosse.ultimaratio.entity.CaesarEntity;
 import com.nokosse.ultimaratio.entity.ThundartEntity;
+import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,7 +24,7 @@ import net.minecraftforge.fml.common.Mod;
 
 /**
  * Same gunner view as FCP's Ural Grad: round scope frame + Pitch / Yaw / Range readout.
- * FCP hardcodes its vehicle ids in a mixin, so this is the equivalent for the Thundart.
+ * FCP hardcodes its vehicle ids in a mixin, so this is the equivalent for the Thundart, Caesar and VBMR MEPAC.
  * The frame is drawn under SBW's land HUD, which then adds compass, rangefinder and ammo.
  */
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
@@ -40,7 +42,9 @@ public class ThundartHud {
         }
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        if (player == null || !(player.getVehicle() instanceof ThundartEntity thundart)) {
+        if (player == null || !(player.getVehicle() instanceof VehicleEntity thundart)
+                || !(thundart instanceof ThundartEntity || thundart instanceof CaesarEntity
+                || thundart instanceof VbmrMepacEntity)) {
             return;
         }
         if (thundart.getSeatIndex(player) != thundart.computed().getTurretControllerIndex()) {

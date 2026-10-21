@@ -27,6 +27,7 @@ public class SampTNgEntity extends VehicleEntity {
     public static final String FOLD_ANIM = "fold_radar";
     public static final int DEPLOY_ANIM_TICKS = 60;
 
+    private final MobileRadar mobileRadar = new MobileRadar();
     private boolean clientDeployed;
     private int clientDeployStartTick = -1;
     private boolean clientPowered;
@@ -88,6 +89,7 @@ public class SampTNgEntity extends VehicleEntity {
     public void baseTick() {
         super.baseTick();
         if (!this.level().isClientSide) {
+            this.mobileRadar.tick(this);
             if (!isSrsLoaded()) {
                 this.tickFallbackDeploy();
             }

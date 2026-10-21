@@ -29,6 +29,10 @@ public class VbmrMepacRenderer extends GeoVehicleRenderer<VbmrMepacEntity> {
             float partialTicks
     ) {
         super.transformCustomModelPart(entity, instance, poseStack, entityYaw, partialTicks);
+        BoneState hitboxes = instance.getBone("hitboxes");
+        if (hitboxes != null) {
+            hitboxes.y = -4096.0F;
+        }
         float steer = Mth.lerp(partialTicks, entity.getRudderRotO(), entity.getRudderRot());
         BoneState volant = instance.getBone("volant");
         if (volant != null && volant.rotation != null) {
@@ -47,12 +51,12 @@ public class VbmrMepacRenderer extends GeoVehicleRenderer<VbmrMepacEntity> {
             barrel.rotation.rotateX(this.getTurretXRot() * deg);
         }
         if (entity.getNthEntity(VbmrMepacEntity.MACHINE_GUN_SEAT) == null) {
-            BoneState hmgYaw = instance.getBone("move_hmgYaw");
+            BoneState hmgYaw = instance.getBone("passengerWeaponStationYaw");
             if (hmgYaw != null && hmgYaw.rotation != null) {
                 hmgYaw.rotation.set(hmgYaw.definition().bindRotation());
                 hmgYaw.rotation.rotateY(entity.getMgYaw() * deg);
             }
-            BoneState hmgPitch = instance.getBone("move_hmgPitch");
+            BoneState hmgPitch = instance.getBone("passengerWeaponStationPitch");
             if (hmgPitch != null && hmgPitch.rotation != null) {
                 hmgPitch.rotation.set(hmgPitch.definition().bindRotation());
                 hmgPitch.rotation.rotationX(entity.getMgPitch() * deg);

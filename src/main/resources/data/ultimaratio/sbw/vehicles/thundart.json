@@ -210,7 +210,7 @@
   "RotateOffsetHeight": 2.2,
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "VehicleContainerType": "Medium",
+  "VehicleContainerType": "Mini",
   "Type": "Artillery",
   "CollisionLevel": {
     "Level": 4,

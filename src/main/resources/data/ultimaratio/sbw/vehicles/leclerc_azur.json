@@ -314,7 +314,7 @@
   "ThirdPersonCameraPos": [-0.9, 1.6, 6.0],
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/m_1a_2_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
-  "VehicleContainerType": "Medium",
+  "VehicleContainerType": "Small",
   "Type": "Tank",
   "CollisionLevel": {
     "Level": 4,

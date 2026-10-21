@@ -6,5 +6,23 @@
         "stream": false
       }
     ]
+  },
+  "rafale_30mm_fire": {
+    "sounds": [
+      {
+        "name": "ultimaratio:rafale_30mm_fire",
+        "attenuation_distance": 512,
+        "stream": false
+      }
+    ]
+  },
+  "caesar_fire": {
+    "sounds": [
+      {
+        "name": "ultimaratio:caesar_fire",
+        "attenuation_distance": 256,
+        "stream": false
+      }
+    ]
   }
 }

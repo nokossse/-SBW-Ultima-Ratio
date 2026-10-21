@@ -15,4 +15,15 @@ public class ModSounds {
             "mortar_fire",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "mortar_fire"))
     );
+
+    /** 78 ms clip (60 / 769 RPM): SBW loops it while the trigger is held, so one loop = one round. */
+    public static final RegistryObject<SoundEvent> RAFALE_30MM_FIRE = REGISTRY.register(
+            "rafale_30mm_fire",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "rafale_30mm_fire"))
+    );
+
+    public static final RegistryObject<SoundEvent> CAESAR_FIRE = REGISTRY.register(
+            "caesar_fire",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "caesar_fire"))
+    );
 }

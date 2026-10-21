@@ -26,6 +26,8 @@ public class CaesarRenderer extends GeoVehicleRenderer<CaesarEntity> {
     private static final float CYL_Z = 22.74175F;
     private static final float REL_Y = CYL_Y - BARREL_Y;
     private static final float REL_Z = CYL_Z - BARREL_Z;
+    /** The barrel geometry is modelled 10° up; bone move_barrel_tilt cancels it, so the gun pitch is the true elevation. */
+    private static final float BARREL_TILT = 10.0F * ((float) Math.PI / 180.0F);
 
     public CaesarRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -58,7 +60,9 @@ public class CaesarRenderer extends GeoVehicleRenderer<CaesarEntity> {
      * FH77-style 2D look-at in the pitch plane. Trailer stab rams stay on JSON.
      * Cannon ram bones must be listed in {@code animation.rams} or the baker folds them.
      */
-    private void aimCannonRams(VehicleModelInstance instance, float pitch) {
+    private void aimCannonRams(VehicleModelInstance instance, float gunPitch) {
+        // Ram attach points sit in the tilted geometry frame, which turns by gunPitch - tilt.
+        float pitch = gunPitch - BARREL_TILT;
         float cos = Mth.cos(pitch);
         float sin = Mth.sin(pitch);
         float dY = BARREL_Y + REL_Y * cos - REL_Z * sin - ROD_Y;
