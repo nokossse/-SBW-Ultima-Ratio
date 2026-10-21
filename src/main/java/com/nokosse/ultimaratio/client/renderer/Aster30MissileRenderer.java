@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class Aster30MissileRenderer extends BasicProjectileRenderer<Aster30MissileEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/aster_30_missile.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/aster_30_missile.png");
 
     public Aster30MissileRenderer(EntityRendererProvider.Context context) {
         super(context);

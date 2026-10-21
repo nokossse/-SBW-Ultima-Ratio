@@ -2,13 +2,13 @@
   "type": "superbwarfare:vehicle_assembling",
   "category": "land",
   "inputs": [
-    "12 #forge:storage_blocks/steel",
+    "12 #c:storage_blocks/steel",
     "superbwarfare:heavy_armament_module",
     "superbwarfare:medium_battery_pack",
-    "6 superbwarfare:wheel",
+    "8 superbwarfare:wheel",
     "superbwarfare:large_motor"
   ],
   "result": {
-    "entity": "ultimaratio:mamba_radar"
+    "entity": "ultimaratio:samp_t_ng"
   }
 }

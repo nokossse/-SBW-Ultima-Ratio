@@ -17,27 +17,27 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /**
  * Same gunner view as FCP's Ural Grad: round scope frame + Pitch / Yaw / Range readout.
  * FCP hardcodes its vehicle ids in a mixin, so this is the equivalent for the Thundart, Caesar and VBMR MEPAC.
  * The frame is drawn under SBW's land HUD, which then adds compass, rangefinder and ammo.
  */
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
 public class ThundartHud {
     private static final ResourceLocation FRAME =
-            new ResourceLocation(UltimaRatio.MODID, "textures/overlay/gunner.png");
+            ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "textures/overlay/gunner.png");
     private static final ResourceLocation SBW_MAIN_WEAPON_HUD =
-            new ResourceLocation("superbwarfare", "superbwarfare_vehicle_main_weapon_hud");
+            ResourceLocation.fromNamespaceAndPath("superbwarfare", "vehicle_main_weapon_hud");
 
     /** Pre = just before SBW draws its land HUD, so the compass / ammo / rangefinder end up on top. */
     @SubscribeEvent
-    public static void onOverlay(RenderGuiOverlayEvent.Pre event) {
-        if (!SBW_MAIN_WEAPON_HUD.equals(event.getOverlay().id())) {
+    public static void onOverlay(RenderGuiLayerEvent.Pre event) {
+        if (!SBW_MAIN_WEAPON_HUD.equals(event.getName())) {
             return;
         }
         Minecraft mc = Minecraft.getInstance();
@@ -53,8 +53,8 @@ public class ThundartHud {
         if (mc.options.getCameraType() != CameraType.FIRST_PERSON && !ClientEventHandler.zoomVehicle) {
             return;
         }
-        draw(thundart, player, event.getGuiGraphics(), mc, event.getPartialTick(),
-                event.getWindow().getGuiScaledWidth(), event.getWindow().getGuiScaledHeight());
+        draw(thundart, player, event.getGuiGraphics(), mc, event.getPartialTick().getGameTimeDeltaPartialTick(false),
+                mc.getWindow().getGuiScaledWidth(), mc.getWindow().getGuiScaledHeight());
     }
 
     private static void draw(VehicleEntity vehicle, Player player, GuiGraphics g, Minecraft mc,

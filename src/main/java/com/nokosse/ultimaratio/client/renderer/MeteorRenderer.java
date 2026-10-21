@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class MeteorRenderer extends BasicProjectileRenderer<MeteorEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/meteor.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/meteor.png");
 
     public MeteorRenderer(EntityRendererProvider.Context context) {
         super(context);

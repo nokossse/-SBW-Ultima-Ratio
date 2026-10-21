@@ -1,30 +1,17 @@
 package com.nokosse.ultimaratio.network;
 
 import com.nokosse.ultimaratio.UltimaRatio;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 
+@EventBusSubscriber(modid = UltimaRatio.MODID)
 public final class ModNetwork {
-    private static final String PROTOCOL = "1";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(UltimaRatio.MODID, "main"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals
-    );
-
     private ModNetwork() {
     }
 
-    public static void register() {
-        int id = 0;
-        CHANNEL.registerMessage(
-                id++,
-                VbmrDecoyMessage.class,
-                VbmrDecoyMessage::encode,
-                VbmrDecoyMessage::decode,
-                VbmrDecoyMessage::handle
-        );
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlersEvent event) {
+        event.registrar("1").playToServer(VbmrDecoyMessage.TYPE, VbmrDecoyMessage.CODEC, VbmrDecoyMessage::handle);
     }
 }
