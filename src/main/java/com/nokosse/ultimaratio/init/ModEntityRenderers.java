@@ -18,6 +18,7 @@ import com.nokosse.ultimaratio.client.renderer.RafaleRenderer;
 import com.nokosse.ultimaratio.client.renderer.SampTNgRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRocketRenderer;
+import com.nokosse.ultimaratio.client.renderer.As350Renderer;
 import com.nokosse.ultimaratio.client.renderer.TigreRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrMepacRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrRenderer;
@@ -51,6 +52,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.LECLERC_AZUR.get(), LeclercAzurRenderer::new);
         event.registerEntityRenderer(ModEntities.RAFALE_C.get(), RafaleRenderer::new);
         event.registerEntityRenderer(ModEntities.TIGRE.get(), TigreRenderer::new);
+        event.registerEntityRenderer(ModEntities.AS350.get(), As350Renderer::new);
         event.registerEntityRenderer(ModEntities.ASTER_30_MISSILE.get(), Aster30MissileRenderer::new);
         event.registerEntityRenderer(ModEntities.MICA.get(), MicaRenderer::new);
         event.registerEntityRenderer(ModEntities.METEOR.get(), MeteorRenderer::new);

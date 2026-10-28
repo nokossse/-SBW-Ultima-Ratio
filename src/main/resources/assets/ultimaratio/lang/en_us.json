@@ -51,5 +51,7 @@
   "weapon.ultimaratio.am_30781_ap": "30 mm GIAT AM-30781 AP",
   "weapon.ultimaratio.am_30781_he": "30 mm GIAT AM-30781 HE",
   "weapon.ultimaratio.rocket_68mm": "68 mm rocket",
-  "info.ultimaratio.tigre": "The EC665 Tigre HAP is the Franco-German tandem-seat attack helicopter, in its escort and fire-support version. The pilot sits behind and flies, and fires the 68 mm rocket pods (44 rockets) and Kh-39 missiles; the gunner sits in front and controls the chin-mounted 30 mm AM-30781 cannon (AP or HE) and the cursor-following 9M120 wire-guided missiles, aiming through the roof sight. Lighter and more agile than the Mi-28, but less armored."
+  "info.ultimaratio.tigre": "The EC665 Tigre HAP is the Franco-German tandem-seat attack helicopter, in its escort and fire-support version. The pilot sits behind and flies, and fires the 68 mm rocket pods (44 rockets) and Kh-39 missiles; the gunner sits in front and controls the chin-mounted 30 mm AM-30781 cannon (AP or HE) and the cursor-following 9M120 wire-guided missiles, aiming through the roof sight. Lighter and more agile than the Mi-28, but less armored.",
+  "entity.ultimaratio.as350": "AS350 \"Écureuil\"",
+  "info.ultimaratio.as350": "The AS350 Écureuil is a light single-engine utility helicopter. Unarmed: one pilot, a front passenger and two more in the back. Fast and agile."
 }

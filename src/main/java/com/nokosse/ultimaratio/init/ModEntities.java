@@ -11,6 +11,7 @@ import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
 import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
 import com.nokosse.ultimaratio.entity.SampTNgEntity;
 import com.nokosse.ultimaratio.entity.ThundartEntity;
+import com.nokosse.ultimaratio.entity.As350Entity;
 import com.nokosse.ultimaratio.entity.TigreEntity;
 import com.nokosse.ultimaratio.entity.ServalDsaEntity;
 import com.nokosse.ultimaratio.entity.ServalEntity;
@@ -157,6 +158,15 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(3.375F, 2.625F)
+    );
+
+    public static final RegistryObject<EntityType<As350Entity>> AS350 = register(
+            "as350",
+            EntityType.Builder.<As350Entity>of(As350Entity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(2.1F, 3.1F)
     );
 
     public static final RegistryObject<EntityType<TigreEntity>> TIGRE = register(

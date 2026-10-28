@@ -51,5 +51,7 @@
   "weapon.ultimaratio.am_30781_ap": "30 mm GIAT AM-30781 AP",
   "weapon.ultimaratio.am_30781_he": "30 mm GIAT AM-30781 HE",
   "weapon.ultimaratio.rocket_68mm": "Roquette de 68 mm",
-  "info.ultimaratio.tigre": "L’EC665 Tigre HAP est l’hélicoptère d’attaque franco-allemand à sièges en tandem, dans sa version appui-protection. Le pilote, assis à l’arrière, pilote et tire les roquettes de 68 mm (44 roquettes) et les missiles Kh-39 ; le tireur, assis à l’avant, commande le canon de 30 mm AM-30781 de menton (AP ou HE) et les missiles filoguidés 9M120 qui suivent le curseur, en visant par le viseur de toit. Plus léger et plus agile que le Mi-28, mais moins blindé."
+  "info.ultimaratio.tigre": "L’EC665 Tigre HAP est l’hélicoptère d’attaque franco-allemand à sièges en tandem, dans sa version appui-protection. Le pilote, assis à l’arrière, pilote et tire les roquettes de 68 mm (44 roquettes) et les missiles Kh-39 ; le tireur, assis à l’avant, commande le canon de 30 mm AM-30781 de menton (AP ou HE) et les missiles filoguidés 9M120 qui suivent le curseur, en visant par le viseur de toit. Plus léger et plus agile que le Mi-28, mais moins blindé.",
+  "entity.ultimaratio.as350": "AS350 \"Écureuil\"",
+  "info.ultimaratio.as350": "L’AS350 Écureuil est un hélicoptère utilitaire léger monomoteur. Non armé : un pilote, un passager avant et deux autres à l’arrière. Rapide et agile."
 }

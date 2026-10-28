@@ -35,6 +35,7 @@ public class ModTabs {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.LECLERC_AZUR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.RAFALE_C.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.TIGRE.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.AS350.get()));
                         output.accept(ModBlocks.GF300_ITEM.get());
                     })
                     .build()
