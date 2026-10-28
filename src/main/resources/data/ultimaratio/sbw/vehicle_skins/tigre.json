@@ -1,0 +1,16 @@
+{
+  "Skins": [
+    {
+      "Id": "vanilla",
+      "Name": "France",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/tigre.png",
+      "Priority": 1
+    },
+    {
+      "Id": "luftwaffe",
+      "Name": "Luftwaffe",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/tigre_luftwaffe.png",
+      "Priority": 2
+    }
+  ]
+}

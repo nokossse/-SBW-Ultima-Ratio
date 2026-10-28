@@ -386,7 +386,7 @@
     },
     "PassengerMissile": {
       "DefaultZoom": 3,
-      "Magazine": 4,
+      "Magazine": 1,
       "Template": "@Missile",
       "Crosshair": "@VehicleCommonMissile",
       "ShootPos": {
@@ -398,29 +398,16 @@
         ],
         "Positions": [
           [
-            1.954,
-            1.386,
-            1.2
-          ],
-          [
-            2.272,
-            1.386,
-            1.2
-          ],
-          [
-            1.954,
-            1.186,
-            1.2
-          ],
-          [
-            2.272,
-            1.186,
-            1.2
+            2.113,
+            1.231,
+            0.188
           ]
         ],
         "BoundUpWithAmmoAmount": true,
         "ViewDirection": "Barrel"
-      }
+      },
+      "EmptyReloadTime": 80,
+      "RPM": 30
     },
     "SeekMissile": {
       "AmmoType": [
