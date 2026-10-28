@@ -79,12 +79,12 @@ public class CaesarEntity extends SpArtilleryEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(STABILIZED, false);
-        this.entityData.define(STABILIZING, false);
-        this.entityData.define(PACKING, false);
-        this.entityData.define(STAB_BLEND, 0.0F);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(STABILIZED, false);
+        builder.define(STABILIZING, false);
+        builder.define(PACKING, false);
+        builder.define(STAB_BLEND, 0.0F);
     }
 
     @Override

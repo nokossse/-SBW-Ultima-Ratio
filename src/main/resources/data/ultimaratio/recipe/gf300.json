@@ -7,7 +7,7 @@
     "b": { "item": "minecraft:observer" },
     "c": { "item": "superbwarfare:motor" },
     "d": { "item": "superbwarfare:cell" },
-    "e": { "tag": "forge:storage_blocks/steel" }
+    "e": { "tag": "c:storage_blocks/steel" }
   },
-  "result": { "item": "ultimaratio:gf300" }
+  "result": { "id": "ultimaratio:gf300" }
 }

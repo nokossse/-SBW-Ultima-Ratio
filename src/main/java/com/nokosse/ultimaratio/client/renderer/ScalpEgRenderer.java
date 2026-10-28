@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ScalpEgRenderer extends BasicProjectileRenderer<ScalpEgEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/scalp_eg.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/scalp_eg.png");
 
     public ScalpEgRenderer(EntityRendererProvider.Context context) {
         super(context);

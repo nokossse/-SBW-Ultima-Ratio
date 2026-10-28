@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class MicaRenderer extends BasicProjectileRenderer<MicaEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/mica.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/mica.png");
 
     public MicaRenderer(EntityRendererProvider.Context context) {
         super(context);

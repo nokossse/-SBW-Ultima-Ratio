@@ -74,9 +74,9 @@ public class SampTNgEntity extends VehicleEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DEPLOYED, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DEPLOYED, false);
     }
 
     @Override
