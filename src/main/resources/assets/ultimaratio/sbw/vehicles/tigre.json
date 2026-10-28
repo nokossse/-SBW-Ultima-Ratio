@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/tigre.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/tigre.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/tigre.png"
+    }
+  ]
+}

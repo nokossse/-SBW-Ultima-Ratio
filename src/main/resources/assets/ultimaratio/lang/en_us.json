@@ -46,5 +46,10 @@
   "info.ultimaratio.leclerc_azur": "The Leclerc AZUR is an urban-combat kit for the Leclerc: extra slat armor at the rear and a remote 7.62 mm weapon station. The 120 mm CN120-26 and coaxial 7.62 mm stay. Three crew: gunner, commander and driver.",
   "entity.ultimaratio.rafale_c": "Dassault Rafale C F3",
   "weapon.ultimaratio.defa_30mm": "30 mm DEFA 791B",
-  "info.ultimaratio.rafale_c": "The Dassault Rafale C is the French Air and Space Force single-seat multirole fighter, in F3 standard. Twin-engine delta-canard airframe, roughly twice as fast as the A-10. Weapons: 30 mm DEFA cannon (1), MICA or METEOR long-range air-to-air missiles (2, switch with N), Mk 82 bombs (3), Mk 84 bombs (4), SCALP-EG cruise missile (5). Sprint for afterburner; press the gear key to retract the landing gear."
+  "info.ultimaratio.rafale_c": "The Dassault Rafale C is the French Air and Space Force single-seat multirole fighter, in F3 standard. Twin-engine delta-canard airframe, roughly twice as fast as the A-10. Weapons: 30 mm DEFA cannon (1), MICA or METEOR long-range air-to-air missiles (2, switch with N), Mk 82 bombs (3), Mk 84 bombs (4), SCALP-EG cruise missile (5). Sprint for afterburner; press the gear key to retract the landing gear.",
+  "entity.ultimaratio.tigre": "EC-665 \"Tigre\"",
+  "weapon.ultimaratio.am_30781_ap": "30 mm GIAT AM-30781 AP",
+  "weapon.ultimaratio.am_30781_he": "30 mm GIAT AM-30781 HE",
+  "weapon.ultimaratio.rocket_68mm": "68 mm rocket",
+  "info.ultimaratio.tigre": "The EC665 Tigre HAP is the Franco-German tandem-seat attack helicopter, in its escort and fire-support version. The pilot sits behind and flies, and fires the 68 mm rocket pods (44 rockets) and Kh-39 missiles; the gunner sits in front and controls the chin-mounted 30 mm AM-30781 cannon (AP or HE) and the cursor-following 9M120 wire-guided missiles, aiming through the roof sight. Lighter and more agile than the Mi-28, but less armored."
 }

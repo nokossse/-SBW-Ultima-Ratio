@@ -46,5 +46,10 @@
   "info.ultimaratio.leclerc_azur": "Le Leclerc AZUR est un kit de combat urbain pour le Leclerc : grillage additionnel à l'arrière et tourelleau téléopéré 7,62 mm. Le canon CN120-26 de 120 mm et la coaxiale 7,62 mm sont conservés. Trois membres d'équipage : tireur, chef de char et pilote.",
   "entity.ultimaratio.rafale_c": "Dassault Rafale C F3",
   "weapon.ultimaratio.defa_30mm": "30 mm DEFA 791B",
-  "info.ultimaratio.rafale_c": "Le Dassault Rafale C est le chasseur multirôle monoplace de l’Armée de l’Air et de l’Espace, au standard F3. Cellule bimoteur delta-canard, environ deux fois plus rapide que l’A-10. Armement : canon DEFA de 30 mm (1), missiles air-air MICA ou METEOR longue portée (2, changement avec N), bombes Mk 82 (3), bombes Mk 84 (4), missile de croisière SCALP-EG (5). Sprint pour la postcombustion ; touche de train pour rentrer le train d’atterrissage."
+  "info.ultimaratio.rafale_c": "Le Dassault Rafale C est le chasseur multirôle monoplace de l’Armée de l’Air et de l’Espace, au standard F3. Cellule bimoteur delta-canard, environ deux fois plus rapide que l’A-10. Armement : canon DEFA de 30 mm (1), missiles air-air MICA ou METEOR longue portée (2, changement avec N), bombes Mk 82 (3), bombes Mk 84 (4), missile de croisière SCALP-EG (5). Sprint pour la postcombustion ; touche de train pour rentrer le train d’atterrissage.",
+  "entity.ultimaratio.tigre": "EC-665 \"Tigre\"",
+  "weapon.ultimaratio.am_30781_ap": "30 mm GIAT AM-30781 AP",
+  "weapon.ultimaratio.am_30781_he": "30 mm GIAT AM-30781 HE",
+  "weapon.ultimaratio.rocket_68mm": "Roquette de 68 mm",
+  "info.ultimaratio.tigre": "L’EC665 Tigre HAP est l’hélicoptère d’attaque franco-allemand à sièges en tandem, dans sa version appui-protection. Le pilote, assis à l’arrière, pilote et tire les roquettes de 68 mm (44 roquettes) et les missiles Kh-39 ; le tireur, assis à l’avant, commande le canon de 30 mm AM-30781 de menton (AP ou HE) et les missiles filoguidés 9M120 qui suivent le curseur, en visant par le viseur de toit. Plus léger et plus agile que le Mi-28, mais moins blindé."
 }

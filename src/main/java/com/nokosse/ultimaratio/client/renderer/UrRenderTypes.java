@@ -27,6 +27,20 @@ public class UrRenderTypes extends RenderType {
         return RenderType.create("ultimaratio_glass", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 256, true, true, state);
     });
 
+    /** Same as GLASS for poly meshes, which the baker emits as triangles. */
+    public static final Function<ResourceLocation, RenderType> GLASS_POLY = Util.memoize(texture -> {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(RENDERTYPE_ENTITY_TRANSLUCENT_SHADER)
+                .setTextureState(new TextureStateShard(texture, false, false))
+                .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                .setCullState(NO_CULL)
+                .setLightmapState(LIGHTMAP)
+                .setOverlayState(OVERLAY)
+                .setWriteMaskState(COLOR_WRITE)
+                .createCompositeState(true);
+        return RenderType.create("ultimaratio_glass_poly", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.TRIANGLES, 256, true, true, state);
+    });
+
     /** Full-bright additive colour quads (vanilla lightning blend) for engine flames; no depth write so layers stack. */
     public static final RenderType AFTERBURNER = RenderType.create(
             "ultimaratio_afterburner",

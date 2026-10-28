@@ -11,6 +11,7 @@ import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
 import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
 import com.nokosse.ultimaratio.entity.SampTNgEntity;
 import com.nokosse.ultimaratio.entity.ThundartEntity;
+import com.nokosse.ultimaratio.entity.TigreEntity;
 import com.nokosse.ultimaratio.entity.ServalDsaEntity;
 import com.nokosse.ultimaratio.entity.ServalEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
@@ -156,6 +157,15 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(3.375F, 2.625F)
+    );
+
+    public static final RegistryObject<EntityType<TigreEntity>> TIGRE = register(
+            "tigre",
+            EntityType.Builder.<TigreEntity>of(TigreEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.375F, 3.0F)
     );
 
     public static final RegistryObject<EntityType<Aster30MissileEntity>> ASTER_30_MISSILE = register(
