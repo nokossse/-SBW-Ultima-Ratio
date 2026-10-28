@@ -5,39 +5,40 @@ import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationConte
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.github.mcmodderanchor.simplebedrockmodel.v1.common.animation.BedrockAnimation;
+import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 
+
 import java.util.HashMap;
+import java.util.UUID;
 
 public class SampTNgEntity extends VehicleEntity {
     public static final EntityDataAccessor<Boolean> DEPLOYED =
             SynchedEntityData.defineId(SampTNgEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> POWERED =
-            SynchedEntityData.defineId(SampTNgEntity.class, EntityDataSerializers.BOOLEAN);
-
-    public static final int OPERATOR_SEAT = 1;
 
     public static final String DEPLOY_ANIM = "deploy_radar";
     public static final String FOLD_ANIM = "fold_radar";
     public static final int DEPLOY_ANIM_TICKS = 60;
 
-    private final MobileRadar mobileRadar = new MobileRadar();
+    private final MobileRadar mobileRadar = new MobileRadar(1000.0);
+    private UUID radarActivator;
     private boolean clientDeployed;
     private int clientDeployStartTick = -1;
-    private boolean clientPowered;
-    private int clientPowerStartTick = -1;
 
     public SampTNgEntity(EntityType<? extends SampTNgEntity> type, Level level) {
         super(type, level);
-    }
-
-    public static boolean isSrsLoaded() {
-        return MambaRadarEntity.isSrsLoaded();
     }
 
     public boolean isRadarDeployed() {
@@ -46,31 +47,42 @@ public class SampTNgEntity extends VehicleEntity {
 
     public void setRadarDeployed(boolean deployed) {
         this.entityData.set(DEPLOYED, deployed);
-        if (!deployed) {
-            this.setRadarPowered(false);
+    }
+
+    /** Shift + right click toggles the radar: active = deployed, inactive = folded. Needs energy to deploy. */
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        if (player.isCrouching() && !this.isWreck() && !this.getLocked()
+                && !player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
+            if (!this.level().isClientSide) {
+                boolean deploy = !this.isRadarDeployed();
+                if (deploy && this.getEnergy() < FuMO25BlockEntity.DEFAULT_MIN_ENERGY) {
+                    player.displayClientMessage(Component.translatable("tips.superbwarfare.auto_aimable_entity.inactive"), true);
+                    return InteractionResult.sidedSuccess(false);
+                }
+                this.setRadarDeployed(deploy);
+                this.radarActivator = deploy ? player.getUUID() : null;
+                player.displayClientMessage(Component.translatable(deploy
+                        ? "tips.superbwarfare.auto_aimable_entity.active"
+                        : "tips.superbwarfare.auto_aimable_entity.inactive"), true);
+                this.level().playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER,
+                        SoundSource.PLAYERS, 0.5F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
         }
-    }
-
-    public boolean isRadarPowered() {
-        return this.entityData.get(POWERED);
-    }
-
-    public void setRadarPowered(boolean powered) {
-        this.entityData.set(POWERED, powered);
+        return super.interact(player, hand);
     }
 
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DEPLOYED, false);
-        this.entityData.define(POWERED, false);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("RadarDeployed", this.isRadarDeployed());
-        compound.putBoolean("RadarPowered", this.isRadarPowered());
     }
 
     @Override
@@ -79,44 +91,20 @@ public class SampTNgEntity extends VehicleEntity {
         if (compound.contains("RadarDeployed")) {
             this.setRadarDeployed(compound.getBoolean("RadarDeployed"));
         }
-        if (compound.contains("RadarPowered")) {
-            this.setRadarPowered(compound.getBoolean("RadarPowered"));
-        }
     }
 
     @Override
     public void baseTick() {
         super.baseTick();
         if (!this.level().isClientSide) {
-            this.mobileRadar.tick(this);
-            if (!isSrsLoaded()) {
-                this.tickFallbackDeploy();
+            Player activator = this.radarActivator == null ? null : this.level().getPlayerByUUID(this.radarActivator);
+            this.mobileRadar.tick(this, this.isRadarDeployed(), activator);
+            if (this.isRadarDeployed() && !this.mobileRadar.isActive()) {
+                this.setRadarDeployed(false);
             }
-        } else if (isSrsLoaded()) {
-            this.tickSrsPowerClient();
         } else {
             this.tickDeployAnimation();
         }
-    }
-
-    private void tickFallbackDeploy() {
-        boolean occupied = this.hasRadarOperator();
-        if (occupied != this.isRadarDeployed()) {
-            this.setRadarDeployed(occupied);
-        }
-    }
-
-    private boolean hasRadarOperator() {
-        return this.getNthEntity(OPERATOR_SEAT) != null;
-    }
-
-    private void tickSrsPowerClient() {
-        boolean powered = this.isRadarPowered();
-        if (powered == this.clientPowered) {
-            return;
-        }
-        this.clientPowered = powered;
-        this.clientPowerStartTick = powered ? this.tickCount : -1;
     }
 
     private void tickDeployAnimation() {
@@ -145,9 +133,6 @@ public class SampTNgEntity extends VehicleEntity {
     }
 
     public boolean isRadarDishSpinning() {
-        if (isSrsLoaded()) {
-            return this.isRadarDeployed() && this.isRadarPowered();
-        }
         return this.isRadarDeployed()
                 && this.clientDeployStartTick >= 0
                 && this.tickCount - this.clientDeployStartTick >= DEPLOY_ANIM_TICKS;
@@ -157,8 +142,8 @@ public class SampTNgEntity extends VehicleEntity {
         if (!this.isRadarDishSpinning()) {
             return 0.0F;
         }
-        int startTick = isSrsLoaded() ? this.clientPowerStartTick : this.clientDeployStartTick;
-        float delay = isSrsLoaded() ? 0.0F : DEPLOY_ANIM_TICKS;
+        int startTick = this.clientDeployStartTick;
+        float delay = DEPLOY_ANIM_TICKS;
         if (startTick < 0) {
             return 0.0F;
         }
