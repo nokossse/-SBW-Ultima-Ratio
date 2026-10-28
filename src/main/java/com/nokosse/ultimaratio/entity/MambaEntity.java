@@ -1,6 +1,7 @@
 package com.nokosse.ultimaratio.entity;
 
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType;
+import com.nokosse.ultimaratio.UltimaRatioConfig;
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationContext;
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
@@ -8,14 +9,30 @@ import com.atsuishio.superbwarfare.tools.ParticleTool;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import com.atsuishio.superbwarfare.entity.projectile.MissileProjectile;
+import com.atsuishio.superbwarfare.entity.projectile.SwarmDroneEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
+import com.atsuishio.superbwarfare.init.ModTags;
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Comparator;
+import java.util.UUID;
 
 public class MambaEntity extends SpArtilleryEntity {
     public static final EntityDataAccessor<Integer> PHASE =
@@ -24,6 +41,18 @@ public class MambaEntity extends SpArtilleryEntity {
             SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Boolean> DEPLOYED =
             SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public static final EntityDataAccessor<Boolean> AUTO =
+            SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.BOOLEAN);
+
+    /** Auto-fire only on targets at least this many blocks above the launcher's Y. */
+    private static final double AUTO_RANGE = 512.0;
+    private static final int AUTO_COOLDOWN_TICKS = 60;
+    private static final int AUTO_RETARGET_TICKS = 200;
+
+    private UUID owner;
+    private UUID lastAutoTarget;
+    private int lastAutoShotTick = -AUTO_RETARGET_TICKS;
 
     public static final int PHASE_IDLE = 0;
     public static final int PHASE_STAB = 1;
@@ -88,6 +117,84 @@ public class MambaEntity extends SpArtilleryEntity {
         this.entityData.define(PHASE, PHASE_IDLE);
         this.entityData.define(PHASE_TICKS, 0);
         this.entityData.define(DEPLOYED, false);
+        this.entityData.define(AUTO, false);
+    }
+
+    public boolean isAuto() {
+        return this.entityData.get(AUTO);
+    }
+
+    /** Same as the CIWS: shift + right click from outside toggles ACTIVE/INACTIVE (first user becomes the owner). */
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        if (player.isCrouching() && !this.isWreck() && !this.getLocked()
+                && !player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
+            if (this.owner == null) {
+                this.owner = player.getUUID();
+            }
+            if (!player.getUUID().equals(this.owner)) {
+                return InteractionResult.PASS;
+            }
+            if (!this.level().isClientSide) {
+                boolean auto = !this.isAuto();
+                this.entityData.set(AUTO, auto);
+                player.displayClientMessage(Component.translatable(auto
+                        ? "tips.superbwarfare.auto_aimable_entity.active"
+                        : "tips.superbwarfare.auto_aimable_entity.inactive"), true);
+                this.level().playSound(null, player.blockPosition(), SoundEvents.ARROW_HIT_PLAYER,
+                        SoundSource.PLAYERS, 0.5F, 1.0F);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
+        return super.interact(player, hand);
+    }
+
+    private void tickAutoFire() {
+        if (!this.isAuto() || !this.isDeployed() || this.isWreck()
+                || this.getNthEntity(this.getTurretControllerIndex()) != null
+                || this.tickCount - this.lastAutoShotTick < AUTO_COOLDOWN_TICKS
+                || this.getAmmoCount("Main") <= 0) {
+            return;
+        }
+        Player ownerPlayer = this.owner == null ? null : this.level().getPlayerByUUID(this.owner);
+        double minY = this.getY() + UltimaRatioConfig.SAMPT_MIN_TARGET_HEIGHT.get();
+        Entity target = this.level()
+                .getEntities(this, this.getBoundingBox().inflate(AUTO_RANGE), e -> this.isAutoTarget(e, ownerPlayer, minY))
+                .stream()
+                .min(Comparator.comparingDouble(this::distanceToSqr))
+                .orElse(null);
+        if (target == null) {
+            return;
+        }
+        this.lastAutoTarget = target.getUUID();
+        this.lastAutoShotTick = this.tickCount;
+        this.vehicleShoot(ownerPlayer, "Main", target.getUUID(), target.getBoundingBox().getCenter());
+    }
+
+    private boolean isAutoTarget(Entity e, @Nullable Player ownerPlayer, double minY) {
+        if (!e.isAlive() || e.getY() < minY || e.distanceToSqr(this) > AUTO_RANGE * AUTO_RANGE) {
+            return false;
+        }
+        // do not stack missiles on a target already engaged
+        if (e.getUUID().equals(this.lastAutoTarget) && this.tickCount - this.lastAutoShotTick < AUTO_RETARGET_TICKS) {
+            return false;
+        }
+        if (e instanceof Enemy) {
+            return true;
+        }
+        // SBW missiles only (no bullets, no swarm drones, never our own ASTER-30), not fired by an ally
+        if (e instanceof MissileProjectile m) {
+            if (m instanceof SwarmDroneEntity || m instanceof Aster30MissileEntity) {
+                return false;
+            }
+            // no shooter (e.g. /summon) counts as hostile
+            Entity shooter = m.getOwner();
+            return shooter == null || (shooter != ownerPlayer && (ownerPlayer == null || !shooter.isAlliedTo(ownerPlayer)));
+        }
+        // enemy vehicle: crewed and not friendly to the owner
+        return e instanceof VehicleEntity v && v != this && !v.getPassengers().isEmpty()
+                && ownerPlayer != null && !SeekTool.IS_FRIENDLY.test(ownerPlayer, v)
+                && v.getPassengers().stream().noneMatch(p -> p == ownerPlayer);
     }
 
     @Override
@@ -97,6 +204,10 @@ public class MambaEntity extends SpArtilleryEntity {
         compound.putInt("PhaseTicks", this.getPhaseTicks());
         compound.putBoolean("Deployed", this.isDeployed());
         compound.putBoolean("Undeployed", this.isUndeployed());
+        compound.putBoolean("Auto", this.isAuto());
+        if (this.owner != null) {
+            compound.putUUID("AutoOwner", this.owner);
+        }
     }
 
     @Override
@@ -104,6 +215,10 @@ public class MambaEntity extends SpArtilleryEntity {
         super.readAdditionalSaveData(compound);
         if (compound.contains("Phase")) {
             this.setPhase(compound.getInt("Phase"));
+        }
+        this.entityData.set(AUTO, compound.getBoolean("Auto"));
+        if (compound.hasUUID("AutoOwner")) {
+            this.owner = compound.getUUID("AutoOwner");
         }
         if (compound.contains("PhaseTicks")) {
             this.setPhaseTicks(compound.getInt("PhaseTicks"));
@@ -138,6 +253,9 @@ public class MambaEntity extends SpArtilleryEntity {
     public void baseTick() {
         super.baseTick();
         this.tickDeploy();
+        if (!this.level().isClientSide) {
+            this.tickAutoFire();
+        }
         if (this.level().isClientSide) {
             this.tickDeployAnimation();
         }

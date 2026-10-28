@@ -7,6 +7,7 @@ import com.nokosse.ultimaratio.init.ModSounds;
 import com.nokosse.ultimaratio.init.ModTabs;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
@@ -23,5 +24,6 @@ public class UltimaRatio {
         ModSounds.REGISTRY.register(bus);
         ModTabs.TABS.register(bus);
         ModNetwork.register();
+        context.registerConfig(ModConfig.Type.COMMON, UltimaRatioConfig.SPEC);
     }
 }
