@@ -36,3 +36,6 @@ type = "required"
 versionRange = "[2.5.1.1,)"
 ordering = "NONE"
 side = "CLIENT"
+
+[[mixins]]
+config = "ultimaratio.mixins.json"

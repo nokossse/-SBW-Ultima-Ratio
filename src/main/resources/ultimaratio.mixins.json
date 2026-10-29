@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "package": "com.nokosse.ultimaratio.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "MapEntityRendererMixin",
+    "TacticalMapScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
