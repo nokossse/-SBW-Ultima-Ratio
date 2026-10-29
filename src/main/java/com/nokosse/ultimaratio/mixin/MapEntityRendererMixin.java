@@ -1,5 +1,6 @@
 package com.nokosse.ultimaratio.mixin;
 
+import com.nokosse.ultimaratio.client.RadarCone;
 import com.atsuishio.superbwarfare.client.map.MapEntityRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.Mixin;

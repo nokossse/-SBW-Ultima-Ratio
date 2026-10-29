@@ -1,4 +1,4 @@
-package com.nokosse.ultimaratio.mixin;
+package com.nokosse.ultimaratio.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
@@ -12,11 +12,11 @@ import net.minecraft.client.renderer.GameRenderer;
 import org.joml.Matrix4f;
 
 /** SBW 1.21.1 left drawFilledSector empty (TODO upstream), so the green radar sweep cone never showed. */
-final class RadarCone {
+public final class RadarCone {
     private RadarCone() {
     }
 
-    static void draw(GuiGraphics guiGraphics, float cx, float cy, float radius, float startDeg, float sweepDeg) {
+    public static void draw(GuiGraphics guiGraphics, float cx, float cy, float radius, float startDeg, float sweepDeg) {
         if (radius < 2f || sweepDeg <= 0f) return;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
