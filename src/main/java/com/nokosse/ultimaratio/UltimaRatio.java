@@ -3,6 +3,7 @@ package com.nokosse.ultimaratio;
 import com.mojang.logging.LogUtils;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import com.nokosse.ultimaratio.init.ModEntities;
+import com.nokosse.ultimaratio.init.ModMenus;
 import com.nokosse.ultimaratio.init.ModSounds;
 import com.nokosse.ultimaratio.init.ModTabs;
 import com.nokosse.ultimaratio.network.ModNetwork;
@@ -21,6 +22,7 @@ public class UltimaRatio {
         IEventBus bus = context.getModEventBus();
         ModBlocks.register(bus);
         ModEntities.REGISTRY.register(bus);
+        ModMenus.register(bus);
         ModSounds.REGISTRY.register(bus);
         ModTabs.TABS.register(bus);
         ModNetwork.register();

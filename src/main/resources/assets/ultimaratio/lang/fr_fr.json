@@ -53,5 +53,16 @@
   "weapon.ultimaratio.rocket_68mm": "Roquette de 68 mm",
   "info.ultimaratio.tigre": "L’EC665 Tigre HAP est l’hélicoptère d’attaque franco-allemand à sièges en tandem, dans sa version appui-protection. Le pilote, assis à l’arrière, pilote et tire les roquettes de 68 mm (44 roquettes) et les missiles Kh-39 ; le tireur, assis à l’avant, commande le canon de 30 mm AM-30781 de menton (AP ou HE) et les missiles filoguidés 9M120 qui suivent le curseur, en visant par le viseur de toit. Plus léger et plus agile que le Mi-28, mais moins blindé.",
   "entity.ultimaratio.as350": "AS350 \"Écureuil\"",
-  "info.ultimaratio.as350": "L’AS350 Écureuil est un hélicoptère utilitaire léger monomoteur. Non armé : un pilote, un passager avant et deux autres à l’arrière. Rapide et agile."
+  "info.ultimaratio.as350": "L’AS350 Écureuil est un hélicoptère utilitaire léger monomoteur. Non armé : un pilote, un passager avant et deux autres à l’arrière. Rapide et agile.",
+  "entity.ultimaratio.vsr700": "VSR700",
+  "info.ultimaratio.vsr700": "Le VSR700 est un hélicoptère tactique sans pilote dérivé du Cabri G2. Il se pilote à distance avec le VSR Monitor : l’opérateur reste à sa place pendant que le drone vole comme un hélicoptère normal.",
+  "item.ultimaratio.vsr_monitor": "VSR Monitor",
+  "tips.ultimaratio.vsr.linked": "VSR700 lié",
+  "tips.ultimaratio.vsr.unlinked": "VSR700 délié",
+  "tips.ultimaratio.vsr.already_linked": "Ce VSR700 est déjà lié à un monitor",
+  "tips.ultimaratio.vsr.monitor_busy": "Ce monitor est déjà lié à un VSR700",
+  "tips.ultimaratio.vsr.out_of_range": "VSR700 hors de portée : liaison perdue",
+  "tips.ultimaratio.vsr.destroyed": "VSR700 détruit : liaison perdue",
+  "tips.ultimaratio.vsr.signal_lost": "Signal du VSR700 perdu",
+  "tips.ultimaratio.vsr.removed": "VSR700 disparu : liaison rompue"
 }

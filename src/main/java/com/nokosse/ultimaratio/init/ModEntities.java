@@ -12,6 +12,7 @@ import com.nokosse.ultimaratio.entity.LeclercXlrEntity;
 import com.nokosse.ultimaratio.entity.SampTNgEntity;
 import com.nokosse.ultimaratio.entity.ThundartEntity;
 import com.nokosse.ultimaratio.entity.As350Entity;
+import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.entity.TigreEntity;
 import com.nokosse.ultimaratio.entity.ServalDsaEntity;
 import com.nokosse.ultimaratio.entity.ServalEntity;
@@ -167,6 +168,15 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(2.1F, 3.1F)
+    );
+
+    public static final RegistryObject<EntityType<Vsr700Entity>> VSR700 = register(
+            "vsr700",
+            EntityType.Builder.<Vsr700Entity>of(Vsr700Entity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(2.0F, 2.4F)
     );
 
     public static final RegistryObject<EntityType<TigreEntity>> TIGRE = register(

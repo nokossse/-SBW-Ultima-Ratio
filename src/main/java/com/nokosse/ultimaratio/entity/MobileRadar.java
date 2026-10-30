@@ -31,7 +31,7 @@ final class MobileRadar {
     /** Switch-driven radar: scans only while {@code deployed}; {@link #isActive()} turns false once energy runs out. */
     void tick(VehicleEntity vehicle, boolean deployed, Player fallback) {
         if (!(vehicle.level() instanceof ServerLevel level)) return;
-        if (!deployed) {
+        if (!deployed || vehicle.isWreck()) {
             active = false;
             return;
         }
@@ -44,6 +44,10 @@ final class MobileRadar {
 
     void tick(VehicleEntity vehicle) {
         if (!(vehicle.level() instanceof ServerLevel level)) return;
+        if (vehicle.isWreck()) {
+            active = false;
+            return;
+        }
         // radar actif seulement si la place 3 (index 2) est occupee par un joueur : c'est lui l'operateur
         if (!(vehicle.getNthEntity(OPERATOR_SEAT) instanceof Player player)) {
             active = false;

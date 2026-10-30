@@ -26,5 +26,12 @@ public final class ModNetwork {
                 VbmrDecoyMessage::decode,
                 VbmrDecoyMessage::handle
         );
+        CHANNEL.registerMessage(
+                id++,
+                VsrReleaseMessage.class,
+                VsrReleaseMessage::encode,
+                VsrReleaseMessage::decode,
+                VsrReleaseMessage::handle
+        );
     }
 }

@@ -19,6 +19,7 @@ import com.nokosse.ultimaratio.client.renderer.SampTNgRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRocketRenderer;
 import com.nokosse.ultimaratio.client.renderer.As350Renderer;
+import com.nokosse.ultimaratio.client.renderer.Vsr700Renderer;
 import com.nokosse.ultimaratio.client.renderer.TigreRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrMepacRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrRenderer;
@@ -31,6 +32,12 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.item.ItemProperties;
+import com.nokosse.ultimaratio.client.screen.Vsr700Screen;
+import net.minecraft.resources.ResourceLocation;
+import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -53,6 +60,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.RAFALE_C.get(), RafaleRenderer::new);
         event.registerEntityRenderer(ModEntities.TIGRE.get(), TigreRenderer::new);
         event.registerEntityRenderer(ModEntities.AS350.get(), As350Renderer::new);
+        event.registerEntityRenderer(ModEntities.VSR700.get(), Vsr700Renderer::new);
         event.registerEntityRenderer(ModEntities.ASTER_30_MISSILE.get(), Aster30MissileRenderer::new);
         event.registerEntityRenderer(ModEntities.MICA.get(), MicaRenderer::new);
         event.registerEntityRenderer(ModEntities.METEOR.get(), MeteorRenderer::new);
@@ -60,6 +68,15 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.THUNDART_ROCKET.get(), ThundartRocketRenderer::new);
         event.registerEntityRenderer(ModEntities.HADES_MISSILE.get(), HadesMissileRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.GF300_BE.get(), ctx -> new Gf300BlockEntityRenderer());
+    }
+
+    @SubscribeEvent
+    public static void clientSetup(FMLClientSetupEvent event) {
+        // Linked screen texture on the VSR Monitor, like SBW's drone monitor
+        event.enqueueWork(() -> MenuScreens.register(ModMenus.VSR700.get(), Vsr700Screen::new));
+        event.enqueueWork(() -> ItemProperties.register(ModBlocks.VSR_MONITOR.get(),
+                new ResourceLocation(UltimaRatio.MODID, "linked"),
+                (stack, level, entity, seed) -> VsrMonitorItem.getLinked(stack) != null ? 1 : 0));
     }
 
     @SubscribeEvent

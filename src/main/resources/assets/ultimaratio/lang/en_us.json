@@ -53,5 +53,16 @@
   "weapon.ultimaratio.rocket_68mm": "68 mm rocket",
   "info.ultimaratio.tigre": "The EC665 Tigre HAP is the Franco-German tandem-seat attack helicopter, in its escort and fire-support version. The pilot sits behind and flies, and fires the 68 mm rocket pods (44 rockets) and Kh-39 missiles; the gunner sits in front and controls the chin-mounted 30 mm AM-30781 cannon (AP or HE) and the cursor-following 9M120 wire-guided missiles, aiming through the roof sight. Lighter and more agile than the Mi-28, but less armored.",
   "entity.ultimaratio.as350": "AS350 \"Écureuil\"",
-  "info.ultimaratio.as350": "The AS350 Écureuil is a light single-engine utility helicopter. Unarmed: one pilot, a front passenger and two more in the back. Fast and agile."
+  "info.ultimaratio.as350": "The AS350 Écureuil is a light single-engine utility helicopter. Unarmed: one pilot, a front passenger and two more in the back. Fast and agile.",
+  "entity.ultimaratio.vsr700": "VSR700",
+  "info.ultimaratio.vsr700": "The VSR700 is an unmanned tactical helicopter derived from the Cabri G2. Flown remotely with the VSR Monitor: the operator stays where they stand while the drone flies like a normal helicopter.",
+  "item.ultimaratio.vsr_monitor": "VSR Monitor",
+  "tips.ultimaratio.vsr.linked": "VSR700 linked",
+  "tips.ultimaratio.vsr.unlinked": "VSR700 unlinked",
+  "tips.ultimaratio.vsr.already_linked": "This VSR700 is already linked to a monitor",
+  "tips.ultimaratio.vsr.monitor_busy": "This monitor is already linked to a VSR700",
+  "tips.ultimaratio.vsr.out_of_range": "VSR700 out of range: link lost",
+  "tips.ultimaratio.vsr.destroyed": "VSR700 destroyed: link lost",
+  "tips.ultimaratio.vsr.signal_lost": "VSR700 signal lost",
+  "tips.ultimaratio.vsr.removed": "VSR700 gone: link cut"
 }
