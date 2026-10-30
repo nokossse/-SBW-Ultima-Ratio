@@ -6,7 +6,9 @@
     "superbwarfare:medium_battery_pack",
     "superbwarfare:large_propeller",
     "superbwarfare:propeller",
-    "superbwarfare:large_motor"
+    "superbwarfare:large_motor",
+    "superbwarfare:heavy_armament_module",
+    "superbwarfare:fumo_25"
   ],
   "result": {
     "entity": "ultimaratio:vsr700"
