@@ -33,5 +33,12 @@ public final class ModNetwork {
                 VsrReleaseMessage::decode,
                 VsrReleaseMessage::handle
         );
+        CHANNEL.registerMessage(
+                id++,
+                VsrMarkMessage.class,
+                VsrMarkMessage::encode,
+                VsrMarkMessage::decode,
+                VsrMarkMessage::handle
+        );
     }
 }

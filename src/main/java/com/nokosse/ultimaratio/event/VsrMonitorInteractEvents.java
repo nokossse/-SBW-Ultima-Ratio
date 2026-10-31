@@ -6,12 +6,13 @@ import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** With a VSR Monitor in the main hand, right click interacts with nothing (chests, buttons, vehicles...) but the VSR700. */
+/** With a VSR Monitor in the main hand, right click interacts with nothing but the VSR700, and left click attacks and mines nothing. */
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID)
 public final class VsrMonitorInteractEvents {
     private VsrMonitorInteractEvents() {
@@ -25,6 +26,20 @@ public final class VsrMonitorInteractEvents {
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (holdsMonitor(event.getEntity())) {
             event.setUseBlock(Event.Result.DENY); // the item itself still reacts (take/release the controls)
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLeftClickBlock(PlayerInteractEvent.LeftClickBlock event) {
+        if (holdsMonitor(event.getEntity())) {
+            event.setCanceled(true);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onAttackEntity(AttackEntityEvent event) {
+        if (holdsMonitor(event.getEntity())) {
+            event.setCanceled(true);
         }
     }
 

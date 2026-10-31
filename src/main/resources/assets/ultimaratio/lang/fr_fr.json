@@ -13,6 +13,9 @@
   "entity.ultimaratio.vbmr": "VBMR Griffon",
   "entity.ultimaratio.serval_dsa": "VBMR-L Serval DSA",
   "weapon.ultimaratio.mistral": "Mistral",
+  "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
+  "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
+  "info.ultimaratio.serval_lad": "Le VBMR-L Serval LAD est la version appui-feu du Serval : une tourelle de toit armée d'un canon ARX30 de 30 mm tirant des obus GS. Elle peut être servie depuis la place du tireur, ou Shift + clic droit pour activer la tourelle automatique, qui tire sur les drones hostiles et les phantoms dans un rayon de 50 blocs. L'escalier arrière se déploie à l'arrêt.",
   "entity.ultimaratio.serval": "VBMR-L Serval",
   "entity.ultimaratio.vbmr_mepac": "VBMR Griffon MEPAC",
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -64,5 +67,7 @@
   "tips.ultimaratio.vsr.out_of_range": "VSR700 hors de portée : liaison perdue",
   "tips.ultimaratio.vsr.destroyed": "VSR700 détruit : liaison perdue",
   "tips.ultimaratio.vsr.signal_lost": "Signal du VSR700 perdu",
-  "tips.ultimaratio.vsr.removed": "VSR700 disparu : liaison rompue"
+  "tips.ultimaratio.vsr.removed": "VSR700 disparu : liaison rompue",
+  "weapon.ultimaratio.vsr_laser": "Désignateur laser",
+  "des.ultimaratio.vsr_monitor": "Distance du VSR700 : %1$s"
 }

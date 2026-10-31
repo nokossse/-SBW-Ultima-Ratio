@@ -183,7 +183,8 @@
       "MinYaw": -80,
       "MaxYaw": 80,
       "Weapons": [
-        "Mistral"
+        "Mistral",
+        "Laser"
       ],
       "HasThermalImaging": true
     }
@@ -205,15 +206,6 @@
       "ExplosionRadius": 6,
       "Velocity": 3,
       "RPM": 30,
-      "SeekWeaponInfo": {
-        "SeekDirection": "Default",
-        "CanGuidedByRadar": false,
-        "AffectedByStealthTarget": false,
-        "SeekRange": 384,
-        "SeekAngle": 20,
-        "SeekTime": 30,
-        "OnlyLockEntity": true
-      },
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [
@@ -244,8 +236,41 @@
         "Locked": "superbwarfare:igla_9k38_locked"
       },
       "CrosshairColor": "0xFFC700",
-      "Crosshair": "@VehicleCommonSeekMissile",
+      "Crosshair": "@VehicleCommonMissile",
       "SoundRadius": 12
+    },
+    "Laser": {
+      "Name": "weapon.ultimaratio.vsr_laser",
+      "Icon": "superbwarfare:textures/overlay/vehicle/weapon/icons/laser.png",
+      "UseNacelleCamera": true,
+      "DefaultZoom": 6,
+      "DefaultFireMode": "Semi",
+      "AvailableFireModes": "Semi",
+      "Magazine": 0,
+      "AmmoType": "minecraft:barrier",
+      "CrosshairColor": "0xFFC700",
+      "Crosshair": "@Empty",
+      "ShootPos": {
+        "Transform": "Vehicle",
+        "ShootPositionForHud": [
+          0,
+          0.74,
+          3.05
+        ],
+        "Positions": [
+          [
+            -0.6,
+            0.85,
+            2.2
+          ],
+          [
+            0.6,
+            0.85,
+            2.2
+          ]
+        ],
+        "BoundUpWithAmmoAmount": true
+      }
     }
   },
   "EngineType": "Helicopter",
@@ -259,7 +284,7 @@
     "LiftSpeed": 1,
     "Speed": 0.95,
     "EngineStartSound": "superbwarfare:ah_6_engine_start",
-    "EngineSoundVolume": 2
+    "EngineSoundVolume": 1
   },
   "EngineSound": "superbwarfare:ah_6_engine",
   "ThirdPersonCameraPos": [

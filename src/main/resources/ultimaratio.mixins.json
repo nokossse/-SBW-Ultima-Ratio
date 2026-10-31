@@ -8,8 +8,10 @@
     "ChunkMapMixin",
     "ChunkMapTrackedEntityMixin",
     "SeekToolBuilderMixin",
+    "IglaMissileMixin",
     "SbwPilotMessagesMixin",
-    "SbwStopRidingMixin"
+    "SbwStopRidingMixin",
+    "VehicleEntityMixin"
   ],
   "client": [
     "ClientLevelMixin",
@@ -17,7 +19,8 @@
     "KeyboardInputMixin",
     "CommonOverlayMixin",
     "HelicopterHudMixin",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "EngineSoundMixin"
   ],
   "injectors": {
     "defaultRequire": 1

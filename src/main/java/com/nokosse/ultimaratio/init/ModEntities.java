@@ -16,6 +16,7 @@ import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.entity.TigreEntity;
 import com.nokosse.ultimaratio.entity.ServalDsaEntity;
 import com.nokosse.ultimaratio.entity.ServalEntity;
+import com.nokosse.ultimaratio.entity.ServalLadEntity;
 import com.nokosse.ultimaratio.entity.VbmrMepacEntity;
 import com.nokosse.ultimaratio.entity.VbmrEntity;
 import com.nokosse.ultimaratio.entity.projectile.Aster30MissileEntity;
@@ -119,6 +120,15 @@ public class ModEntities {
     public static final RegistryObject<EntityType<ServalDsaEntity>> SERVAL_DSA = register(
             "serval_dsa",
             EntityType.Builder.<ServalDsaEntity>of(ServalDsaEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.6F, 3.0F)
+    );
+
+    public static final RegistryObject<EntityType<ServalLadEntity>> SERVAL_LAD = register(
+            "serval_lad",
+            EntityType.Builder.<ServalLadEntity>of(ServalLadEntity::new, MobCategory.MISC)
                     .setTrackingRange(512)
                     .setUpdateInterval(1)
                     .fireImmune()

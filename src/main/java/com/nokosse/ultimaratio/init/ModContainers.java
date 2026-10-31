@@ -20,6 +20,7 @@ public class ModContainers {
         event.add(ModEntities.VBMR_MEPAC);
         event.add(ModEntities.SERVAL);
         event.add(ModEntities.SERVAL_DSA);
+        event.add(ModEntities.SERVAL_LAD);
         event.add(ModEntities.LECLERC_XLR);
         event.add(ModEntities.LECLERC_AZUR);
     }

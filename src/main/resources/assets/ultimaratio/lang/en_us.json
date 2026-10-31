@@ -13,6 +13,9 @@
   "entity.ultimaratio.vbmr": "VBMR Griffon",
   "entity.ultimaratio.serval_dsa": "VBMR-L Serval DSA",
   "weapon.ultimaratio.mistral": "Mistral",
+  "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
+  "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
+  "info.ultimaratio.serval_lad": "The VBMR-L Serval LAD is the fire-support version of the Serval: a roof turret with a 30 mm ARX30 cannon firing GS shells. It can be crewed from the gunner seat, or Shift + right click it to switch on the automatic turret, which shoots hostile drones and phantoms within 50 blocks. The rear stairs lower when stopped.",
   "entity.ultimaratio.serval": "VBMR-L Serval",
   "entity.ultimaratio.vbmr_mepac": "VBMR Griffon MEPAC",
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -64,5 +67,7 @@
   "tips.ultimaratio.vsr.out_of_range": "VSR700 out of range: link lost",
   "tips.ultimaratio.vsr.destroyed": "VSR700 destroyed: link lost",
   "tips.ultimaratio.vsr.signal_lost": "VSR700 signal lost",
-  "tips.ultimaratio.vsr.removed": "VSR700 gone: link cut"
+  "tips.ultimaratio.vsr.removed": "VSR700 gone: link cut",
+  "weapon.ultimaratio.vsr_laser": "Laser designator",
+  "des.ultimaratio.vsr_monitor": "VSR700 Distance: %1$s"
 }

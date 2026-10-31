@@ -1,7 +1,19 @@
 package com.nokosse.ultimaratio.item;
 
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
+import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -13,6 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -85,8 +99,46 @@ public class VsrMonitorItem extends Item {
         }
     }
 
+    /** Same weapon stats as SBW's drone monitor (it cannot attack, see VsrMonitorInteractEvents and VsrClientEvents). */
+    @Override
+    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
+        if (slot != EquipmentSlot.MAINHAND) {
+            return super.getAttributeModifiers(slot, stack);
+        }
+        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
+        builder.putAll(super.getAttributeModifiers(slot, stack));
+        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 2.0, AttributeModifier.Operation.ADDITION));
+        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Item modifier", -2.4, AttributeModifier.Operation.ADDITION));
+        return builder.build();
+    }
+
+    /** Distance to the linked drone and its coordinates (kept up to date by Vsr700Entity), like the drone monitor. */
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
+        CompoundTag tag = stack.getTag();
+        Player player = Minecraft.getInstance().player;
+        if (tag == null || player == null || !tag.contains(LINKED) || !tag.contains("PosX") || !tag.contains("PosY") || !tag.contains("PosZ")) {
+            return;
+        }
+        Vec3 drone = new Vec3(tag.getDouble("PosX"), tag.getDouble("PosY"), tag.getDouble("PosZ"));
+        tooltip.add(Component.translatable("des.ultimaratio.vsr_monitor", format1(player.position().distanceTo(drone)) + "m")
+                .withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.literal("X: " + format1(drone.x) + " Y: " + format1(drone.y) + " Z: " + format1(drone.z)));
+    }
+
+    private static String format1(double value) {
+        return String.format(Locale.ROOT, "%.1f", value);
+    }
+
+    public static void setDronePos(ItemStack stack, Vec3 pos) {
+        stack.getOrCreateTag().putDouble("PosX", pos.x);
+        stack.getOrCreateTag().putDouble("PosY", pos.y);
+        stack.getOrCreateTag().putDouble("PosZ", pos.z);
+    }
+
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-        return slotChanged;
+        return false;
     }
 }

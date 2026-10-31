@@ -1,5 +1,7 @@
 package com.nokosse.ultimaratio.entity;
 
+import com.atsuishio.superbwarfare.data.gun.GunData;
+import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.google.common.collect.Iterables;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
@@ -127,6 +129,12 @@ public class Vsr700Entity extends VehicleEntity {
         return InteractionResult.CONSUME;
     }
 
+    /** True while the pilot's selected weapon is the laser (the one that only gives a free camera). */
+    public boolean isLaserSelected(Entity pilot) {
+        GunData data = getGunData(pilot);
+        return data != null && data.get(GunProp.USE_NACELLE_CAMERA);
+    }
+
     public void clearController() {
         controller = null;
     }
@@ -197,6 +205,12 @@ public class Vsr700Entity extends VehicleEntity {
         }
         if (controller != null && (isWreck() || getHealth() <= 0)) {
             disconnectOperator(Component.translatable("tips.ultimaratio.vsr.destroyed"));
+        }
+        if (controller != null && tickCount % 5 == 0) {
+            ServerPlayer operatorPlayer = level().getServer() == null ? null : level().getServer().getPlayerList().getPlayer(controller);
+            if (operatorPlayer != null) {
+                linkedMonitors(operatorPlayer).forEach(monitor -> VsrMonitorItem.setDronePos(monitor, position()));
+            }
         }
         // SBW's JSON radar scans for the last driver and stops without one: set while the drone is linked and
         // alive (SBW alone would forget it after 10 s without a real passenger), cleared for a wreck or unlinked drone

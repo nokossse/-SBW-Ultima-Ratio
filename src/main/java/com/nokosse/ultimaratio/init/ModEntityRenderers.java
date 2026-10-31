@@ -30,6 +30,8 @@ import net.minecraft.util.Unit;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import com.nokosse.ultimaratio.client.VsrClientEvents;
 import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -54,6 +56,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.VBMR.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.SERVAL.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.SERVAL_DSA.get(), VbmrRenderer::new);
+        event.registerEntityRenderer(ModEntities.SERVAL_LAD.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR_MEPAC.get(), VbmrMepacRenderer::new);
         event.registerEntityRenderer(ModEntities.LECLERC_XLR.get(), LeclercXlrRenderer::new);
         event.registerEntityRenderer(ModEntities.LECLERC_AZUR.get(), LeclercAzurRenderer::new);
@@ -68,6 +71,11 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.THUNDART_ROCKET.get(), ThundartRocketRenderer::new);
         event.registerEntityRenderer(ModEntities.HADES_MISSILE.get(), HadesMissileRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.GF300_BE.get(), ctx -> new Gf300BlockEntityRenderer());
+    }
+
+    @SubscribeEvent
+    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
+        event.registerAboveAll("vsr700", (gui, graphics, partialTick, width, height) -> VsrClientEvents.renderHud(graphics, width, height));
     }
 
     @SubscribeEvent
