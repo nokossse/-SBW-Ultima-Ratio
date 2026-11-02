@@ -59,6 +59,10 @@ public class MambaRenderer extends GeoVehicleRenderer<MambaEntity> {
             volant.rotation.rotateZ(-VOLANT_TURNS * steer);
         }
 
+        // OFF = original bone, ON = green twin (fullbright).
+        this.setVisible(instance, "move_auto_indicator", !entity.isAuto());
+        this.setVisible(instance, "move_auto_indicator_on", entity.isAuto());
+
         for (int i = 1; i <= 8; i++) {
             BoneState dummy = instance.getBone("dummy_2_0_" + i);
             if (dummy == null) {
@@ -67,6 +71,14 @@ public class MambaRenderer extends GeoVehicleRenderer<MambaEntity> {
             dummy.x = 0.0F;
             dummy.y = SILO_DUMMY_MID_Y;
             dummy.z = SILO_DUMMY_Z;
+        }
+    }
+
+    private void setVisible(VehicleModelInstance instance, String name, boolean visible) {
+        BoneState bone = instance.getBone(name);
+        if (bone != null) {
+            bone.visible = visible;
+            bone.illuminated = visible && name.endsWith("_on");
         }
     }
 
