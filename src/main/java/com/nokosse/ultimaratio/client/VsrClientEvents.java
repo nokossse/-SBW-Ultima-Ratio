@@ -1,6 +1,7 @@
 package com.nokosse.ultimaratio.client;
 
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
+import com.mojang.blaze3d.platform.InputConstants;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
@@ -16,13 +17,13 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.Util;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -39,6 +40,8 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Client side of the VSR700 remote control: while the monitor is in use, the local player is made the
@@ -65,6 +68,31 @@ public final class VsrClientEvents {
     private static double lastMouseY;
     @Nullable
     private static Vec3 laserPoint;
+    /** Laser designator: a click asks for the lock, nothing locks without it. */
+    private static boolean lockWanted;
+    private static boolean lockClick;
+    /** The held point is a block of Distant Horizons' LOD terrain: its distance is an estimate. */
+    private static boolean laserPointLod;
+    /** Trace that gives the point to hold once the mouse stops (a LOD answer comes a few frames later). */
+    @Nullable
+    private static CompletableFuture<LaserTrace.Hit> lockTrace;
+    /** Range shown while the mouse moves: the last answer, and the trace that will replace it. */
+    @Nullable
+    private static CompletableFuture<LaserTrace.Hit> rangeTrace;
+    @Nullable
+    private static LaserTrace.Hit rangeHit;
+    /** Where the readout trace was started from: it is only redone when the view has moved (each one walks the LOD). */
+    @Nullable
+    private static Vec3 rangeFrom;
+    @Nullable
+    private static Vec3 rangeLook;
+    private static long rangeStart;
+    /** What the screen centre showed last frame (LaserTrace.seen): the lock takes it at once when it is fresh. */
+    @Nullable
+    private static LaserTrace.Hit seenHit;
+    private static long seenTime;
+    private static final long SEEN_FRESH_MS = 250;
+    private static final long SLOW_TRACE_MS = 300;
 
     private VsrClientEvents() {
     }
@@ -187,6 +215,13 @@ public final class VsrClientEvents {
         if (!laserZoomActive()) {
             haveUsedOffsets = false;
             laserPoint = null;
+            lockTrace = null;
+            rangeTrace = null;
+            rangeHit = null;
+            rangeFrom = null;
+            seenTime = 0;
+            LaserTrace.cancel(LaserTrace.RANGE);
+            LaserTrace.cancel(LaserTrace.LOCK);
             return;
         }
         // The offsets this frame's camera was built with: the ones left at the end of the previous call
@@ -199,19 +234,48 @@ public final class VsrClientEvents {
         usedYawOffset = ClientMouseHandler.nacelleCameraYaw;
         usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
         haveUsedOffsets = true;
+        boolean click = lockClick;
+        lockClick = false;
         if (!known || mouseMoved) {
             laserPoint = null;
+            lockTrace = null;
+            lockWanted = false;
+            LaserTrace.cancel(LaserTrace.LOCK);
             return;
+        }
+        if (Vsr700Entity.clientPiloted.isLaserDesignatorSelected(mc.player)) {
+            if (click) {
+                lockWanted = !lockWanted; // a second click releases
+            }
+            if (!lockWanted) {
+                laserPoint = null;
+                lockTrace = null;
+                LaserTrace.cancel(LaserTrace.LOCK);
+                return;
+            }
+        } else {
+            lockWanted = false;
         }
         Vec3 from = event.getCamera().getPosition();
         if (laserPoint == null) {
-            float yaw = event.getYaw() * Mth.DEG_TO_RAD;
-            float pitch = event.getPitch() * Mth.DEG_TO_RAD;
-            Vec3 look = new Vec3(-Mth.sin(yaw) * Mth.cos(pitch), -Mth.sin(pitch), Mth.cos(yaw) * Mth.cos(pitch));
-            Vec3 to = from.add(look.scale(512.0));
-            laserPoint = mc.level
-                    .clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, Vsr700Entity.clientPiloted))
-                    .getLocation();
+            if (lockTrace == null && Util.getMillis() - seenTime < SEEN_FRESH_MS) {
+                // What the centre showed last frame, mouse still since: the very point the operator sees, no trace
+                lockTrace = CompletableFuture.completedFuture(seenHit);
+            }
+            if (lockTrace == null) {
+                float yaw = event.getYaw() * Mth.DEG_TO_RAD;
+                float pitch = event.getPitch() * Mth.DEG_TO_RAD;
+                Vec3 look = new Vec3(-Mth.sin(yaw) * Mth.cos(pitch), -Mth.sin(pitch), Mth.cos(yaw) * Mth.cos(pitch));
+                lockTrace = LaserTrace.trace(mc.level, from, look, Vsr700Entity.clientPiloted, LaserTrace.LOCK);
+            }
+            // Held on the centre of the block hit, never on a point in the air (it would slide as the drone moves).
+            // Nothing hit, or the LOD still answering: the camera stays free; a miss is not retried until the mouse moves.
+            LaserTrace.Hit hit = lockTrace.getNow(null);
+            if (hit == null) {
+                return;
+            }
+            laserPoint = hit.block().getCenter();
+            laserPointLod = hit.lod();
         }
         Vec3 toPoint = laserPoint.subtract(from);
         if (toPoint.lengthSqr() < 1.0) {
@@ -259,6 +323,21 @@ public final class VsrClientEvents {
             }
         }
         ModNetwork.CHANNEL.sendToServer(new VsrMarkMessage(hit.x, hit.y, hit.z));
+    }
+
+    /**
+     * Laser designator: the fire click asks for the lock. SBW cancels that click for a flown vehicle before it reaches
+     * the game, so this must also see cancelled events.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST, receiveCanceled = true)
+    public static void onLockClick(InputEvent.MouseButton.Pre event) {
+        Minecraft mc = Minecraft.getInstance();
+        var fire = ModKeyMappings.FIRE.getKey();
+        boolean fireButton = fire.getType() == InputConstants.Type.MOUSE && fire.getValue() == event.getButton();
+        if (event.getAction() == GLFW.GLFW_PRESS && (fireButton || mc.options.keyAttack.matchesMouse(event.getButton()))
+                && laserZoomActive()) {
+            lockClick = true;
+        }
     }
 
     /**
@@ -333,7 +412,10 @@ public final class VsrClientEvents {
         }
     }
 
-    /** Plain cross at the centre of the screen and the distance to the block it points at (the laser's free camera, zoomed). */
+    /**
+     * Plain cross at the centre of the screen and the distance to the block it points at (the laser's free camera,
+     * zoomed): the held block once locked, else the latest trace. "~": measured on Distant Horizons' LOD terrain.
+     */
     private static void renderLaserSight(GuiGraphics graphics, Minecraft mc, Vsr700Entity vsr, int cx, int cy) {
         int color = 0xFFFFFF;
         graphics.fill(cx - 10, cy, cx - 3, cy + 1, 0xFF000000 | color);
@@ -342,9 +424,49 @@ public final class VsrClientEvents {
         graphics.fill(cx, cy + 3, cx + 1, cy + 10, 0xFF000000 | color);
         Camera camera = mc.gameRenderer.getMainCamera();
         Vec3 from = camera.getPosition();
-        Vec3 to = from.add(new Vec3(camera.getLookVector()).scale(512.0));
-        HitResult hit = vsr.level().clip(new ClipContext(from, to, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, vsr));
-        String range = hit.getType() == HitResult.Type.MISS ? "---" : Math.round(hit.getLocation().distanceTo(from)) + " m";
+        String range;
+        if (laserPoint != null) {
+            color = 0x55FF55; // locked
+            range = (laserPointLod ? "~" : "") + Math.round(laserPoint.distanceTo(from)) + " m";
+        } else {
+            Vec3 look = new Vec3(camera.getLookVector());
+            long now = Util.getMillis();
+            LaserTrace.Hit seen = LaserTrace.seen(vsr.level(), from, look, vsr);
+            if (seen != LaserTrace.UNKNOWN) {
+                // Read off this frame's picture (DH's depth past the loaded chunks): exact and instant
+                seenHit = seen;
+                seenTime = now;
+                rangeHit = seen;
+                rangeTrace = null;
+                rangeFrom = null;
+                range = seen == null ? "---" : (seen.lod() ? "~" : "") + Math.round(seen.location().distanceTo(from)) + " m";
+                graphics.drawCenteredString(mc.font, range, cx, cy + 14, color);
+                return;
+            }
+            // No DH picture to read: the readout walks DH's terrain data, traced again only when the view has moved
+            if (rangeTrace != null && rangeTrace.isDone()) {
+                rangeHit = rangeTrace.join();
+                rangeTrace = null;
+            }
+            // Never replaces a running trace: the drone and the view always move a little, so traces replaced
+            // as soon as the view moved never got to finish (dots for ever)
+            if (rangeTrace == null && (rangeFrom == null || rangeFrom.distanceToSqr(from) > 4.0 || rangeLook.dot(look) < 0.99999)) {
+                rangeFrom = from;
+                rangeLook = look;
+                rangeStart = Util.getMillis();
+                rangeTrace = LaserTrace.trace(vsr.level(), from, look, vsr, LaserTrace.RANGE);
+            }
+            // Dots only for a trace that keeps us waiting (the first answer, a cold LOD section, a lock being taken):
+            // a quick one leaves the last value up instead of flickering
+            boolean computing = (lockTrace != null && !lockTrace.isDone())
+                    || (rangeTrace != null && (rangeHit == null || now - rangeStart > SLOW_TRACE_MS));
+            if (computing) {
+                range = ".".repeat(1 + (int) (now / 300 % 3)); // ". .. ..." while Distant Horizons answers
+            } else {
+                range = rangeHit == null ? "---"
+                        : (rangeHit.lod() ? "~" : "") + Math.round(rangeHit.location().distanceTo(from)) + " m";
+            }
+        }
         graphics.drawCenteredString(mc.font, range, cx, cy + 14, color);
     }
 

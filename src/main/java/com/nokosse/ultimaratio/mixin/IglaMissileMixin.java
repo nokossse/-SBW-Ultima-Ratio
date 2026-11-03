@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(value = IglaMissileEntity.class, remap = false)
 public abstract class IglaMissileMixin {
-    @Inject(method = "tick", at = @At("TAIL"))
+    @Inject(method = {"tick", "m_8119_"}, at = @At("TAIL"))
     private void ultimaratio$followCursor(CallbackInfo info) {
         IglaMissileEntity missile = (IglaMissileEntity) (Object) this;
         if (missile.level().isClientSide || missile.tickCount <= 0 || !(missile.getOwner() instanceof ServerPlayer player)) {

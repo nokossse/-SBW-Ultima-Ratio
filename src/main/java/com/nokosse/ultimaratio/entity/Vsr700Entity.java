@@ -184,6 +184,12 @@ public class Vsr700Entity extends VehicleEntity {
         return data != null && data.get(GunProp.USE_NACELLE_CAMERA);
     }
 
+    /** True while the pilot's selected weapon is the laser designator: it only locks on a click (VsrClientEvents). */
+    public boolean isLaserDesignatorSelected(Entity pilot) {
+        GunData data = getGunData(pilot);
+        return data != null && "weapon.ultimaratio.vsr_laser".equals(data.get(GunProp.NAME));
+    }
+
     public void clearController() {
         controller = null;
     }

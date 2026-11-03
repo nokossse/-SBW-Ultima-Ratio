@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(value = VehicleEntity.class, remap = false)
 public abstract class VehicleEntityMixin {
     @Redirect(
-            method = "baseTick",
+            method = {"baseTick", "m_6075_"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;displayClientMessage(Lnet/minecraft/network/chat/Component;Z)V", remap = true)
     )
     private void ultimaratio$noLaserAmmoWarning(Player player, Component message, boolean actionBar) {

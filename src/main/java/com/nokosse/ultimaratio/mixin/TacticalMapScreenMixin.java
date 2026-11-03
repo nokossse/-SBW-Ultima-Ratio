@@ -26,7 +26,7 @@ public abstract class TacticalMapScreenMixin {
     }
 
     @Redirect(
-            method = "mouseClicked",
+            method = {"mouseClicked", "m_6375_"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getVehicle()Lnet/minecraft/world/entity/Entity;", ordinal = 0, remap = true),
             remap = false
     )
@@ -35,7 +35,7 @@ public abstract class TacticalMapScreenMixin {
     }
 
     @Redirect(
-            method = "mouseClicked",
+            method = {"mouseClicked", "m_6375_"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;getVehicle()Lnet/minecraft/world/entity/Entity;", ordinal = 2, remap = true),
             remap = false
     )

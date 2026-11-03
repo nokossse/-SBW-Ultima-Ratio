@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /** The VSR700's engine is full volume within 3 blocks of the listener and 10 times quieter from 8 blocks on. */
 @Mixin(value = VehicleSoundInstance.EngineSound.class, remap = false)
 public abstract class EngineSoundMixin {
-    @Inject(method = "getVolume", at = @At("RETURN"), cancellable = true)
+    @Inject(method = {"getVolume", "m_7769_"}, at = @At("RETURN"), cancellable = true)
     private void ultimaratio$vsrQuiet(VehicleEntity vehicle, CallbackInfoReturnable<Float> info) {
         if (!(vehicle instanceof Vsr700Entity) || vehicle == Vsr700Entity.clientPiloted) {
             return;

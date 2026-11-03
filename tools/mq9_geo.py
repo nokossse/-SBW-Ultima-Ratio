@@ -19,13 +19,17 @@ for bone in geo['minecraft:geometry'][0]['bones']:
     bone['name'] = rename(bone['name'])
     if 'parent' in bone:
         bone['parent'] = rename(bone['parent'])
-# The "ARMEE DE L'AIR" plates are 0.025 px thick, flush with the fuselage: in game the depth buffer cannot tell them
-# from it and the text vanishes. Per-face UVs make thickening safe: 0.4 px each side, so they stand 0.4 px proud.
+# The "ARMEE DE L'AIR" plates and the wing roundels are flat cubes (0 to 0.025 px thick on one axis), flush with the
+# surface they decorate: in game the depth buffer cannot tell them from it and the markings vanish. Per-face UVs make
+# thickening safe: 0.6 px each side on the flat axis, so they stand 0.6 px proud (the plane stays the same).
+PROUD = 0.6
 for bone in geo['minecraft:geometry'][0]['bones']:
     for cube in bone.get('cubes', []):
-        if cube['size'][0] < 0.1 and cube['size'][1] > 1:
-            cube['origin'][0] -= 0.4
-            cube['size'][0] += 0.8
+        flat = [axis for axis in range(3) if cube['size'][axis] < 0.1]
+        if len(flat) == 1 and all(cube['size'][a] > 1 for a in range(3) if a != flat[0]):
+            axis = flat[0]
+            cube['origin'][axis] -= PROUD
+            cube['size'][axis] += 2 * PROUD
 
 json.dump(geo, open(RES + 'models/bedrock/vehicle/mq9_reaper.geo.json', 'w'), indent=2)
 

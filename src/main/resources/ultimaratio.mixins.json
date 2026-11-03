@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "com.nokosse.ultimaratio.mixin",
   "compatibilityLevel": "JAVA_17",
+  "plugin": "com.nokosse.ultimaratio.mixin.UltimaRatioMixinPlugin",
   "refmap": "ultimaratio.refmap.json",
   "mixins": [
     "ChunkMapMixin",
@@ -23,6 +24,8 @@
     "CommonOverlayMixin",
     "HelicopterHudMixin",
     "LevelRendererMixin",
+    "LevelRendererSetupMixin",
+    "BetterFpsDistMixin",
     "EngineSoundMixin",
     "TacticalMapScreenMixin"
   ],

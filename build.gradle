@@ -192,6 +192,9 @@ dependencies {
     implementation "thedarkcolour:kotlinforforge:4.11.0"
     implementation fg.deobf("blank:simplebedrockmodel:2.5.1")
     compileOnly "blank:mae:1.1.4"
+    // Distant Horizons (LaserTrace): optional for players, loaded in runClient to test it; never bundled
+    compileOnly "blank:distanthorizons:3.3.3"
+    runtimeOnly fg.deobf("blank:distanthorizons:3.3.3")
 
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
