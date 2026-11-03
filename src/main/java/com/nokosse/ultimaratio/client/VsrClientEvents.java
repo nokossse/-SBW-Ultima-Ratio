@@ -15,6 +15,7 @@ import com.nokosse.ultimaratio.network.VsrMarkMessage;
 import com.nokosse.ultimaratio.network.ReaperAimMessage;
 import com.nokosse.ultimaratio.network.VsrReleaseMessage;
 import net.minecraft.client.Camera;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
@@ -62,9 +64,7 @@ public final class VsrClientEvents {
     private static final float MAX_CAMERA_PITCH = 89F;
     private static double laserZoom = 1.0;
     private static double laserZoomSmooth = 1.0;
-    private static boolean haveUsedOffsets;
-    private static double usedYawOffset;
-    private static double usedPitchOffset;
+    private static boolean mouseStillKnown;
     private static double lastMouseX;
     private static double lastMouseY;
     @Nullable
@@ -202,24 +202,47 @@ public final class VsrClientEvents {
         if (!laserZoomActive()) {
             return;
         }
+        Vec2 camera = sbwCameraRotation(event);
+        if (camera == null) {
+            return;
+        }
         // The free camera must not go past straight up or down (the picture would turn over); the Reaper's sensor
         // only looks from the horizon down
-        float pitch = event.getPitch();
+        float pitch = camera.y;
         float min = Vsr700Entity.clientPiloted instanceof Mq9ReaperEntity ? 0F : -MAX_CAMERA_PITCH;
         float limited = Mth.clamp(pitch, min, MAX_CAMERA_PITCH);
         if (limited != pitch) {
-            double before = ClientMouseHandler.nacelleCameraPitch;
-            ClientMouseHandler.nacelleCameraPitch = sbwPitchOffset(before + limited - pitch);
-            usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
-            event.setPitch((float) (pitch - before + usedPitchOffset));
+            ClientMouseHandler.nacelleCameraPitch = sbwPitchOffset(ClientMouseHandler.nacelleCameraPitch + limited - pitch);
         }
     }
 
     /**
-     * SBW 1.21.1 clamps nacelleCameraPitch to [0, 180] in ClientMouseHandler (1.20.1 did not): an offset written
-     * outside that range is silently changed before the next frame, the drone angle worked out from it is then wrong
-     * and the hold correction runs away. Write only values SBW keeps.
+     * The camera angles SBW is about to apply. On NeoForge 1.21.1 this event fires inside Camera.setup, before SBW's
+     * CameraMixin, which then sets the camera from VehicleEntity.getCameraRotation and cancels the rest: the event's
+     * angles are the operator's body and whatever is written back to the event is dropped. So read SBW's rotation
+     * here and steer it only through the nacelle offsets, which its CameraMixin reads right after this event.
      */
+    private static @Nullable Vec2 sbwCameraRotation(ViewportEvent.ComputeCameraAngles event) {
+        Minecraft mc = Minecraft.getInstance();
+        Vsr700Entity vsr = Vsr700Entity.clientPiloted;
+        if (vsr == null || mc.player == null) {
+            return null;
+        }
+        return vsr.getCameraRotation((float) event.getPartialTick(), mc.player, ClientEventHandler.zoomVehicle,
+                mc.options.getCameraType() == CameraType.FIRST_PERSON);
+    }
+
+    private static @Nullable Vec3 sbwCameraPosition(ViewportEvent.ComputeCameraAngles event) {
+        Minecraft mc = Minecraft.getInstance();
+        Vsr700Entity vsr = Vsr700Entity.clientPiloted;
+        if (vsr == null || mc.player == null) {
+            return null;
+        }
+        return vsr.getCameraPosition((float) event.getPartialTick(), mc.player, ClientEventHandler.zoomVehicle,
+                mc.options.getCameraType() == CameraType.FIRST_PERSON);
+    }
+
+    /** SBW 1.21.1 clamps nacelleCameraPitch to [0, 180] in ClientMouseHandler (1.20.1 did not): write only values it keeps. */
     private static double sbwPitchOffset(double offset) {
         return Mth.clamp(offset, 0.0, 180.0);
     }
@@ -227,7 +250,7 @@ public final class VsrClientEvents {
     private static void holdLaserPoint(ViewportEvent.ComputeCameraAngles event) {
         Minecraft mc = Minecraft.getInstance();
         if (!laserZoomActive()) {
-            haveUsedOffsets = false;
+            mouseStillKnown = false;
             laserPoint = null;
             lockTrace = null;
             rangeTrace = null;
@@ -238,16 +261,11 @@ public final class VsrClientEvents {
             LaserTrace.cancel(LaserTrace.LOCK);
             return;
         }
-        // The offsets this frame's camera was built with: the ones left at the end of the previous call
-        double usedYaw = usedYawOffset;
-        double usedPitch = usedPitchOffset;
-        boolean known = haveUsedOffsets;
+        boolean known = mouseStillKnown;
         boolean mouseMoved = mc.mouseHandler.xpos() != lastMouseX || mc.mouseHandler.ypos() != lastMouseY;
         lastMouseX = mc.mouseHandler.xpos();
         lastMouseY = mc.mouseHandler.ypos();
-        usedYawOffset = ClientMouseHandler.nacelleCameraYaw;
-        usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
-        haveUsedOffsets = true;
+        mouseStillKnown = true;
         boolean click = lockClick;
         lockClick = false;
         if (!known || mouseMoved) {
@@ -270,15 +288,19 @@ public final class VsrClientEvents {
         } else {
             lockWanted = false;
         }
-        Vec3 from = event.getCamera().getPosition();
+        Vec2 camera = sbwCameraRotation(event);
+        Vec3 from = sbwCameraPosition(event);
+        if (camera == null || from == null) {
+            return;
+        }
         if (laserPoint == null) {
             if (lockTrace == null && Util.getMillis() - seenTime < SEEN_FRESH_MS) {
                 // What the centre showed last frame, mouse still since: the very point the operator sees, no trace
                 lockTrace = CompletableFuture.completedFuture(seenHit);
             }
             if (lockTrace == null) {
-                float yaw = event.getYaw() * Mth.DEG_TO_RAD;
-                float pitch = event.getPitch() * Mth.DEG_TO_RAD;
+                float yaw = camera.x * Mth.DEG_TO_RAD;
+                float pitch = camera.y * Mth.DEG_TO_RAD;
                 Vec3 look = new Vec3(-Mth.sin(yaw) * Mth.cos(pitch), -Mth.sin(pitch), Mth.cos(yaw) * Mth.cos(pitch));
                 lockTrace = LaserTrace.trace(mc.level, from, look, Vsr700Entity.clientPiloted, LaserTrace.LOCK);
             }
@@ -297,16 +319,11 @@ public final class VsrClientEvents {
         }
         float wantedYaw = (float) Math.toDegrees(Math.atan2(-toPoint.x, toPoint.z));
         float wantedPitch = (float) Math.toDegrees(-Math.atan2(toPoint.y, Math.hypot(toPoint.x, toPoint.z)));
-        // The drone's own angle is what is left once the offsets used by this frame are removed
-        double baseYaw = event.getYaw() + usedYaw;
-        double basePitch = event.getPitch() - usedPitch;
-        usedYawOffset = Mth.wrapDegrees(baseYaw - wantedYaw);
-        usedPitchOffset = sbwPitchOffset(Mth.wrapDegrees(wantedPitch - basePitch));
-        ClientMouseHandler.nacelleCameraYaw = usedYawOffset;
-        ClientMouseHandler.nacelleCameraPitch = usedPitchOffset;
-        event.setYaw(wantedYaw);
-        // A point above the drone's attitude is out of SBW's pitch range: show what the next frame will really use
-        event.setPitch((float) (basePitch + usedPitchOffset));
+        // SBW's camera is "drone angle - yaw offset, + pitch offset": the drone's own angle is the camera without them
+        double baseYaw = camera.x + ClientMouseHandler.nacelleCameraYaw;
+        double basePitch = camera.y - ClientMouseHandler.nacelleCameraPitch;
+        ClientMouseHandler.nacelleCameraYaw = Mth.wrapDegrees(baseYaw - wantedYaw);
+        ClientMouseHandler.nacelleCameraPitch = sbwPitchOffset(Mth.wrapDegrees(wantedPitch - basePitch));
     }
 
     /**
