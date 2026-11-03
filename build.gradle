@@ -59,6 +59,8 @@ dependencies {
     implementation name: 'mae-1.1.4'
     // Optional at runtime: the code is guarded by ModList.isLoaded("distanthorizons")
     implementation name: 'DistantHorizons-3.3.3-1.21.1-fabric-neoforge'
+    // Dev client only: reproduces the Sodium rewrite of LevelRenderer.setupRender (see UltimaRatioMixinPlugin)
+    runtimeOnly name: 'sodium-neoforge-0.8.13+mc1.21.1'
 }
 
 tasks.withType(ProcessResources).configureEach {

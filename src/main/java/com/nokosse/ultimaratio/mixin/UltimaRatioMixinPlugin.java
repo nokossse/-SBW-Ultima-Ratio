@@ -15,8 +15,8 @@ public class UltimaRatioMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        // Embeddium/Rubidium replace setupRender wholesale: the player getX/Y/Z redirects have nothing to hook.
-        if (mixinClassName.endsWith("LevelRendererSetupMixin")) return !has("embeddium") && !has("rubidium");
+        // Sodium/Embeddium/Rubidium replace setupRender wholesale: the player getX/Y/Z redirects have nothing to hook.
+        if (mixinClassName.endsWith("LevelRendererSetupMixin")) return !has("sodium") && !has("embeddium") && !has("rubidium");
         if (mixinClassName.endsWith("BetterFpsDistMixin")) return has("betterfpsdist");
         return true;
     }
