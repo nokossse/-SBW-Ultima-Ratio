@@ -5,6 +5,7 @@ import com.nokosse.ultimaratio.entity.CaesarEntity;
 import com.nokosse.ultimaratio.entity.HadesEntity;
 import com.nokosse.ultimaratio.entity.KeraxEntity;
 import com.nokosse.ultimaratio.entity.MambaEntity;
+import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.RafaleEntity;
 import com.nokosse.ultimaratio.entity.MambaRadarEntity;
 import com.nokosse.ultimaratio.entity.LeclercAzurEntity;
@@ -108,6 +109,15 @@ public class ModEntities {
                     .sized(4.0F, 3.2F)
     );
 
+    public static final RegistryObject<EntityType<VbmrEntity>> VAB_P = register(
+            "vab_p",
+            EntityType.Builder.<VbmrEntity>of(VbmrEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(4.2F, 3.5F)
+    );
+
     public static final RegistryObject<EntityType<ServalEntity>> SERVAL = register(
             "serval",
             EntityType.Builder.<ServalEntity>of(ServalEntity::new, MobCategory.MISC)
@@ -187,6 +197,15 @@ public class ModEntities {
                     .setUpdateInterval(1)
                     .fireImmune()
                     .sized(2.0F, 2.4F)
+    );
+
+    public static final RegistryObject<EntityType<Mq9ReaperEntity>> MQ9_REAPER = register(
+            "mq9_reaper",
+            EntityType.Builder.<Mq9ReaperEntity>of(Mq9ReaperEntity::new, MobCategory.MISC)
+                    .setTrackingRange(512)
+                    .setUpdateInterval(1)
+                    .fireImmune()
+                    .sized(3.0F, 2.5F)
     );
 
     public static final RegistryObject<EntityType<TigreEntity>> TIGRE = register(

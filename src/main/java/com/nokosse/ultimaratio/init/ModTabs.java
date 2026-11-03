@@ -29,6 +29,7 @@ public class ModTabs {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.RENAULT_KERAX.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VBMR_MEPAC.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.VAB_P.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.SERVAL.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.SERVAL_DSA.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.SERVAL_LAD.get()));
@@ -38,7 +39,9 @@ public class ModTabs {
                         output.accept(ContainerBlockItem.createInstance(ModEntities.TIGRE.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.AS350.get()));
                         output.accept(ContainerBlockItem.createInstance(ModEntities.VSR700.get()));
+                        output.accept(ContainerBlockItem.createInstance(ModEntities.MQ9_REAPER.get()));
                         output.accept(ModBlocks.VSR_MONITOR.get());
+                        output.accept(ModBlocks.GCS_ITEM.get());
                         output.accept(ModBlocks.GF300_ITEM.get());
                     })
                     .build()

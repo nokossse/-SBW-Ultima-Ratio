@@ -40,5 +40,16 @@ public final class ModNetwork {
                 VsrMarkMessage::decode,
                 VsrMarkMessage::handle
         );
+        CHANNEL.registerMessage(
+                id++,
+                DroneSelectMessage.class,
+                DroneSelectMessage::encode,
+                DroneSelectMessage::decode,
+                DroneSelectMessage::handle
+        );
+        CHANNEL.registerMessage(id++, GcsListMessage.class, GcsListMessage::encode, GcsListMessage::decode, GcsListMessage::handle);
+        CHANNEL.registerMessage(id++, GcsSelectMessage.class, GcsSelectMessage::encode, GcsSelectMessage::decode, GcsSelectMessage::handle);
+        CHANNEL.registerMessage(id++, GcsRefreshMessage.class, GcsRefreshMessage::encode, GcsRefreshMessage::decode, GcsRefreshMessage::handle);
+        CHANNEL.registerMessage(id++, GcsPilotMessage.class, GcsPilotMessage::encode, GcsPilotMessage::decode, GcsPilotMessage::handle);
     }
 }

@@ -6,12 +6,12 @@ import com.atsuishio.superbwarfare.init.ModItems;
 import com.atsuishio.superbwarfare.init.ModKeyMappings;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.nokosse.ultimaratio.UltimaRatio;
+import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import com.nokosse.ultimaratio.network.VsrMarkMessage;
 import com.nokosse.ultimaratio.network.VsrReleaseMessage;
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,6 +27,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 import net.minecraftforge.client.event.ViewportEvent;
@@ -51,6 +52,10 @@ public final class VsrClientEvents {
     private static final double LASER_ZOOM_MIN = 0.25;
     private static final double LASER_ZOOM_MAX = 4.0;
     private static final double LASER_ZOOM_STEP = 1.25;
+    /** The Reaper's Hellfire starts at x1.25: zooming out past this would push the field of view toward 180 degrees and turn the picture over. */
+    private static final double REAPER_ZOOM_MIN = 0.6;
+    private static final double MAX_FOV = 110.0;
+    private static final float MAX_CAMERA_PITCH = 89F;
     private static double laserZoom = 1.0;
     private static double laserZoomSmooth = 1.0;
     private static boolean haveUsedOffsets;
@@ -64,13 +69,28 @@ public final class VsrClientEvents {
     private VsrClientEvents() {
     }
 
+    /** UUID of the drone flown from a GCS, "" if none (GcsPilotMessage). */
+    private static String gcsDrone = "";
+
+    public static void setGcsDrone(String drone) {
+        gcsDrone = drone;
+    }
+
+    @SubscribeEvent
+    public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        gcsDrone = "";
+    }
+
+    /** The drone flown: the monitor in use in main hand, else the one picked at a GCS. */
     @Nullable
     private static Vsr700Entity linkedInUse(LocalPlayer player) {
         ItemStack stack = player.getMainHandItem();
-        if (!player.isAlive() || !(stack.getItem() instanceof VsrMonitorItem) || !VsrMonitorItem.isUsing(stack)) {
+        String id = stack.getItem() instanceof VsrMonitorItem && VsrMonitorItem.isUsing(stack) ? VsrMonitorItem.getLinked(stack)
+                : gcsDrone.isEmpty() ? null : gcsDrone;
+        if (!player.isAlive() || id == null) {
             return null;
         }
-        Entity entity = EntityFindUtil.findEntity(player.level(), VsrMonitorItem.getLinked(stack));
+        Entity entity = EntityFindUtil.findEntity(player.level(), id);
         return entity instanceof Vsr700Entity vsr && vsr.isAlive() ? vsr : null;
     }
 
@@ -121,7 +141,9 @@ public final class VsrClientEvents {
     @SubscribeEvent(priority = EventPriority.HIGH)
     public static void onScroll(InputEvent.MouseScrollingEvent event) {
         if (laserZoomActive() && !ModKeyMappings.FREE_CAMERA.isDown()) {
-            laserZoom = Mth.clamp(laserZoom * Math.pow(LASER_ZOOM_STEP, event.getScrollDelta()), LASER_ZOOM_MIN, LASER_ZOOM_MAX);
+            boolean reaper = Vsr700Entity.clientPiloted instanceof Mq9ReaperEntity;
+            laserZoom = Mth.clamp(laserZoom * Math.pow(LASER_ZOOM_STEP, event.getScrollDelta()),
+                    reaper ? REAPER_ZOOM_MIN : LASER_ZOOM_MIN, reaper ? 2 * LASER_ZOOM_MAX : LASER_ZOOM_MAX);
             event.setCanceled(true); // SBW's own handler (weapon switch) never sees it
         }
     }
@@ -131,27 +153,36 @@ public final class VsrClientEvents {
     public static void onFov(ViewportEvent.ComputeFov event) {
         if (laserZoomActive()) {
             laserZoomSmooth = Mth.lerp(0.25, laserZoomSmooth, laserZoom);
-            event.setFOV(event.getFOV() / laserZoomSmooth);
+            event.setFOV(Math.min(event.getFOV() / laserZoomSmooth, MAX_FOV));
         }
     }
 
-    /** Read from GLFW: with the monitor in hand the attack click is cancelled before the key mapping sees it. */
-    private static boolean attackHeld() {
-        Minecraft mc = Minecraft.getInstance();
-        InputConstants.Key key = mc.options.keyAttack.getKey();
-        return key.getType() == InputConstants.Type.MOUSE
-                && GLFW.glfwGetMouseButton(mc.getWindow().getWindow(), key.getValue()) == GLFW.GLFW_PRESS;
-    }
-
     /**
-     * Laser point tracking, while the attack button is held: the free camera stays on the world point it points at when
-     * the button goes down, whatever the drone does; moving the mouse moves the point. SBW's camera angle is
+     * Laser point tracking: the free camera stays on the world point it points at once the mouse stops, whatever the
+     * drone does; moving the mouse moves the point. SBW's camera angle is
      * "drone angle -/+ nacelleCameraYaw/Pitch", so holding a point is rewriting those two offsets every frame. The
      * mouse is read raw (SBW's own offsets keep sliding for a moment after it stops, which would delay the hold).
      * shortcut: a point of the world only (no entity following), no gimbal limits, add them if a target should be followed.
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onCameraAngles(ViewportEvent.ComputeCameraAngles event) {
+        holdLaserPoint(event);
+        if (!laserZoomActive()) {
+            return;
+        }
+        // The free camera must not go past straight up or down (the picture would turn over); the Reaper's sensor
+        // only looks from the horizon down
+        float pitch = event.getPitch();
+        float min = Vsr700Entity.clientPiloted instanceof Mq9ReaperEntity ? 0F : -MAX_CAMERA_PITCH;
+        float limited = Mth.clamp(pitch, min, MAX_CAMERA_PITCH);
+        if (limited != pitch) {
+            ClientMouseHandler.nacelleCameraPitch += limited - pitch;
+            usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
+            event.setPitch(limited);
+        }
+    }
+
+    private static void holdLaserPoint(ViewportEvent.ComputeCameraAngles event) {
         Minecraft mc = Minecraft.getInstance();
         if (!laserZoomActive()) {
             haveUsedOffsets = false;
@@ -168,7 +199,7 @@ public final class VsrClientEvents {
         usedYawOffset = ClientMouseHandler.nacelleCameraYaw;
         usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
         haveUsedOffsets = true;
-        if (!known || !attackHeld() || mouseMoved) {
+        if (!known || mouseMoved) {
             laserPoint = null;
             return;
         }
@@ -237,7 +268,8 @@ public final class VsrClientEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onAttackButton(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player != null && mc.screen == null && mc.player.getMainHandItem().getItem() instanceof VsrMonitorItem
+        if (mc.player != null && mc.screen == null
+                && (mc.player.getMainHandItem().getItem() instanceof VsrMonitorItem || mc.player == Vsr700Entity.clientPilot)
                 && mc.options.keyAttack.matchesMouse(event.getButton())) {
             event.setCanceled(true);
         }
@@ -271,11 +303,33 @@ public final class VsrClientEvents {
             return;
         }
         double distance = Math.sqrt(vsr.distanceToSqr(mc.player.getX(), mc.player.getY(), mc.player.getZ()));
-        int color = distance > Vsr700Entity.MAX_RANGE * 0.9 ? 0xFF5555 : 0xFFFFFF; // red near the link limit
-        String text = String.format("DIST %d / %d m", Math.round(distance), Math.round(Vsr700Entity.MAX_RANGE));
+        renderStatic(graphics, width, height, (distance - vsr.jamRange()) / (vsr.maxRange() - vsr.jamRange()));
+        int color = distance >= vsr.warnRange() ? 0xFF5555 : distance >= vsr.jamRange() ? 0xFFFF55 : 0xFFFFFF;
+        String text = String.format("DIST %d / %d m", Math.round(distance), Math.round(vsr.maxRange()));
         graphics.drawCenteredString(mc.font, text, width / 2, 22, color);
         if (laserZoomActive()) {
             renderLaserSight(graphics, mc, vsr, width / 2, height / 2);
+        }
+    }
+
+    /** Signal loss: snow and scan bands over the picture, from nothing (0) to nearly opaque (1). */
+    private static void renderStatic(GuiGraphics graphics, int width, int height, double strength) {
+        if (strength <= 0) {
+            return;
+        }
+        float s = (float) Math.min(strength, 1.0);
+        var rnd = Minecraft.getInstance().level.random;
+        graphics.fill(0, 0, width, height, ((int) (s * 90) << 24)); // darkening
+        int specks = (int) (s * width * height / 60);
+        for (int i = 0; i < specks; i++) {
+            int x = rnd.nextInt(width);
+            int y = rnd.nextInt(height);
+            int g = 100 + rnd.nextInt(156);
+            graphics.fill(x, y, x + 1 + rnd.nextInt(3), y + 1, ((int) (s * 200) << 24) | g << 16 | g << 8 | g);
+        }
+        for (int i = 0, bands = (int) (s * 6); i < bands; i++) {
+            int y = rnd.nextInt(height);
+            graphics.fill(0, y, width, y + 1 + rnd.nextInt(4), ((int) (s * 110) << 24) | 0xC8C8C8);
         }
     }
 

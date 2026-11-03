@@ -18,6 +18,7 @@ public class ModContainers {
         event.add(ModEntities.RENAULT_KERAX);
         event.add(ModEntities.VBMR);
         event.add(ModEntities.VBMR_MEPAC);
+        event.add(ModEntities.VAB_P);
         event.add(ModEntities.SERVAL);
         event.add(ModEntities.SERVAL_DSA);
         event.add(ModEntities.SERVAL_LAD);

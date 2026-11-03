@@ -33,7 +33,12 @@ public class VbmrRenderer extends GeoVehicleRenderer<VbmrEntity> {
         BoneState volant = instance.getBone("volant");
         if (volant != null && volant.rotation != null) {
             volant.rotation.set(volant.definition().bindRotation());
-            volant.rotation.rotateZ(VOLANT_TURNS * steer);
+            this.spinVolant(volant, VOLANT_TURNS * steer);
         }
+    }
+
+    /** Steering wheel axis in the model: Z for the tilted Serval/Griffon wheels. */
+    protected void spinVolant(BoneState volant, float angle) {
+        volant.rotation.rotateZ(angle);
     }
 }

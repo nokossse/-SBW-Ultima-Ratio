@@ -118,7 +118,8 @@ g = d['minecraft:geometry'][0]
 g['description']['identifier'] = 'geometry.vsr700'
 drop = {'STEVE', 'Left Leg', 'Right Leg', 'Waist', 'Head', 'Body', 'Right Arm', 'Left Arm', 'hitbox', 'hitbox2', 'hitbox3'}  # hitboxes live in the vehicle JSON
 g['bones'] = [b for b in g['bones'] if b['name'] not in drop]
-ren = {'move_tailPropeller': 'move_propeller', 'propellerBase': 'move_tailPropeller', 'radar': 'move_radar'}
+ren = {'move_tailPropeller': 'move_propeller', 'propellerBase': 'move_tailPropeller', 'radar': 'move_radar',
+       'kamera': 'move_kamera', 'cam': 'move_cam'}
 for b in g['bones']:
     b['name'] = ren.get(b['name'], b['name'])
     if b.get('parent') in ren:

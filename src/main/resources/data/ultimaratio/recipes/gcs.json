@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "STS",
+    "SDS",
+    "SBS"
+  ],
+  "key": {
+    "S": { "item": "superbwarfare:steel_ingot" },
+    "T": { "item": "superbwarfare:tactical_terminal" },
+    "D": { "item": "superbwarfare:monitor" },
+    "B": { "item": "superbwarfare:medium_battery_pack" }
+  },
+  "result": {
+    "item": "ultimaratio:gcs"
+  }
+}

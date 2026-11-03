@@ -1,6 +1,7 @@
 package com.nokosse.ultimaratio.mixin;
 
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +17,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(Entity.class)
 public abstract class EntityVehicleMixin {
+    /** A drone operator draws every entity out to the render distance, not just the 64 blocks per size unit vanilla allows. */
+    @Inject(method = "shouldRenderAtSqrDistance", at = @At("HEAD"), cancellable = true)
+    private void ultimaratio$farRender(double distanceSqr, CallbackInfoReturnable<Boolean> cir) {
+        if (Vsr700Entity.clientPiloted != null) {
+            double range = Minecraft.getInstance().options.getEffectiveRenderDistance() * 16.0;
+            cir.setReturnValue(distanceSqr < range * range);
+        }
+    }
+
     @Inject(method = "getVehicle", at = @At("HEAD"), cancellable = true)
     private void ultimaratio$remoteVehicle(CallbackInfoReturnable<Entity> cir) {
         Vsr700Entity vsr = Vsr700Entity.clientPiloted;

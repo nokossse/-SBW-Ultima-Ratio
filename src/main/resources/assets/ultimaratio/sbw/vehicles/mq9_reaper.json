@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/mq9_reaper.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/mq9_reaper.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/mq9_reaper.png"
+    }
+  ]
+}

@@ -7,6 +7,9 @@
   "mixins": [
     "ChunkMapMixin",
     "ChunkMapTrackedEntityMixin",
+    "EntityPassengersMixin",
+    "GunItemShootMixin",
+    "LoiterMessagesMixin",
     "SeekToolBuilderMixin",
     "IglaMissileMixin",
     "SbwPilotMessagesMixin",
@@ -20,7 +23,8 @@
     "CommonOverlayMixin",
     "HelicopterHudMixin",
     "LevelRendererMixin",
-    "EngineSoundMixin"
+    "EngineSoundMixin",
+    "TacticalMapScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 1

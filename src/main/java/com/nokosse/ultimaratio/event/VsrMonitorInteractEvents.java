@@ -3,6 +3,7 @@ package com.nokosse.ultimaratio.event;
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +19,10 @@ public final class VsrMonitorInteractEvents {
     private VsrMonitorInteractEvents() {
     }
 
+    /** Monitor in hand, or flying from a GCS (whatever is in hand must not use, mine or hit, nor reopen the GCS). */
     private static boolean holdsMonitor(Player player) {
-        return player.getMainHandItem().getItem() instanceof VsrMonitorItem;
+        return player.getMainHandItem().getItem() instanceof VsrMonitorItem || player == Vsr700Entity.clientPilot
+                || player instanceof ServerPlayer serverPlayer && VsrRemote.flying(serverPlayer) != null;
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package com.nokosse.ultimaratio.network;
 
+import com.nokosse.ultimaratio.event.VsrRemote;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,6 +29,7 @@ public class VsrReleaseMessage {
             if (stack.getItem() instanceof VsrMonitorItem) {
                 stack.getOrCreateTag().putBoolean(VsrMonitorItem.USING, false);
             }
+            VsrRemote.releaseGcs(player);
         });
         ctx.setPacketHandled(true);
     }

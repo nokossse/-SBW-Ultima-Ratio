@@ -2,10 +2,19 @@ package com.nokosse.ultimaratio.event;
 
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.nokosse.ultimaratio.UltimaRatio;
+import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
+import com.nokosse.ultimaratio.block.GcsBlock;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
+import com.nokosse.ultimaratio.network.GcsListMessage;
+import com.nokosse.ultimaratio.network.GcsPilotMessage;
+import com.nokosse.ultimaratio.network.ModNetwork;
+import net.minecraft.world.level.entity.EntityTypeTest;
+import net.minecraftforge.network.PacketDistributor;
+import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
@@ -42,6 +51,15 @@ public final class VsrRemote {
             TicketType.create("ultimaratio_vsr_operator", Comparator.comparingLong(ChunkPos::toLong), 60);
     /** Server thread only. */
     private static final Map<UUID, Vsr700Entity> PILOTS = new HashMap<>();
+    /** Server thread only: the Reaper each player picked on the tactical map (entity id), for "cruise here" without flying it. */
+    private static final Map<UUID, Integer> MAP_SELECTED = new HashMap<>();
+    /** Server thread only: the GCS each player flies from and the drone. */
+    private static final Map<UUID, GcsLink> GCS_LINKS = new HashMap<>();
+    /** How far the operator may stand from the GCS before the link drops (knockback, walking off). */
+    private static final double GCS_REACH = 6.0;
+
+    private record GcsLink(BlockPos pos, UUID drone) {
+    }
 
     private VsrRemote() {
     }
@@ -63,6 +81,117 @@ public final class VsrRemote {
     public static Entity vehicleOf(ServerPlayer player) {
         Vsr700Entity vsr = flying(player);
         return vsr != null ? vsr : player.getVehicle();
+    }
+
+    public static void selectOnMap(ServerPlayer player, int entityId) {
+        MAP_SELECTED.put(player.getUUID(), entityId);
+    }
+
+    /** The vehicle SBW's loiter packets drive: as vehicleOf, else the Reaper picked on the tactical map (unless another operator linked it). */
+    @Nullable
+    public static Entity loiterVehicleOf(ServerPlayer player) {
+        Entity vehicle = vehicleOf(player);
+        if (vehicle != null) {
+            return vehicle;
+        }
+        Integer id = MAP_SELECTED.get(player.getUUID());
+        if (id != null && player.serverLevel().getEntity(id) instanceof Mq9ReaperEntity reaper && reaper.isAlive()
+                && (reaper.getController() == null || reaper.getController().equals(player.getUUID()))) {
+            return reaper;
+        }
+        return null;
+    }
+
+    /** Drones a player may fly from a GCS: theirs, unlinked ones or a teammate's that nobody flies, within the drone's range. */
+    private static boolean canFlyFromGcs(ServerPlayer player, Vsr700Entity vsr) {
+        UUID controller = vsr.getController();
+        Entity pilot = vsr.getPilot();
+        return vsr.isAlive() && !vsr.isWreck() && (pilot == null || pilot == player)
+                && (controller == null || controller.equals(player.getUUID()) || (vsr.getTeam() != null && vsr.isAlliedTo(player)))
+                && vsr.distanceToSqr(player) <= vsr.maxRange() * vsr.maxRange();
+    }
+
+    private static boolean atGcs(ServerPlayer player, BlockPos pos) {
+        return player.level().getBlockState(pos).getBlock() instanceof GcsBlock
+                && player.level().getBlockState(pos).getValue(GcsBlock.POWERED)
+                && player.distanceToSqr(Vec3.atCenterOf(pos)) <= GCS_REACH * GCS_REACH;
+    }
+
+    /** Right click on a GCS: send the player the drones they can fly from it. */
+    public static void openGcs(ServerPlayer player, BlockPos pos) {
+        if (flying(player) != null) {
+            return;
+        }
+        if (!player.level().getBlockState(pos).getValue(GcsBlock.POWERED)) {
+            player.displayClientMessage(Component.translatable("tips.ultimaratio.gcs.no_power").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+        List<GcsListMessage.Entry> drones = player.serverLevel()
+                .getEntities(EntityTypeTest.forClass(Vsr700Entity.class), vsr -> canFlyFromGcs(player, vsr)).stream()
+                .sorted(Comparator.comparingDouble(vsr -> vsr.distanceToSqr(player)))
+                .map(vsr -> new GcsListMessage.Entry(vsr.getUUID(), vsr.getDisplayName().getString(), (int) Math.sqrt(vsr.distanceToSqr(player))))
+                .toList();
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsListMessage(pos.immutable(), drones));
+    }
+
+    /** The open list asks for fresh distances: same list, no message if the desk lost power meanwhile. */
+    public static void refreshGcs(ServerPlayer player, BlockPos pos) {
+        if (atGcs(player, pos)) {
+            openGcs(player, pos);
+        }
+    }
+
+    /** A drone picked in the GCS list: the player becomes its controller and flies it until they let go or leave the desk. */
+    public static void selectFromGcs(ServerPlayer player, BlockPos pos, UUID drone) {
+        if (!atGcs(player, pos) || !(player.serverLevel().getEntity(drone) instanceof Vsr700Entity vsr) || !canFlyFromGcs(player, vsr)) {
+            return;
+        }
+        vsr.setController(player.getUUID());
+        GCS_LINKS.put(player.getUUID(), new GcsLink(pos.immutable(), drone));
+        setGcsScreen(player, pos, vsr instanceof Mq9ReaperEntity ? 1 : 2);
+        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsPilotMessage(drone.toString()));
+    }
+
+    /** SBW's dismount key, walking away from the desk, or the link cut: the GCS lets go of the drone. */
+    public static void releaseGcs(ServerPlayer player) {
+        if (dropGcsLink(player)) {
+            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsPilotMessage(""));
+        }
+    }
+
+    private static void setGcsScreen(ServerPlayer player, BlockPos pos, int screen) {
+        BlockState state = player.level().getBlockState(pos);
+        if (state.getBlock() instanceof GcsBlock) {
+            player.level().setBlockAndUpdate(pos, state.setValue(GcsBlock.SCREEN, screen));
+        }
+    }
+
+    /** Forgets the player's GCS link and blanks the screens; false if there was none. */
+    private static boolean dropGcsLink(ServerPlayer player) {
+        GcsLink link = GCS_LINKS.remove(player.getUUID());
+        if (link != null) {
+            setGcsScreen(player, link.pos(), 0);
+        }
+        return link != null;
+    }
+
+    /** The drone this player flies from a GCS, if the link still holds. */
+    @Nullable
+    private static Vsr700Entity gcsPiloted(ServerPlayer player) {
+        GcsLink link = GCS_LINKS.get(player.getUUID());
+        if (link == null) {
+            return null;
+        }
+        Entity entity = player.serverLevel().getEntity(link.drone());
+        if (entity instanceof Vsr700Entity vsr && vsr.isAlive() && !vsr.isWreck() && player.isAlive()
+                && atGcs(player, link.pos()) && player.getUUID().equals(vsr.getController())) {
+            return vsr;
+        }
+        if (!(entity instanceof Vsr700Entity) || !entity.isAlive()) {
+            player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.signal_lost").withStyle(ChatFormatting.RED), true);
+        }
+        releaseGcs(player);
+        return null;
     }
 
     /** The VSR700 this player is flying right now: monitor in main hand, in use, linked to them. */
@@ -118,6 +247,9 @@ public final class VsrRemote {
         }
         dropDeadLink(player);
         Vsr700Entity vsr = findPiloted(player);
+        if (vsr == null) {
+            vsr = gcsPiloted(player);
+        }
         Vsr700Entity previous = PILOTS.get(player.getUUID());
         if (vsr == null && previous == null) {
             return;
@@ -139,7 +271,7 @@ public final class VsrRemote {
                 }
             }
         }
-        if (vsr != null && vsr.distanceToSqr(player) > Vsr700Entity.MAX_RANGE * Vsr700Entity.MAX_RANGE) {
+        if (vsr != null && vsr.distanceToSqr(player) > vsr.maxRange() * vsr.maxRange()) {
             // Out of range: the link is cut, the monitor switches off and forgets the drone
             vsr.disconnectOperator(Component.translatable("tips.ultimaratio.vsr.out_of_range"));
             vsr = null;
@@ -205,6 +337,8 @@ public final class VsrRemote {
             if (stack.getItem() instanceof VsrMonitorItem) {
                 stack.getOrCreateTag().putBoolean(VsrMonitorItem.USING, false);
             }
+            MAP_SELECTED.remove(player.getUUID());
+            dropGcsLink(player);
             Vsr700Entity vsr = PILOTS.remove(player.getUUID());
             if (vsr != null) {
                 vsr.setOperator(null);

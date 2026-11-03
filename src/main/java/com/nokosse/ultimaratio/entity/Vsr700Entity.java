@@ -3,8 +3,11 @@ package com.nokosse.ultimaratio.entity;
 import com.atsuishio.superbwarfare.data.gun.GunData;
 import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
+import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
+import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.google.common.collect.Iterables;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
+import com.nokosse.ultimaratio.event.VsrRemote;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -19,9 +22,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Team;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Vector4d;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,11 +48,24 @@ public class Vsr700Entity extends VehicleEntity {
     /** Client only: >0 while the level ticks a riding entity, which must see its real vehicle (ClientLevelMixin). */
     public static int clientTickingPassenger;
     /** Max distance between the operator and the drone: the link is lost beyond it. */
-    public static final double MAX_RANGE = 1000.0;
+    public double maxRange() {
+        return 2500.0;
+    }
+
+    /** Client HUD: the picture starts to break up here, and the distance reads red from warnRange. */
+    public double jamRange() {
+        return maxRange() - 200.0;
+    }
+
+    public double warnRange() {
+        return maxRange() - 100.0;
+    }
 
     /** Operator the drone is linked to (saved). */
     @Nullable
     private UUID controller;
+    /** Server only: true during tick() while the drone hovers with nobody at the controls, see getFirstPassenger. */
+    private boolean hoverStandIn;
     /** Server only: the operator while their monitor is in use, see VsrRemote. */
     @Nullable
     private ServerPlayer operator;
@@ -70,6 +88,34 @@ public class Vsr700Entity extends VehicleEntity {
         this.operator = operator;
     }
 
+    /** The sensor ball's pitch pivot and how far its lens sits in front of it (vehicle axes, blocks): where the zoomed camera is. */
+    protected Vec3 lensPivot() {
+        return new Vec3(0, 0.731, 1.45);
+    }
+
+    protected double lensReach() {
+        return 0.219;
+    }
+
+    /**
+     * The zoomed sensor camera sits on the lens (the "view" bone) and follows the ball: in front of the pitch pivot,
+     * along the camera direction relative to the drone (SBW's nacelle angles, zero outside the nacelle).
+     */
+    @Override
+    public @Nullable Vec3 getViewPos(@NotNull Entity entity, float partialTicks) {
+        if (!level().isClientSide || entity != clientPilot || !isLaserSelected(entity)) {
+            return super.getViewPos(entity, partialTicks);
+        }
+        double yaw = Math.toRadians(-ClientMouseHandler.nacelleCameraYaw);
+        double pitch = Math.toRadians(ClientMouseHandler.nacelleCameraPitch);
+        Vec3 pivot = lensPivot();
+        Vector4d p = VehicleVecUtils.transformPosition(getTransformFromString("Vehicle", partialTicks),
+                pivot.x - Math.sin(yaw) * Math.cos(pitch) * lensReach(),
+                pivot.y - Math.sin(pitch) * lensReach(),
+                pivot.z + Math.cos(yaw) * Math.cos(pitch) * lensReach());
+        return new Vec3(p.x, p.y, p.z);
+    }
+
     /** The remote pilot on this side, if someone is flying. */
     @Nullable
     public Entity getPilot() {
@@ -82,6 +128,9 @@ public class Vsr700Entity extends VehicleEntity {
     @Override
     public @Nullable Entity getFirstPassenger() {
         Entity pilot = getPilot();
+        if (pilot == null && hoverStandIn) {
+            return this;
+        }
         return pilot != null ? pilot : super.getFirstPassenger();
     }
 
@@ -139,6 +188,11 @@ public class Vsr700Entity extends VehicleEntity {
         controller = null;
     }
 
+    /** Taken over from a GCS (VsrRemote). */
+    public void setController(UUID controller) {
+        this.controller = controller;
+    }
+
     /** Monitors of this player linked to this drone (inventory and offhand). */
     private List<ItemStack> linkedMonitors(ServerPlayer player) {
         String id = getStringUUID();
@@ -160,7 +214,7 @@ public class Vsr700Entity extends VehicleEntity {
             return false;
         }
         ServerPlayer player = level().getServer() == null ? null : level().getServer().getPlayerList().getPlayer(controller);
-        return player == null || !linkedMonitors(player).isEmpty();
+        return player == null || !linkedMonitors(player).isEmpty() || VsrRemote.flying(player) == this;
     }
 
     /**
@@ -199,7 +253,21 @@ public class Vsr700Entity extends VehicleEntity {
 
     @Override
     public void tick() {
-        super.tick();
+        // SBW's helicopter engine only runs its hover logic for a pilot. Operator gone with the hover on: it sees
+        // a pilot touching nothing (the drone itself stands in), so it behaves exactly as with a hands-off pilot.
+        hoverStandIn = !level().isClientSide && getPilot() == null && getHoverMode() && getEngineStartOver()
+                && !isWreck() && !onGround();
+        if (controller != null) {
+            // SBW forgets the last driver after 10 s without a passenger, right before it syncs the entity to its
+            // team and lets radars classify it: the drone flickered neutral/hidden on the tactical map
+            setNoPassengerTime(0);
+            setLastDriverUUID(controller.toString());
+        }
+        try {
+            super.tick();
+        } finally {
+            hoverStandIn = false;
+        }
         if (level().isClientSide) {
             return;
         }
@@ -215,6 +283,15 @@ public class Vsr700Entity extends VehicleEntity {
         // SBW's JSON radar scans for the last driver and stops without one: set while the drone is linked and
         // alive (SBW alone would forget it after 10 s without a real passenger), cleared for a wreck or unlinked drone
         setLastDriverUUID(controller != null ? controller.toString() : "undefined");
+    }
+
+    /**
+     * A linked drone's last driver is always its controller: SBW overwrites it inside baseTick (the pilot, or the
+     * hover stand-in, i.e. the drone itself), between its radar scan and its sync to the team, which then sees it as foreign.
+     */
+    @Override
+    public void setLastDriverUUID(@NotNull String uuid) {
+        super.setLastDriverUUID(controller != null ? controller.toString() : uuid);
     }
 
     /** The drone fights for the operator's team: IFF, radars and seekers of their side treat it as friendly. */
@@ -234,13 +311,22 @@ public class Vsr700Entity extends VehicleEntity {
 
     @Override
     public @Nullable AbstractContainerMenu createMenu(int id, @NotNull Inventory inventory, @NotNull Player player) {
-        return player.isSpectator() ? null : new Vsr700Menu(id, inventory, getId());
+        return player.isSpectator() ? null : newMenu(id, inventory);
     }
 
-    /** One slot only: the Kh-39 magazine. The menu is SBW's one-row "Mini" one, the other cells stay locked. */
+    /** The VSR700's single cell menu; a drone with more to load opens SBW's own. */
+    protected AbstractContainerMenu newMenu(int id, Inventory inventory) {
+        return new Vsr700Menu(id, inventory, getId());
+    }
+
+    /** Usable magazine cells: the VSR700's menu is SBW's one-row "Mini" one, the other cells stay locked. */
+    protected int magazineSlots() {
+        return 1;
+    }
+
     @Override
     public boolean canPlaceItem(int slot, @NotNull ItemStack stack) {
-        return slot == 0 && super.canPlaceItem(slot, stack);
+        return slot < magazineSlots() && super.canPlaceItem(slot, stack);
     }
 
     /** The VSR700 this entity is flying right now (either side), so seekers never target their own drone. */

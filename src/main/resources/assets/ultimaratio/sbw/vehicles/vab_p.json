@@ -1,0 +1,9 @@
+{
+  "Animation": "ultimaratio:animations/bedrock/vehicle/vab_p.animation.json",
+  "Models": [
+    {
+      "Model": "ultimaratio:models/bedrock/vehicle/vab_p.geo.json",
+      "Texture": "ultimaratio:textures/bedrock/vehicle/vab_p.png"
+    }
+  ]
+}

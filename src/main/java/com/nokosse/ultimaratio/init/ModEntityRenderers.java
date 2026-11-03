@@ -7,6 +7,7 @@ import com.nokosse.ultimaratio.client.renderer.MicaRenderer;
 import com.nokosse.ultimaratio.client.renderer.ScalpEgRenderer;
 import com.nokosse.ultimaratio.client.renderer.CaesarRenderer;
 import com.nokosse.ultimaratio.client.renderer.Gf300BlockEntityRenderer;
+import com.nokosse.ultimaratio.client.renderer.GcsBlockEntityRenderer;
 import com.nokosse.ultimaratio.client.renderer.HadesMissileRenderer;
 import com.nokosse.ultimaratio.client.renderer.HadesRenderer;
 import com.nokosse.ultimaratio.client.renderer.KeraxRenderer;
@@ -14,6 +15,7 @@ import com.nokosse.ultimaratio.client.renderer.LeclercAzurRenderer;
 import com.nokosse.ultimaratio.client.renderer.LeclercXlrRenderer;
 import com.nokosse.ultimaratio.client.renderer.MambaRadarRenderer;
 import com.nokosse.ultimaratio.client.renderer.MambaRenderer;
+import com.nokosse.ultimaratio.client.renderer.Mq9ReaperRenderer;
 import com.nokosse.ultimaratio.client.renderer.RafaleRenderer;
 import com.nokosse.ultimaratio.client.renderer.SampTNgRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRenderer;
@@ -21,6 +23,7 @@ import com.nokosse.ultimaratio.client.renderer.ThundartRocketRenderer;
 import com.nokosse.ultimaratio.client.renderer.As350Renderer;
 import com.nokosse.ultimaratio.client.renderer.Vsr700Renderer;
 import com.nokosse.ultimaratio.client.renderer.TigreRenderer;
+import com.nokosse.ultimaratio.client.renderer.VabPRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrMepacRenderer;
 import com.nokosse.ultimaratio.client.renderer.VbmrRenderer;
 import com.nokosse.ultimaratio.entity.projectile.HadesMissileEntity;
@@ -39,6 +42,8 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import com.nokosse.ultimaratio.client.screen.Vsr700Screen;
 import net.minecraft.resources.ResourceLocation;
+import com.nokosse.ultimaratio.inventory.Mq9Menu;
+import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraftforge.fml.common.Mod;
 
@@ -54,6 +59,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.THUNDART.get(), ThundartRenderer::new);
         event.registerEntityRenderer(ModEntities.RENAULT_KERAX.get(), KeraxRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR.get(), VbmrRenderer::new);
+        event.registerEntityRenderer(ModEntities.VAB_P.get(), VabPRenderer::new);
         event.registerEntityRenderer(ModEntities.SERVAL.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.SERVAL_DSA.get(), VbmrRenderer::new);
         event.registerEntityRenderer(ModEntities.SERVAL_LAD.get(), VbmrRenderer::new);
@@ -64,6 +70,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.TIGRE.get(), TigreRenderer::new);
         event.registerEntityRenderer(ModEntities.AS350.get(), As350Renderer::new);
         event.registerEntityRenderer(ModEntities.VSR700.get(), Vsr700Renderer::new);
+        event.registerEntityRenderer(ModEntities.MQ9_REAPER.get(), Mq9ReaperRenderer::new);
         event.registerEntityRenderer(ModEntities.ASTER_30_MISSILE.get(), Aster30MissileRenderer::new);
         event.registerEntityRenderer(ModEntities.MICA.get(), MicaRenderer::new);
         event.registerEntityRenderer(ModEntities.METEOR.get(), MeteorRenderer::new);
@@ -71,6 +78,7 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.THUNDART_ROCKET.get(), ThundartRocketRenderer::new);
         event.registerEntityRenderer(ModEntities.HADES_MISSILE.get(), HadesMissileRenderer::new);
         event.registerBlockEntityRenderer(ModBlocks.GF300_BE.get(), ctx -> new Gf300BlockEntityRenderer());
+        event.registerBlockEntityRenderer(ModBlocks.GCS_BE.get(), ctx -> new GcsBlockEntityRenderer());
     }
 
     @SubscribeEvent
@@ -81,7 +89,8 @@ public class ModEntityRenderers {
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         // Linked screen texture on the VSR Monitor, like SBW's drone monitor
-        event.enqueueWork(() -> MenuScreens.register(ModMenus.VSR700.get(), Vsr700Screen::new));
+        event.enqueueWork(() -> MenuScreens.register(ModMenus.VSR700.get(), Vsr700Screen<Vsr700Menu>::new));
+        event.enqueueWork(() -> MenuScreens.register(ModMenus.MQ9.get(), Vsr700Screen<Mq9Menu>::new));
         event.enqueueWork(() -> ItemProperties.register(ModBlocks.VSR_MONITOR.get(),
                 new ResourceLocation(UltimaRatio.MODID, "linked"),
                 (stack, level, entity, seed) -> VsrMonitorItem.getLinked(stack) != null ? 1 : 0));

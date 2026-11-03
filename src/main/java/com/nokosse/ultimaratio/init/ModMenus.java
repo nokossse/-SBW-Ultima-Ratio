@@ -1,6 +1,7 @@
 package com.nokosse.ultimaratio.init;
 
 import com.nokosse.ultimaratio.UltimaRatio;
+import com.nokosse.ultimaratio.inventory.Mq9Menu;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.common.extensions.IForgeMenuType;
@@ -15,6 +16,9 @@ public class ModMenus {
 
     public static final RegistryObject<MenuType<Vsr700Menu>> VSR700 = MENUS.register("vsr700",
             () -> IForgeMenuType.create((id, inventory, buf) -> new Vsr700Menu(id, inventory, buf.readInt())));
+
+    public static final RegistryObject<MenuType<Mq9Menu>> MQ9 = MENUS.register("mq9_reaper",
+            () -> IForgeMenuType.create((id, inventory, buf) -> new Mq9Menu(id, inventory, buf.readInt())));
 
     public static void register(IEventBus bus) {
         MENUS.register(bus);
