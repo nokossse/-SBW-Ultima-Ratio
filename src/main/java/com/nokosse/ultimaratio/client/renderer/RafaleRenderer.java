@@ -21,9 +21,9 @@ import org.joml.Matrix4f;
 public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
     // Cockpit dashboard: separate model + x128 texture so the airframe texture stays small.
     private static final ResourceLocation COMMANDS_MODEL =
-            new ResourceLocation("ultimaratio", "models/bedrock/vehicle/rafale_commands.geo.json");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "models/bedrock/vehicle/rafale_commands.geo.json");
     private static final ResourceLocation COMMANDS_TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/vehicle/rafale_commands.png");
 
     private static final String GLASS_BONE = "move_translucent";
 
@@ -141,7 +141,7 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
         }
         poseStack.pushPose();
         // Same attachment as SBW muzzle flares: bone global transform, then its pivot = turbine centre.
-        poseStack.mulPoseMatrix(bone.getGlobalTransform(instance));
+        poseStack.mulPose(bone.getGlobalTransform(instance));
         var def = bone.definition();
         poseStack.translate(def.pivotX(), def.pivotY(), def.pivotZ());
         Matrix4f m = poseStack.last().pose();
@@ -198,10 +198,10 @@ public class RafaleRenderer extends GeoVehicleRenderer<RafaleEntity> {
                              float zb, float rb, float rB, float gB, float bB, float aB) {
         for (int s = 0; s < SEGMENTS; s++) {
             float c0 = COS[s], s0 = SIN[s], c1 = COS[s + 1], s1 = SIN[s + 1];
-            vc.vertex(m, c0 * ra, s0 * ra, za).color(rA, gA, bA, aA).endVertex();
-            vc.vertex(m, c1 * ra, s1 * ra, za).color(rA, gA, bA, aA).endVertex();
-            vc.vertex(m, c1 * rb, s1 * rb, zb).color(rB, gB, bB, aB).endVertex();
-            vc.vertex(m, c0 * rb, s0 * rb, zb).color(rB, gB, bB, aB).endVertex();
+            vc.addVertex(m, c0 * ra, s0 * ra, za).setColor(rA, gA, bA, aA);
+            vc.addVertex(m, c1 * ra, s1 * ra, za).setColor(rA, gA, bA, aA);
+            vc.addVertex(m, c1 * rb, s1 * rb, zb).setColor(rB, gB, bB, aB);
+            vc.addVertex(m, c0 * rb, s0 * rb, zb).setColor(rB, gB, bB, aB);
         }
     }
 

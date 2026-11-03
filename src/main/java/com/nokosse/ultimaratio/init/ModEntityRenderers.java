@@ -31,13 +31,14 @@ import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.Unit;
 import net.minecraft.util.profiling.ProfilerFiller;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import com.nokosse.ultimaratio.client.VsrClientEvents;
-import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.item.ItemProperties;
 import com.nokosse.ultimaratio.client.screen.Vsr700Screen;
@@ -45,9 +46,9 @@ import net.minecraft.resources.ResourceLocation;
 import com.nokosse.ultimaratio.inventory.Mq9Menu;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+@EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
 public class ModEntityRenderers {
     @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
@@ -82,17 +83,22 @@ public class ModEntityRenderers {
     }
 
     @SubscribeEvent
-    public static void registerOverlays(RegisterGuiOverlaysEvent event) {
-        event.registerAboveAll("vsr700", (gui, graphics, partialTick, width, height) -> VsrClientEvents.renderHud(graphics, width, height));
+    public static void registerOverlays(RegisterGuiLayersEvent event) {
+        event.registerAboveAll(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "vsr700"),
+                (graphics, delta) -> VsrClientEvents.renderHud(graphics, graphics.guiWidth(), graphics.guiHeight()));
+    }
+
+    @SubscribeEvent
+    public static void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(ModMenus.VSR700.get(), Vsr700Screen<Vsr700Menu>::new);
+        event.register(ModMenus.MQ9.get(), Vsr700Screen<Mq9Menu>::new);
     }
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
         // Linked screen texture on the VSR Monitor, like SBW's drone monitor
-        event.enqueueWork(() -> MenuScreens.register(ModMenus.VSR700.get(), Vsr700Screen<Vsr700Menu>::new));
-        event.enqueueWork(() -> MenuScreens.register(ModMenus.MQ9.get(), Vsr700Screen<Mq9Menu>::new));
         event.enqueueWork(() -> ItemProperties.register(ModBlocks.VSR_MONITOR.get(),
-                new ResourceLocation(UltimaRatio.MODID, "linked"),
+                ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "linked"),
                 (stack, level, entity, seed) -> VsrMonitorItem.getLinked(stack) != null ? 1 : 0));
     }
 

@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Aster30MissileEntity extends Ru9m100MissileEntity {
     private static final ResourceLocation MODEL =
-            new ResourceLocation("ultimaratio", "projectile/aster_30_missile");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/aster_30_missile");
     private static final int BOOST_TICKS = 18;
     // blocs/tick: Kalibr/Scalp/Hades volent jusqu'a ~25 b/t (Mach 1.5), l'Aster doit les depasser
     private static final double MAX_SPEED = 40.0;

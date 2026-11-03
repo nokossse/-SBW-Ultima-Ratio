@@ -8,9 +8,8 @@ import com.nokosse.ultimaratio.block.GcsBlock;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import com.nokosse.ultimaratio.network.GcsListMessage;
 import com.nokosse.ultimaratio.network.GcsPilotMessage;
-import com.nokosse.ultimaratio.network.ModNetwork;
 import net.minecraft.world.level.entity.EntityTypeTest;
-import net.minecraftforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PacketDistributor;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -23,10 +22,11 @@ import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ import java.util.UUID;
  *     knockback are simulated here and a ticket keeps its chunks ticking (it can still be hit).</li>
  * </ul>
  */
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID)
+@EventBusSubscriber(modid = UltimaRatio.MODID)
 public final class VsrRemote {
     private static final TicketType<ChunkPos> OPERATOR_TICKET =
             TicketType.create("ultimaratio_vsr_operator", Comparator.comparingLong(ChunkPos::toLong), 60);
@@ -131,7 +131,7 @@ public final class VsrRemote {
                 .sorted(Comparator.comparingDouble(vsr -> vsr.distanceToSqr(player)))
                 .map(vsr -> new GcsListMessage.Entry(vsr.getUUID(), vsr.getDisplayName().getString(), (int) Math.sqrt(vsr.distanceToSqr(player))))
                 .toList();
-        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsListMessage(pos.immutable(), drones));
+        PacketDistributor.sendToPlayer(player, new GcsListMessage(pos.immutable(), drones));
     }
 
     /** The open list asks for fresh distances: same list, no message if the desk lost power meanwhile. */
@@ -149,13 +149,13 @@ public final class VsrRemote {
         vsr.setController(player.getUUID());
         GCS_LINKS.put(player.getUUID(), new GcsLink(pos.immutable(), drone));
         setGcsScreen(player, pos, vsr instanceof Mq9ReaperEntity ? 1 : 2);
-        ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsPilotMessage(drone.toString()));
+        PacketDistributor.sendToPlayer(player, new GcsPilotMessage(drone.toString()));
     }
 
     /** SBW's dismount key, walking away from the desk, or the link cut: the GCS lets go of the drone. */
     public static void releaseGcs(ServerPlayer player) {
         if (dropGcsLink(player)) {
-            ModNetwork.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new GcsPilotMessage(""));
+            PacketDistributor.sendToPlayer(player, new GcsPilotMessage(""));
         }
     }
 
@@ -241,8 +241,8 @@ public final class VsrRemote {
     }
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) {
+    public static void onPlayerTick(PlayerTickEvent.Post event) {
+        if (!(event.getEntity() instanceof ServerPlayer player)) {
             return;
         }
         dropDeadLink(player);
@@ -290,8 +290,8 @@ public final class VsrRemote {
 
     /** After the connections ticked, so ServerGamePacketListenerImpl does not reset the body's position. */
     @SubscribeEvent
-    public static void onServerTick(TickEvent.ServerTickEvent event) {
-        if (event.phase != TickEvent.Phase.END || PILOTS.isEmpty()) {
+    public static void onServerTick(ServerTickEvent.Post event) {
+        if (PILOTS.isEmpty()) {
             return;
         }
         for (Vsr700Entity vsr : new ArrayList<>(PILOTS.values())) {
@@ -335,7 +335,7 @@ public final class VsrRemote {
         if (event.getEntity() instanceof ServerPlayer player) {
             ItemStack stack = player.getMainHandItem();
             if (stack.getItem() instanceof VsrMonitorItem) {
-                stack.getOrCreateTag().putBoolean(VsrMonitorItem.USING, false);
+                VsrMonitorItem.setUsing(stack, false);
             }
             MAP_SELECTED.remove(player.getUUID());
             dropGcsLink(player);

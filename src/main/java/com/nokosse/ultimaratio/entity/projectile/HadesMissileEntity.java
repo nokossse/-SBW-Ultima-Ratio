@@ -15,13 +15,13 @@ import java.util.List;
 
 public class HadesMissileEntity extends Ru3m14MissileEntity {
     static final ResourceLocation MODEL_FILE =
-            new ResourceLocation("ultimaratio", "models/bedrock/projectile/hades_missile.geo.json");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "models/bedrock/projectile/hades_missile.geo.json");
     static final ResourceLocation MODEL_ID =
-            new ResourceLocation("ultimaratio", "hades_missile");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "hades_missile");
     static final ResourceLocation MODEL_SHORT =
-            new ResourceLocation("ultimaratio", "projectile/hades_missile");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/hades_missile");
     static final ResourceLocation ANIM_FILE =
-            new ResourceLocation("ultimaratio", "animations/bedrock/projectile/hades_missile.animation.json");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "animations/bedrock/projectile/hades_missile.animation.json");
 
     public HadesMissileEntity(EntityType<? extends HadesMissileEntity> type, Level level) {
         super(type, level);

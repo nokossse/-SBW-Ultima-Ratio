@@ -1,5 +1,6 @@
 package com.nokosse.ultimaratio.client;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.atsuishio.superbwarfare.event.ClientEventHandler;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
@@ -10,7 +11,6 @@ import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
-import com.nokosse.ultimaratio.network.ModNetwork;
 import com.nokosse.ultimaratio.network.VsrMarkMessage;
 import com.nokosse.ultimaratio.network.ReaperAimMessage;
 import com.nokosse.ultimaratio.network.VsrReleaseMessage;
@@ -28,17 +28,17 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-import net.minecraftforge.client.event.InputEvent;
-import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-import net.minecraftforge.client.event.ViewportEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.InputEvent;
+import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+import net.neoforged.neoforge.client.event.ViewportEvent;
+import net.neoforged.neoforge.client.event.RenderLivingEvent;
+import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
@@ -49,7 +49,7 @@ import java.util.concurrent.CompletableFuture;
  * drone's virtual pilot (Vsr700Entity.clientPilot + EntityVehicleMixin), and SBW does the rest exactly as
  * for a seated helicopter pilot. SBW's dismount key or right click releases the controls.
  */
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
+@EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
 public final class VsrClientEvents {
     private static boolean dismountWasDown;
     /** Laser zoom multiplier on top of the weapon's own zoom (x6): 0.25 (x1.5 in all) to 4 (x24 in all). */
@@ -124,10 +124,7 @@ public final class VsrClientEvents {
     }
 
     @SubscribeEvent
-    public static void onClientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase != TickEvent.Phase.START) {
-            return;
-        }
+    public static void onClientTick(ClientTickEvent.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         Vsr700Entity vsr = player != null ? linkedInUse(player) : null;
@@ -140,12 +137,12 @@ public final class VsrClientEvents {
         if (vsr instanceof Mq9ReaperEntity && mc.screen == null) {
             // The Hellfire follows the camera, whatever it shows (zoomed sensor, or the plane's own view)
             Camera camera = mc.gameRenderer.getMainCamera();
-            ModNetwork.CHANNEL.sendToServer(new ReaperAimMessage(camera.getPosition(), new Vec3(camera.getLookVector())));
+            PacketDistributor.sendToServer(new ReaperAimMessage(camera.getPosition(), new Vec3(camera.getLookVector())));
         }
 
         boolean dismountDown = vsr != null && mc.screen == null && ModKeyMappings.DISMOUNT.isDown();
         if (dismountDown && !dismountWasDown) {
-            ModNetwork.CHANNEL.sendToServer(new VsrReleaseMessage());
+            PacketDistributor.sendToServer(new VsrReleaseMessage());
         }
         dismountWasDown = dismountDown;
     }
@@ -177,7 +174,7 @@ public final class VsrClientEvents {
     public static void onScroll(InputEvent.MouseScrollingEvent event) {
         if (laserZoomActive() && !ModKeyMappings.FREE_CAMERA.isDown()) {
             boolean reaper = Vsr700Entity.clientPiloted instanceof Mq9ReaperEntity;
-            laserZoom = Mth.clamp(laserZoom * Math.pow(LASER_ZOOM_STEP, event.getScrollDelta()),
+            laserZoom = Mth.clamp(laserZoom * Math.pow(LASER_ZOOM_STEP, event.getScrollDeltaY()),
                     reaper ? REAPER_ZOOM_MIN : LASER_ZOOM_MIN, reaper ? 2 * LASER_ZOOM_MAX : LASER_ZOOM_MAX);
             event.setCanceled(true); // SBW's own handler (weapon switch) never sees it
         }
@@ -329,7 +326,7 @@ public final class VsrClientEvents {
                 hit = entity.getEntity().position();
             }
         }
-        ModNetwork.CHANNEL.sendToServer(new VsrMarkMessage(hit.x, hit.y, hit.z));
+        PacketDistributor.sendToServer(new VsrMarkMessage(hit.x, hit.y, hit.z));
     }
 
     /**
@@ -363,16 +360,16 @@ public final class VsrClientEvents {
 
     /** The survival HUD (hearts, armor, food, air, xp, hotbar) is hidden while flying: only SBW's helicopter HUD shows. */
     @SubscribeEvent
-    public static void onOverlayPre(RenderGuiOverlayEvent.Pre event) {
+    public static void onOverlayPre(RenderGuiLayerEvent.Pre event) {
         if (Vsr700Entity.clientPiloted == null) {
             return;
         }
-        var overlay = event.getOverlay();
-        if (overlay == VanillaGuiOverlay.HOTBAR.type() || overlay == VanillaGuiOverlay.PLAYER_HEALTH.type()
-                || overlay == VanillaGuiOverlay.ARMOR_LEVEL.type() || overlay == VanillaGuiOverlay.FOOD_LEVEL.type()
-                || overlay == VanillaGuiOverlay.AIR_LEVEL.type() || overlay == VanillaGuiOverlay.EXPERIENCE_BAR.type()
-                || overlay == VanillaGuiOverlay.MOUNT_HEALTH.type() || overlay == VanillaGuiOverlay.JUMP_BAR.type()
-                || overlay == VanillaGuiOverlay.ITEM_NAME.type()) {
+        var overlay = event.getName();
+        if (overlay.equals(VanillaGuiLayers.HOTBAR) || overlay.equals(VanillaGuiLayers.PLAYER_HEALTH)
+                || overlay.equals(VanillaGuiLayers.ARMOR_LEVEL) || overlay.equals(VanillaGuiLayers.FOOD_LEVEL)
+                || overlay.equals(VanillaGuiLayers.AIR_LEVEL) || overlay.equals(VanillaGuiLayers.EXPERIENCE_BAR)
+                || overlay.equals(VanillaGuiLayers.EXPERIENCE_LEVEL) || overlay.equals(VanillaGuiLayers.VEHICLE_HEALTH)
+                || overlay.equals(VanillaGuiLayers.JUMP_METER) || overlay.equals(VanillaGuiLayers.SELECTED_ITEM_NAME)) {
             event.setCanceled(true);
         }
     }

@@ -4,16 +4,13 @@ import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.Bake
 import com.nokosse.ultimaratio.block.GcsBlock;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.energy.EnergyStorage;
-import net.minecraftforge.energy.IEnergyStorage;
+import net.neoforged.neoforge.energy.EnergyStorage;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +22,6 @@ public class GcsBlockEntity extends BlockEntity {
     private static final int MIN_ENERGY = 200;
 
     private final EnergyStorage energy = new EnergyStorage(20000);
-    private LazyOptional<IEnergyStorage> energyCap = LazyOptional.of(() -> energy);
     public @Nullable BakedModelInstance modelInstance;
 
     public GcsBlockEntity(BlockPos pos, BlockState state) {
@@ -44,47 +40,26 @@ public class GcsBlockEntity extends BlockEntity {
     }
 
     /** Both halves take FE; the second hands it to the first, like the GF300's ground layer. */
-    @Override
-    public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if (cap != ForgeCapabilities.ENERGY) {
-            return super.getCapability(cap, side);
-        }
+    public @Nullable IEnergyStorage getEnergyCapability() {
         BlockState state = getBlockState();
-        if (state.getValue(GcsBlock.SECOND) && level != null
-                && level.getBlockEntity(GcsBlock.firstHalf(worldPosition, state)) instanceof GcsBlockEntity first) {
-            return first.energyCap.cast();
+        if (!state.getValue(GcsBlock.SECOND)) {
+            return energy;
         }
-        return state.getValue(GcsBlock.SECOND) ? LazyOptional.empty() : energyCap.cast();
+        return level != null && level.getBlockEntity(GcsBlock.firstHalf(worldPosition, state)) instanceof GcsBlockEntity first
+                ? first.energy : null;
     }
 
     @Override
-    public net.minecraft.world.phys.AABB getRenderBoundingBox() {
-        return new net.minecraft.world.phys.AABB(worldPosition).inflate(3);
-    }
-
-    @Override
-    public void invalidateCaps() {
-        super.invalidateCaps();
-        energyCap.invalidate();
-    }
-
-    @Override
-    public void reviveCaps() {
-        super.reviveCaps();
-        energyCap = LazyOptional.of(() -> energy);
-    }
-
-    @Override
-    public void load(@NotNull CompoundTag tag) {
-        super.load(tag);
+    protected void loadAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (tag.contains("Energy")) {
-            energy.deserializeNBT(tag.get("Energy"));
+            energy.deserializeNBT(registries, tag.get("Energy"));
         }
     }
 
     @Override
-    protected void saveAdditional(@NotNull CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.put("Energy", energy.serializeNBT());
+    protected void saveAdditional(@NotNull CompoundTag tag, @NotNull HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.put("Energy", energy.serializeNBT(registries));
     }
 }

@@ -2,14 +2,14 @@
   "type": "superbwarfare:vehicle_assembling",
   "category": "land",
   "inputs": [
-    "12 #forge:storage_blocks/steel",
+    "12 #c:storage_blocks/steel",
+    "superbwarfare:cannon_core",
     "superbwarfare:heavy_armament_module",
-    "ultimaratio:gf300",
     "superbwarfare:medium_battery_pack",
-    "8 superbwarfare:wheel",
+    "6 superbwarfare:wheel",
     "superbwarfare:large_motor"
   ],
   "result": {
-    "entity": "ultimaratio:samp_t_ng"
+    "entity": "ultimaratio:caesar"
   }
 }

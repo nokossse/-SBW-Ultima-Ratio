@@ -50,10 +50,10 @@ public class ServalLadEntity extends ServalEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(AUTO, false);
-        this.entityData.define(TARGET, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(AUTO, false);
+        builder.define(TARGET, -1);
     }
 
     public boolean isAuto() {

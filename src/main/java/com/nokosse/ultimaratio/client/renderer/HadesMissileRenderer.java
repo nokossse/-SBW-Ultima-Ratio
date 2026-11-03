@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class HadesMissileRenderer extends BasicProjectileRenderer<HadesMissileEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/hades_missile.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/hades_missile.png");
 
     public HadesMissileRenderer(EntityRendererProvider.Context context) {
         super(context);

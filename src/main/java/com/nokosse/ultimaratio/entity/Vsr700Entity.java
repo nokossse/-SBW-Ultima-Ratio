@@ -23,7 +23,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Team;
+import net.minecraft.world.scores.PlayerTeam;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4d;
@@ -302,7 +302,7 @@ public class Vsr700Entity extends VehicleEntity {
 
     /** The drone fights for the operator's team: IFF, radars and seekers of their side treat it as friendly. */
     @Override
-    public @Nullable Team getTeam() {
+    public @Nullable PlayerTeam getTeam() {
         Entity pilot = getPilot();
         if (pilot == null && controller != null) {
             pilot = level().getPlayerByUUID(controller);

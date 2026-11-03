@@ -1,12 +1,12 @@
 package com.nokosse.ultimaratio.block;
 
 import com.atsuishio.superbwarfare.block.FuMO25Block;
+import com.mojang.serialization.MapCodec;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.nokosse.ultimaratio.block.entity.Gf300BlockEntity;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +43,7 @@ import java.util.function.Consumer;
  * Le modele regarde vers le NORD (-z du modele) quand FACING = NORTH.
  */
 public class Gf300Block extends BaseEntityBlock {
+    public static final MapCodec<Gf300Block> CODEC = simpleCodec(p -> new Gf300Block());
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = FuMO25Block.POWERED;
     public static final IntegerProperty CX = IntegerProperty.create("cx", 0, 2);
@@ -163,8 +164,13 @@ public class Gf300Block extends BaseEntityBlock {
     // --- interaction -------------------------------------------------------------------------------------------
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand,
-                                 BlockHitResult hit) {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player,
+                                               BlockHitResult hit) {
         if (level.isClientSide) return InteractionResult.SUCCESS;
         if (level.getBlockEntity(controllerPos(pos, state)) instanceof Gf300BlockEntity be) {
             var uuid = be.getOwnerUUID();

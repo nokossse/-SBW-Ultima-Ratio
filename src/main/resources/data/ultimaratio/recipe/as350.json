@@ -2,15 +2,13 @@
   "type": "superbwarfare:vehicle_assembling",
   "category": "aircraft",
   "inputs": [
-    "3 #forge:storage_blocks/steel",
+    "3 #c:storage_blocks/steel",
     "superbwarfare:medium_battery_pack",
     "superbwarfare:large_propeller",
     "superbwarfare:propeller",
-    "superbwarfare:large_motor",
-    "superbwarfare:heavy_armament_module",
-    "superbwarfare:fumo_25"
+    "superbwarfare:large_motor"
   ],
   "result": {
-    "entity": "ultimaratio:vsr700"
+    "entity": "ultimaratio:as350"
   }
 }

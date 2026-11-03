@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 public class GcsBlockEntityRenderer implements BlockEntityRenderer<GcsBlockEntity> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(UltimaRatio.MODID, "textures/bedrock/block/gcs.png");
-    private static final ResourceLocation MODEL = new ResourceLocation(UltimaRatio.MODID, "models/bedrock/block/gcs.geo.json");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "textures/bedrock/block/gcs.png");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "models/bedrock/block/gcs.geo.json");
 
     @Override
     public int getViewDistance() {

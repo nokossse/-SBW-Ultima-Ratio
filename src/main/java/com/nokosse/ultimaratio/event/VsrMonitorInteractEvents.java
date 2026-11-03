@@ -7,14 +7,14 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.eventbus.api.Event;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.common.util.TriState;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 /** With a VSR Monitor in the main hand, right click interacts with nothing but the VSR700, and left click attacks and mines nothing. */
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID)
+@EventBusSubscriber(modid = UltimaRatio.MODID)
 public final class VsrMonitorInteractEvents {
     private VsrMonitorInteractEvents() {
     }
@@ -28,7 +28,7 @@ public final class VsrMonitorInteractEvents {
     @SubscribeEvent
     public static void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
         if (holdsMonitor(event.getEntity())) {
-            event.setUseBlock(Event.Result.DENY); // the item itself still reacts (take/release the controls)
+            event.setUseBlock(TriState.FALSE); // the item itself still reacts (take/release the controls)
         }
     }
 
@@ -48,18 +48,21 @@ public final class VsrMonitorInteractEvents {
 
     @SubscribeEvent
     public static void onEntityInteract(PlayerInteractEvent.EntityInteract event) {
-        cancelUnlessVsr(event, event.getTarget());
+        if (cancelUnlessVsr(event, event.getTarget())) {
+            event.setCanceled(true);
+            event.setCancellationResult(InteractionResult.PASS);
+        }
     }
 
     @SubscribeEvent
     public static void onEntityInteractSpecific(PlayerInteractEvent.EntityInteractSpecific event) {
-        cancelUnlessVsr(event, event.getTarget());
-    }
-
-    private static void cancelUnlessVsr(PlayerInteractEvent event, Entity target) {
-        if (holdsMonitor(event.getEntity()) && !(target instanceof Vsr700Entity)) {
+        if (cancelUnlessVsr(event, event.getTarget())) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.PASS);
         }
+    }
+
+    private static boolean cancelUnlessVsr(PlayerInteractEvent event, Entity target) {
+        return holdsMonitor(event.getEntity()) && !(target instanceof Vsr700Entity);
     }
 }

@@ -1,12 +1,12 @@
 package com.nokosse.ultimaratio.block;
 
+import com.mojang.serialization.MapCodec;
 import com.nokosse.ultimaratio.block.entity.GcsBlockEntity;
 import com.nokosse.ultimaratio.event.VsrRemote;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * state; right click on either half lists the drones of the player's side and flies the one picked (VsrRemote).
  */
 public class GcsBlock extends BaseEntityBlock {
+    public static final MapCodec<GcsBlock> CODEC = simpleCodec(p -> new GcsBlock());
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     /** What the right screen shows: 0 off (and the left one too), 1 flying a Reaper, 2 flying a VSR700. */
@@ -83,7 +84,12 @@ public class GcsBlock extends BaseEntityBlock {
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
+        return CODEC;
+    }
+
+    @Override
+    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (player instanceof ServerPlayer serverPlayer) {
             VsrRemote.openGcs(serverPlayer, firstHalf(pos, state));
         }

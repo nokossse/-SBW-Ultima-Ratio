@@ -5,6 +5,7 @@ import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.entity.EntityAccess;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,27 +17,20 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(ChunkMap.class)
 public abstract class ChunkMapMixin {
+    /** 1.21: the chunk view (ChunkTrackingView) is centred on chunkPosition() in updateChunkTracking. */
     @Redirect(
-            method = {"move(Lnet/minecraft/server/level/ServerPlayer;)V", "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V"},
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getBlockX()I")
+            method = "updateChunkTracking(Lnet/minecraft/server/level/ServerPlayer;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;chunkPosition()Lnet/minecraft/world/level/ChunkPos;")
     )
-    private int ultimaratio$viewBlockX(ServerPlayer player) {
-        return VsrRemote.viewEntity(player).getBlockX();
-    }
-
-    @Redirect(
-            method = {"move(Lnet/minecraft/server/level/ServerPlayer;)V", "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V"},
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getBlockZ()I")
-    )
-    private int ultimaratio$viewBlockZ(ServerPlayer player) {
-        return VsrRemote.viewEntity(player).getBlockZ();
+    private ChunkPos ultimaratio$viewChunk(ServerPlayer player) {
+        return VsrRemote.viewEntity(player).chunkPosition();
     }
 
     @Redirect(
             method = {
                     "move(Lnet/minecraft/server/level/ServerPlayer;)V",
                     "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V",
-                    "updatePlayerPos(Lnet/minecraft/server/level/ServerPlayer;)Lnet/minecraft/core/SectionPos;"
+                    "updatePlayerPos(Lnet/minecraft/server/level/ServerPlayer;)V"
             },
             at = @At(value = "INVOKE", target = "Lnet/minecraft/core/SectionPos;of(Lnet/minecraft/world/level/entity/EntityAccess;)Lnet/minecraft/core/SectionPos;")
     )

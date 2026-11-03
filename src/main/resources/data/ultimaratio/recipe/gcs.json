@@ -13,6 +13,6 @@
     "B": { "item": "superbwarfare:medium_battery_pack" }
   },
   "result": {
-    "item": "ultimaratio:gcs"
+    "id": "ultimaratio:gcs"
   }
 }

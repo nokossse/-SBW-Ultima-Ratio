@@ -115,7 +115,7 @@ public class TigreRenderer extends GeoVehicleRenderer<TigreEntity> {
                 p.setSyncedTick(1); // the projectile renderer hides it while syncedTick is low
             }
             poseStack.pushPose();
-            poseStack.mulPoseMatrix(bone.getGlobalTransform(instance));
+            poseStack.mulPose(bone.getGlobalTransform(instance));
             var def = bone.definition();
             poseStack.translate(def.pivotX(), def.pivotY(), def.pivotZ());
             // Same scale and offset as the Kh-39 on SBW's Mi-28.

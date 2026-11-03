@@ -4,21 +4,21 @@ import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.inventory.Mq9Menu;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.common.extensions.IForgeMenuType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredRegister;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 public class ModMenus {
     public static final DeferredRegister<MenuType<?>> MENUS =
-            DeferredRegister.create(ForgeRegistries.MENU_TYPES, UltimaRatio.MODID);
+            DeferredRegister.create(BuiltInRegistries.MENU, UltimaRatio.MODID);
 
-    public static final RegistryObject<MenuType<Vsr700Menu>> VSR700 = MENUS.register("vsr700",
-            () -> IForgeMenuType.create((id, inventory, buf) -> new Vsr700Menu(id, inventory, buf.readInt())));
+    public static final DeferredHolder<MenuType<?>, MenuType<Vsr700Menu>> VSR700 = MENUS.register("vsr700",
+            () -> IMenuTypeExtension.create((id, inventory, buf) -> new Vsr700Menu(id, inventory, buf.readInt())));
 
-    public static final RegistryObject<MenuType<Mq9Menu>> MQ9 = MENUS.register("mq9_reaper",
-            () -> IForgeMenuType.create((id, inventory, buf) -> new Mq9Menu(id, inventory, buf.readInt())));
+    public static final DeferredHolder<MenuType<?>, MenuType<Mq9Menu>> MQ9 = MENUS.register("mq9_reaper",
+            () -> IMenuTypeExtension.create((id, inventory, buf) -> new Mq9Menu(id, inventory, buf.readInt())));
 
     public static void register(IEventBus bus) {
         MENUS.register(bus);

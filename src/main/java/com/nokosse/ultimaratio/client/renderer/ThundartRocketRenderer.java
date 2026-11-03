@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 
 public class ThundartRocketRenderer extends BasicProjectileRenderer<ThundartRocketEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/thundart_rocket.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/thundart_rocket.png");
 
     public ThundartRocketRenderer(EntityRendererProvider.Context context) {
         super(context);

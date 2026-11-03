@@ -5,7 +5,7 @@ import com.atsuishio.superbwarfare.client.overlay.VehicleHudOverlay;
 import com.atsuishio.superbwarfare.client.overlay.VehicleMainWeaponHudOverlay;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
+import net.minecraft.client.DeltaTracker;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,11 +19,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = CommonOverlay.class, remap = false)
 public abstract class CommonOverlayMixin {
     @Inject(
-            method = "render(Lnet/minecraftforge/client/gui/overlay/ForgeGui;Lnet/minecraft/client/gui/GuiGraphics;FII)V",
+            method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    private void ultimaratio$onlyHelicopterHud(ForgeGui gui, GuiGraphics graphics, float partialTick, int width, int height, CallbackInfo ci) {
+    private void ultimaratio$onlyHelicopterHud(GuiGraphics graphics, DeltaTracker delta, CallbackInfo ci) {
         if (Vsr700Entity.clientPiloted != null
                 && !((Object) this instanceof VehicleMainWeaponHudOverlay)
                 && !((Object) this instanceof VehicleHudOverlay)) {

@@ -15,7 +15,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class ThundartRocketEntity extends MediumRocketEntity {
     private static final ResourceLocation MODEL =
-            new ResourceLocation("ultimaratio", "projectile/thundart_rocket");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/thundart_rocket");
     public ThundartRocketEntity(EntityType<? extends ThundartRocketEntity> type, Level level) {
         super(type, level);
         this.setType(MediumRocketEntity.Type.HE);

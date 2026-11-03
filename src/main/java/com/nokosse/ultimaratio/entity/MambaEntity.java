@@ -112,12 +112,12 @@ public class MambaEntity extends SpArtilleryEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(PHASE, PHASE_IDLE);
-        this.entityData.define(PHASE_TICKS, 0);
-        this.entityData.define(DEPLOYED, false);
-        this.entityData.define(AUTO, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(PHASE, PHASE_IDLE);
+        builder.define(PHASE_TICKS, 0);
+        builder.define(DEPLOYED, false);
+        builder.define(AUTO, false);
     }
 
     public boolean isAuto() {

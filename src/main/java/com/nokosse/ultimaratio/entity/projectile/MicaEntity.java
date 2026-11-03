@@ -10,7 +10,7 @@ import net.minecraft.world.level.Level;
 
 /** MICA: reuses SBW's missile guidance (Ru9m100), only the model differs. */
 public class MicaEntity extends Ru9m100MissileEntity {
-    private static final ResourceLocation MODEL = new ResourceLocation("ultimaratio", "projectile/mica");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/mica");
 
     public MicaEntity(EntityType<? extends MicaEntity> type, Level level) {
         super(type, level);

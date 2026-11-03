@@ -1,19 +1,19 @@
 package com.nokosse.ultimaratio.item;
 
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -39,26 +39,47 @@ public class VsrMonitorItem extends Item {
     public static final String USING = "Using";
 
     public VsrMonitorItem() {
-        super(new Properties().stacksTo(1));
+        // Same weapon stats as SBW's drone monitor (it cannot attack, see VsrMonitorInteractEvents and VsrClientEvents).
+        super(new Properties().stacksTo(1).attributes(ItemAttributeModifiers.builder()
+                .add(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_ID, 2.0, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .add(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_ID, -2.4, AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.MAINHAND)
+                .build()));
+    }
+
+    private static CompoundTag tag(ItemStack stack) {
+        return stack.getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag();
+    }
+
+    private static void edit(ItemStack stack, java.util.function.Consumer<CompoundTag> edit) {
+        CustomData.update(DataComponents.CUSTOM_DATA, stack, edit);
+    }
+
+    public static void setUsing(ItemStack stack, boolean using) {
+        edit(stack, t -> t.putBoolean(USING, using));
     }
 
     @Nullable
     public static String getLinked(ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().contains(LINKED) ? stack.getTag().getString(LINKED) : null;
+        CompoundTag tag = tag(stack);
+        return tag.contains(LINKED) ? tag.getString(LINKED) : null;
     }
 
     public static boolean isUsing(ItemStack stack) {
-        return stack.getTag() != null && stack.getTag().getBoolean(USING);
+        return tag(stack).getBoolean(USING);
     }
 
     public static void link(ItemStack stack, String uuid) {
-        stack.getOrCreateTag().putString(LINKED, uuid);
-        stack.getOrCreateTag().putBoolean(USING, false);
+        edit(stack, t -> {
+            t.putString(LINKED, uuid);
+            t.putBoolean(USING, false);
+        });
     }
 
     public static void unlink(ItemStack stack) {
-        stack.getOrCreateTag().remove(LINKED);
-        stack.getOrCreateTag().putBoolean(USING, false);
+        edit(stack, t -> {
+            t.remove(LINKED);
+            t.putBoolean(USING, false);
+        });
     }
 
     @Override
@@ -79,7 +100,7 @@ public class VsrMonitorItem extends Item {
             return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
         }
         if (!level.isClientSide) {
-            stack.getOrCreateTag().putBoolean(USING, !isUsing(stack));
+            setUsing(stack, !isUsing(stack));
         }
         // Holding right click repeats use every 4 ticks: don't flicker in and out of the drone
         player.getCooldowns().addCooldown(this, 10);
@@ -99,26 +120,13 @@ public class VsrMonitorItem extends Item {
         }
     }
 
-    /** Same weapon stats as SBW's drone monitor (it cannot attack, see VsrMonitorInteractEvents and VsrClientEvents). */
-    @Override
-    public Multimap<Attribute, AttributeModifier> getAttributeModifiers(EquipmentSlot slot, ItemStack stack) {
-        if (slot != EquipmentSlot.MAINHAND) {
-            return super.getAttributeModifiers(slot, stack);
-        }
-        ImmutableMultimap.Builder<Attribute, AttributeModifier> builder = ImmutableMultimap.builder();
-        builder.putAll(super.getAttributeModifiers(slot, stack));
-        builder.put(Attributes.ATTACK_DAMAGE, new AttributeModifier(BASE_ATTACK_DAMAGE_UUID, "Item modifier", 2.0, AttributeModifier.Operation.ADDITION));
-        builder.put(Attributes.ATTACK_SPEED, new AttributeModifier(BASE_ATTACK_SPEED_UUID, "Item modifier", -2.4, AttributeModifier.Operation.ADDITION));
-        return builder.build();
-    }
-
     /** Distance to the linked drone and its coordinates (kept up to date by Vsr700Entity), like the drone monitor. */
     @OnlyIn(Dist.CLIENT)
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
-        CompoundTag tag = stack.getTag();
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        CompoundTag tag = tag(stack);
         Player player = Minecraft.getInstance().player;
-        if (tag == null || player == null || !tag.contains(LINKED) || !tag.contains("PosX") || !tag.contains("PosY") || !tag.contains("PosZ")) {
+        if (player == null || !tag.contains(LINKED) || !tag.contains("PosX") || !tag.contains("PosY") || !tag.contains("PosZ")) {
             return;
         }
         Vec3 drone = new Vec3(tag.getDouble("PosX"), tag.getDouble("PosY"), tag.getDouble("PosZ"));
@@ -132,9 +140,11 @@ public class VsrMonitorItem extends Item {
     }
 
     public static void setDronePos(ItemStack stack, Vec3 pos) {
-        stack.getOrCreateTag().putDouble("PosX", pos.x);
-        stack.getOrCreateTag().putDouble("PosY", pos.y);
-        stack.getOrCreateTag().putDouble("PosZ", pos.z);
+        edit(stack, t -> {
+            t.putDouble("PosX", pos.x);
+            t.putDouble("PosY", pos.y);
+            t.putDouble("PosZ", pos.z);
+        });
     }
 
     @Override

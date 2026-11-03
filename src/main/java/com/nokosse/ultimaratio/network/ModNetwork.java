@@ -1,56 +1,27 @@
 package com.nokosse.ultimaratio.network;
 
 import com.nokosse.ultimaratio.UltimaRatio;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
+@EventBusSubscriber(modid = UltimaRatio.MODID)
 public final class ModNetwork {
-    private static final String PROTOCOL = "1";
-    public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(UltimaRatio.MODID, "main"),
-            () -> PROTOCOL,
-            PROTOCOL::equals,
-            PROTOCOL::equals
-    );
-
     private ModNetwork() {
     }
 
-    public static void register() {
-        int id = 0;
-        CHANNEL.registerMessage(
-                id++,
-                VbmrDecoyMessage.class,
-                VbmrDecoyMessage::encode,
-                VbmrDecoyMessage::decode,
-                VbmrDecoyMessage::handle
-        );
-        CHANNEL.registerMessage(
-                id++,
-                VsrReleaseMessage.class,
-                VsrReleaseMessage::encode,
-                VsrReleaseMessage::decode,
-                VsrReleaseMessage::handle
-        );
-        CHANNEL.registerMessage(
-                id++,
-                VsrMarkMessage.class,
-                VsrMarkMessage::encode,
-                VsrMarkMessage::decode,
-                VsrMarkMessage::handle
-        );
-        CHANNEL.registerMessage(
-                id++,
-                DroneSelectMessage.class,
-                DroneSelectMessage::encode,
-                DroneSelectMessage::decode,
-                DroneSelectMessage::handle
-        );
-        CHANNEL.registerMessage(id++, GcsListMessage.class, GcsListMessage::encode, GcsListMessage::decode, GcsListMessage::handle);
-        CHANNEL.registerMessage(id++, GcsSelectMessage.class, GcsSelectMessage::encode, GcsSelectMessage::decode, GcsSelectMessage::handle);
-        CHANNEL.registerMessage(id++, GcsRefreshMessage.class, GcsRefreshMessage::encode, GcsRefreshMessage::decode, GcsRefreshMessage::handle);
-        CHANNEL.registerMessage(id++, GcsPilotMessage.class, GcsPilotMessage::encode, GcsPilotMessage::decode, GcsPilotMessage::handle);
-        CHANNEL.registerMessage(id++, ReaperAimMessage.class, ReaperAimMessage::encode, ReaperAimMessage::decode, ReaperAimMessage::handle);
+    @SubscribeEvent
+    public static void register(RegisterPayloadHandlersEvent event) {
+        PayloadRegistrar r = event.registrar("1");
+        r.playToServer(VbmrDecoyMessage.TYPE, VbmrDecoyMessage.CODEC, VbmrDecoyMessage::handle);
+        r.playToServer(VsrReleaseMessage.TYPE, VsrReleaseMessage.CODEC, VsrReleaseMessage::handle);
+        r.playToServer(VsrMarkMessage.TYPE, VsrMarkMessage.CODEC, VsrMarkMessage::handle);
+        r.playToServer(DroneSelectMessage.TYPE, DroneSelectMessage.CODEC, DroneSelectMessage::handle);
+        r.playToClient(GcsListMessage.TYPE, GcsListMessage.CODEC, GcsListMessage::handle);
+        r.playToServer(GcsSelectMessage.TYPE, GcsSelectMessage.CODEC, GcsSelectMessage::handle);
+        r.playToServer(GcsRefreshMessage.TYPE, GcsRefreshMessage.CODEC, GcsRefreshMessage::handle);
+        r.playToClient(GcsPilotMessage.TYPE, GcsPilotMessage.CODEC, GcsPilotMessage::handle);
+        r.playToServer(ReaperAimMessage.TYPE, ReaperAimMessage.CODEC, ReaperAimMessage::handle);
     }
 }

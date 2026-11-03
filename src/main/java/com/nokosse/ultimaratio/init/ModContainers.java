@@ -2,10 +2,10 @@ package com.nokosse.ultimaratio.init;
 
 import com.atsuishio.superbwarfare.api.event.RegisterContainersEvent;
 import com.nokosse.ultimaratio.UltimaRatio;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 
-@Mod.EventBusSubscriber(modid = UltimaRatio.MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = UltimaRatio.MODID)
 public class ModContainers {
     @SubscribeEvent
     public static void onRegisterContainers(RegisterContainersEvent event) {

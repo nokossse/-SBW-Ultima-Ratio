@@ -1,10 +1,10 @@
 package com.nokosse.ultimaratio.client.screen;
 
+import net.neoforged.neoforge.network.PacketDistributor;
 import com.atsuishio.superbwarfare.client.screens.TacticalMapScreen;
 import com.nokosse.ultimaratio.network.GcsListMessage;
 import com.nokosse.ultimaratio.network.GcsRefreshMessage;
 import com.nokosse.ultimaratio.network.GcsSelectMessage;
-import com.nokosse.ultimaratio.network.ModNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -42,7 +42,7 @@ public class GcsScreen extends Screen {
     @Override
     public void tick() {
         if (++refreshTicks % 20 == 0) {
-            ModNetwork.CHANNEL.sendToServer(new GcsRefreshMessage(pos));
+            PacketDistributor.sendToServer(new GcsRefreshMessage(pos));
         }
     }
 
@@ -52,7 +52,7 @@ public class GcsScreen extends Screen {
         for (int i = 0; i < Math.min(drones.size(), MAX_ROWS); i++) {
             GcsListMessage.Entry drone = drones.get(i);
             addRenderableWidget(Button.builder(Component.literal(drone.name() + "  -  " + drone.distance() + " m"), b -> {
-                ModNetwork.CHANNEL.sendToServer(new GcsSelectMessage(pos, drone.drone()));
+                PacketDistributor.sendToServer(new GcsSelectMessage(pos, drone.drone()));
                 onClose();
             }).bounds(width / 2 - 100, top + i * 24, 200, 20).build());
         }
@@ -64,13 +64,12 @@ public class GcsScreen extends Screen {
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        renderBackground(graphics);
+        super.render(graphics, mouseX, mouseY, partialTick); // 1.21: draws the background, then the buttons
         int top = height / 2 - Math.min(drones.size(), MAX_ROWS) * 12;
         graphics.drawCenteredString(font, title, width / 2, top - 20, 0xFFFFFF);
         if (drones.isEmpty()) {
             graphics.drawCenteredString(font, Component.translatable("gui.ultimaratio.gcs.none"), width / 2, height / 2, 0xAAAAAA);
         }
-        super.render(graphics, mouseX, mouseY, partialTick);
     }
 
     @Override

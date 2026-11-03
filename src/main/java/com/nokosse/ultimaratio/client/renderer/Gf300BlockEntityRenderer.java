@@ -19,13 +19,14 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 
 import java.util.List;
 
 public class Gf300BlockEntityRenderer implements BlockEntityRenderer<Gf300BlockEntity> {
-    private static final ResourceLocation TEXTURE = new ResourceLocation(UltimaRatio.MODID, "textures/bedrock/block/gf300.png");
-    private static final ResourceLocation MODEL = new ResourceLocation(UltimaRatio.MODID, "models/bedrock/block/gf300.geo.json");
-    private static final ResourceLocation ANIM = new ResourceLocation(UltimaRatio.MODID, "animations/bedrock/block/gf300.animation.json");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "textures/bedrock/block/gf300.png");
+    private static final ResourceLocation MODEL = ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "models/bedrock/block/gf300.geo.json");
+    private static final ResourceLocation ANIM = ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "animations/bedrock/block/gf300.animation.json");
     private static final String DEPLOY = "deploy_radar";
     private static final EulerAdditiveBlender BLENDER =
             new SimpleEulerAdditiveBlender(new ZYXBoneTransformFactory(), ArrayPoseBuilder::new);
@@ -84,5 +85,11 @@ public class Gf300BlockEntityRenderer implements BlockEntityRenderer<Gf300BlockE
     @Override
     public int getViewDistance() {
         return 256;
+    }
+
+    /** Le modele depasse largement la case du controleur : sans ca il disparait des que celle-ci quitte l'ecran. */
+    @Override
+    public AABB getRenderBoundingBox(Gf300BlockEntity be) {
+        return new AABB(be.getBlockPos()).inflate(8);
     }
 }

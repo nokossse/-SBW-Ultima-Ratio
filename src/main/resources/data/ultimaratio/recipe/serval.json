@@ -2,14 +2,14 @@
   "type": "superbwarfare:vehicle_assembling",
   "category": "land",
   "inputs": [
-    "8 #forge:storage_blocks/steel",
+    "8 #c:storage_blocks/steel",
     "superbwarfare:light_armament_module",
     "superbwarfare:medium_battery_pack",
     "4 superbwarfare:wheel",
     "superbwarfare:large_motor",
-    "12 superbwarfare:rifle_ammo"
+    "12 superbwarfare:heavy_ammo"
   ],
   "result": {
-    "entity": "ultimaratio:vab_p"
+    "entity": "ultimaratio:serval"
   }
 }

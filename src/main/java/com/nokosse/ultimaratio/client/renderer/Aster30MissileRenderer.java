@@ -12,7 +12,7 @@ import net.minecraft.world.entity.EntityType;
 
 public class Aster30MissileRenderer extends BasicProjectileRenderer<Aster30MissileEntity> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("ultimaratio", "textures/bedrock/projectile/aster_30_missile.png");
+            ResourceLocation.fromNamespaceAndPath("ultimaratio", "textures/bedrock/projectile/aster_30_missile.png");
 
     private Entity dummyKh39;
 
@@ -24,7 +24,7 @@ public class Aster30MissileRenderer extends BasicProjectileRenderer<Aster30Missi
     @Override
     public void render(Aster30MissileEntity entity, float yaw, float partialTick, PoseStack poseStack,
                        MultiBufferSource buffer, int packedLight) {
-        if (entity.isAddedToWorld()) {
+        if (entity.level().getEntity(entity.getId()) == entity) {
             super.render(entity, yaw, partialTick, poseStack, buffer, packedLight);
             return;
         }

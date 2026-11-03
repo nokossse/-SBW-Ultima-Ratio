@@ -2,13 +2,15 @@
   "type": "superbwarfare:vehicle_assembling",
   "category": "aircraft",
   "inputs": [
-    "8 #forge:storage_blocks/steel",
+    "4 #c:storage_blocks/steel",
     "superbwarfare:heavy_armament_module",
     "superbwarfare:large_battery_pack",
-    "2 superbwarfare:large_motor",
+    "superbwarfare:large_propeller",
+    "superbwarfare:large_motor",
+    "superbwarfare:fumo_25",
     "3 superbwarfare:wheel"
   ],
   "result": {
-    "entity": "ultimaratio:rafale_c"
+    "entity": "ultimaratio:mq9_reaper"
   }
 }

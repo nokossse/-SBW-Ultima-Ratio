@@ -2,9 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.nokosse.ultimaratio.mixin",
-  "compatibilityLevel": "JAVA_17",
+  "compatibilityLevel": "JAVA_21",
   "plugin": "com.nokosse.ultimaratio.mixin.UltimaRatioMixinPlugin",
-  "refmap": "ultimaratio.refmap.json",
   "mixins": [
     "ChunkMapMixin",
     "ChunkMapTrackedEntityMixin",
@@ -28,7 +27,8 @@
     "LevelRendererSetupMixin",
     "BetterFpsDistMixin",
     "EngineSoundMixin",
-    "TacticalMapScreenMixin"
+    "TacticalMapScreenMixin",
+    "MapEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

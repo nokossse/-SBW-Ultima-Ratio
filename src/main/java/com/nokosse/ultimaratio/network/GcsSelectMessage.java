@@ -3,14 +3,26 @@ package com.nokosse.ultimaratio.network;
 import com.nokosse.ultimaratio.event.VsrRemote;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import com.nokosse.ultimaratio.UltimaRatio;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.NetworkEvent;
 
 import java.util.UUID;
-import java.util.function.Supplier;
 
 /** Client to server: fly this drone from this GCS (checked again by VsrRemote). */
-public class GcsSelectMessage {
+public class GcsSelectMessage implements CustomPacketPayload {
+    public static final Type<GcsSelectMessage> TYPE =
+            new Type<>(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "gcs_select"));
+    public static final StreamCodec<FriendlyByteBuf, GcsSelectMessage> CODEC = StreamCodec.of((buf, m) -> encode(m, buf), GcsSelectMessage::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
     private final BlockPos pos;
     private final UUID drone;
 
@@ -28,14 +40,10 @@ public class GcsSelectMessage {
         return new GcsSelectMessage(buf.readBlockPos(), buf.readUUID());
     }
 
-    public static void handle(GcsSelectMessage message, Supplier<NetworkEvent.Context> context) {
-        NetworkEvent.Context ctx = context.get();
-        ctx.enqueueWork(() -> {
-            ServerPlayer player = ctx.getSender();
-            if (player != null) {
-                VsrRemote.selectFromGcs(player, message.pos, message.drone);
-            }
-        });
-        ctx.setPacketHandled(true);
+    public static void handle(GcsSelectMessage message, IPayloadContext ctx) {
+        ServerPlayer player = (ServerPlayer) ctx.player();
+        if (player != null) {
+            VsrRemote.selectFromGcs(player, message.pos, message.drone);
+        }
     }
 }
