@@ -57,8 +57,8 @@ dependencies {
     implementation name: 'geckolib-neoforge-1.21.1-4.7.5'
     implementation name: 'curios-neoforge-9.2.0+1.21.1'
     implementation name: 'mae-1.1.4'
-    // API only: the code is guarded by ModList.isLoaded("distanthorizons")
-    compileOnly name: 'distanthorizons-3.3.3'
+    // Optional at runtime: the code is guarded by ModList.isLoaded("distanthorizons")
+    implementation name: 'DistantHorizons-3.3.3-1.21.1-fabric-neoforge'
 }
 
 tasks.withType(ProcessResources).configureEach {
