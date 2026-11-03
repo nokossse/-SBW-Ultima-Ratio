@@ -208,10 +208,20 @@ public final class VsrClientEvents {
         float min = Vsr700Entity.clientPiloted instanceof Mq9ReaperEntity ? 0F : -MAX_CAMERA_PITCH;
         float limited = Mth.clamp(pitch, min, MAX_CAMERA_PITCH);
         if (limited != pitch) {
-            ClientMouseHandler.nacelleCameraPitch += limited - pitch;
+            double before = ClientMouseHandler.nacelleCameraPitch;
+            ClientMouseHandler.nacelleCameraPitch = sbwPitchOffset(before + limited - pitch);
             usedPitchOffset = ClientMouseHandler.nacelleCameraPitch;
-            event.setPitch(limited);
+            event.setPitch((float) (pitch - before + usedPitchOffset));
         }
+    }
+
+    /**
+     * SBW 1.21.1 clamps nacelleCameraPitch to [0, 180] in ClientMouseHandler (1.20.1 did not): an offset written
+     * outside that range is silently changed before the next frame, the drone angle worked out from it is then wrong
+     * and the hold correction runs away. Write only values SBW keeps.
+     */
+    private static double sbwPitchOffset(double offset) {
+        return Mth.clamp(offset, 0.0, 180.0);
     }
 
     private static void holdLaserPoint(ViewportEvent.ComputeCameraAngles event) {
@@ -291,11 +301,12 @@ public final class VsrClientEvents {
         double baseYaw = event.getYaw() + usedYaw;
         double basePitch = event.getPitch() - usedPitch;
         usedYawOffset = Mth.wrapDegrees(baseYaw - wantedYaw);
-        usedPitchOffset = Mth.wrapDegrees(wantedPitch - basePitch);
+        usedPitchOffset = sbwPitchOffset(Mth.wrapDegrees(wantedPitch - basePitch));
         ClientMouseHandler.nacelleCameraYaw = usedYawOffset;
         ClientMouseHandler.nacelleCameraPitch = usedPitchOffset;
         event.setYaw(wantedYaw);
-        event.setPitch(wantedPitch);
+        // A point above the drone's attitude is out of SBW's pitch range: show what the next frame will really use
+        event.setPitch((float) (basePitch + usedPitchOffset));
     }
 
     /**
