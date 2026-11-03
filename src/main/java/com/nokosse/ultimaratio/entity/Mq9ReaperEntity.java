@@ -31,8 +31,27 @@ public class Mq9ReaperEntity extends Vsr700Entity {
     @Nullable
     private Marker standIn;
 
+    /** The operator's camera (ReaperAimMessage), server side: the Hellfire rides it (Agm65Mixin). */
+    @Nullable
+    private Vec3 aimFrom;
+    @Nullable
+    private Vec3 aimDir;
+    private long aimTime;
+
     public Mq9ReaperEntity(EntityType<? extends Mq9ReaperEntity> type, Level level) {
         super(type, level);
+    }
+
+    public void setAim(Vec3 from, Vec3 dir) {
+        aimFrom = from;
+        aimDir = dir;
+        aimTime = level().getGameTime();
+    }
+
+    /** Where the operator's camera is and looks, null once they stopped sending it (left the controls). */
+    @Nullable
+    public Vec3[] aim() {
+        return aimDir == null || level().getGameTime() - aimTime > 10 ? null : new Vec3[]{aimFrom, aimDir};
     }
 
     public boolean isPassengerStandIn() {

@@ -13,6 +13,7 @@
     "LoiterMessagesMixin",
     "SeekToolBuilderMixin",
     "IglaMissileMixin",
+    "Agm65Mixin",
     "SbwPilotMessagesMixin",
     "SbwStopRidingMixin",
     "VehicleEntityMixin"

@@ -51,5 +51,6 @@ public final class ModNetwork {
         CHANNEL.registerMessage(id++, GcsSelectMessage.class, GcsSelectMessage::encode, GcsSelectMessage::decode, GcsSelectMessage::handle);
         CHANNEL.registerMessage(id++, GcsRefreshMessage.class, GcsRefreshMessage::encode, GcsRefreshMessage::decode, GcsRefreshMessage::handle);
         CHANNEL.registerMessage(id++, GcsPilotMessage.class, GcsPilotMessage::encode, GcsPilotMessage::decode, GcsPilotMessage::handle);
+        CHANNEL.registerMessage(id++, ReaperAimMessage.class, ReaperAimMessage::encode, ReaperAimMessage::decode, ReaperAimMessage::handle);
     }
 }

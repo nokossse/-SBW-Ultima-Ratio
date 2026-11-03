@@ -12,6 +12,7 @@ import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import com.nokosse.ultimaratio.network.VsrMarkMessage;
+import com.nokosse.ultimaratio.network.ReaperAimMessage;
 import com.nokosse.ultimaratio.network.VsrReleaseMessage;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -134,6 +135,12 @@ public final class VsrClientEvents {
         Vsr700Entity.clientPiloted = vsr;
         if (vsr == null) {
             laserZoom = laserZoomSmooth = 1.0;
+        }
+
+        if (vsr instanceof Mq9ReaperEntity && mc.screen == null) {
+            // The Hellfire follows the camera, whatever it shows (zoomed sensor, or the plane's own view)
+            Camera camera = mc.gameRenderer.getMainCamera();
+            ModNetwork.CHANNEL.sendToServer(new ReaperAimMessage(camera.getPosition(), new Vec3(camera.getLookVector())));
         }
 
         boolean dismountDown = vsr != null && mc.screen == null && ModKeyMappings.DISMOUNT.isDown();

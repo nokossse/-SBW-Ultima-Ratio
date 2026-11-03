@@ -72,52 +72,12 @@
       "AddShooterDeltaMovement": true,
       "Velocity": 1.2,
       "ProjectileLife": 1200,
-      "SeekWeaponInfo": {
-        "SeekDirection": "ClientCamera",
-        "MaxGuidedRange": 12000,
-        "SeekRange": 1024,
-        "SeekAngle": 20,
-        "SeekTime": 10,
-        "MaxTargetHeight": 32,
-        "MinTargetSize": 0.9,
-        "OnlyLockEntity": true
-      },
       "ProjectileDummyInfo": {
         "Offset": [0, -0.52, -1.48],
         "Rotate": [0, 0, 0],
         "Scale": [0.6, 0.6, 0.6]
       },
-      "AmmoType": [
-        {
-          "Ammo": "superbwarfare:medium_anti_ground_missile",
-          "ShouldUnload": false
-        },
-        {
-          "Ammo": "superbwarfare:medium_anti_ground_missile",
-          "ShouldUnload": false,
-          "Override": {
-            "SeekWeaponInfo": {
-              "SeekDirection": "ClientCamera",
-              "SeekRange": 512,
-              "SeekAngle": 20,
-              "SeekTime": 10,
-              "MaxTargetHeight": 32,
-              "MinTargetSize": 0.9,
-              "OnlyLockBlock": true
-            }
-          }
-        },
-        {
-          "Ammo": "superbwarfare:medium_anti_ground_missile",
-          "ShouldUnload": false,
-          "Override": {
-            "SeekWeaponInfo": {
-              "SeekDirection": "ClientCamera",
-              "InputBlockPos": true
-            }
-          }
-        }
-      ],
+      "AmmoType": "superbwarfare:medium_anti_ground_missile",
       "ShootPos": {
         "Transform": "Vehicle",
         "ShootPositionForHud": [0, 2.2, 0],
@@ -133,9 +93,7 @@
         "Fire3P": "superbwarfare:bomb_release",
         "VehicleReload3p": "superbwarfare:bomb_reload",
         "VehicleReloadSoundTime": 11,
-        "Change": "superbwarfare:into_missile",
-        "Locking": "superbwarfare:missile_locking",
-        "Locked": "superbwarfare:missile_locked"
+        "Change": "superbwarfare:into_missile"
       },
       "Crosshair": "@AirCraftMissile",
       "CrosshairZooming": "@AirCraftNacelle",
