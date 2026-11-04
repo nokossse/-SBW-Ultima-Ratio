@@ -3,14 +3,18 @@ package com.nokosse.ultimaratio.entity.projectile;
 import com.atsuishio.superbwarfare.entity.projectile.Ru9m100MissileEntity;
 import com.atsuishio.superbwarfare.resource.model.ProjectileModelReloadListener;
 import com.atsuishio.superbwarfare.tools.EntityFindUtil;
+import com.atsuishio.superbwarfare.tools.ParticleTool;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.baked.BakedBedrockModel;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 public class Aster30MissileEntity extends Ru9m100MissileEntity {
@@ -21,8 +25,12 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
     // blocs/tick: Kalibr/Scalp/Hades volent jusqu'a ~25 b/t (Mach 1.5), l'Aster doit les depasser
     private static final double MAX_SPEED = 40.0;
     private static final double ACCEL = 2.0;
-    private static final double TURN = 0.35;
+    /** Max heading change per tick (20 deg): a hard but bounded turn, so a miss loops back instead of spiralling. */
+    private static final double MAX_TURN_RAD = Math.toRadians(20.0);
     private static final double PROXIMITY = 8.0;
+    /** Launch smoke budget: ground cloud over the first ticks, then a thinning column behind the missile. */
+    private static final int GROUND_SMOKE_TICKS = 4;
+    private static final int TRAIL_SMOKE_TICKS = 25;
 
     // la classe parente reecrit la vitesse a chaque tick, on garde la notre
     private double speed;
@@ -52,6 +60,9 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         super.tick();
         if (this.level().isClientSide || this.isRemoved() || this.getExploded()) {
             return;
+        }
+        if (this.level() instanceof ServerLevel server) {
+            this.launchSmoke(server, from);
         }
         if (uuid == null || uuid.isEmpty()) {
             return;
@@ -85,6 +96,30 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         }
     }
 
+    private void launchSmoke(ServerLevel server, Vec3 from) {
+        if (this.tickCount <= GROUND_SMOKE_TICKS) {
+            // exhaust hits the ground and spreads around the launcher
+            double groundY = server.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, this.getBlockX(), this.getBlockZ());
+            ParticleTool.sendParticle(server, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), groundY + 0.5, this.getZ(),
+                    this.tickCount == 1 ? 300 : 120, 30.0, 2.0, 30.0, 0.02, true);
+            // dense core under the launcher: the wide cloud above is spread too thin to look opaque on its own
+            ParticleTool.sendParticle(server, ParticleTypes.CAMPFIRE_COSY_SMOKE, this.getX(), groundY + 1.0, this.getZ(),
+                    this.tickCount == 1 ? 200 : 80, 8.0, 1.5, 8.0, 0.01, true);
+            ParticleTool.sendParticle(server, ParticleTypes.LARGE_SMOKE, this.getX(), groundY + 0.3, this.getZ(),
+                    100, 40.0, 1.0, 40.0, 0.15, true);
+        }
+        if (this.tickCount <= TRAIL_SMOKE_TICKS) {
+            // a few puffs spread along this tick's path; fewer as the missile climbs away
+            int puffs = this.tickCount <= 8 ? 4 : 2;
+            Vec3 step = this.position().subtract(from).scale(1.0 / puffs);
+            for (int i = 0; i < puffs; i++) {
+                Vec3 p = from.add(step.scale(i));
+                ParticleTool.sendParticle(server, ParticleTypes.CAMPFIRE_COSY_SMOKE, p.x, p.y, p.z,
+                        1, 0.3, 0.3, 0.3, 0.01, true);
+            }
+        }
+    }
+
     private void thrustStraight() {
         Vec3 current = this.getDeltaMovement();
         if (current.lengthSqr() < 1.0E-8) {
@@ -106,36 +141,57 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         double currentSpeed = current.length();
         this.speed = Math.min(MAX_SPEED, Math.max(this.speed, currentSpeed) + ACCEL);
 
-        double range = here.distanceTo(there);
-        // lead with the speed the Aster will reach, not its speed right after the boost (~4 b/t): that overshot the
-        // lead by hundreds of blocks and sent it the wrong way when the threat came in close
-        double eta = range / MAX_SPEED;
-        Vec3 intercept = there.add(targetVel.scale(eta));
-        Vec3 want = intercept.subtract(here);
+        Vec3 rel = there.subtract(here);
+        // true collision course: smallest t > 0 with |rel + targetVel*t| = MAX_SPEED*t. The old "range / speed" lead
+        // put the aim point behind the Aster when the threat came in close, so it flew the opposite way
+        double t = interceptTime(rel, targetVel, MAX_SPEED);
+        Vec3 want = rel.add(targetVel.scale(t));
         if (want.lengthSqr() < 1.0E-8) {
-            want = there.subtract(here);
+            want = rel;
         }
         if (want.lengthSqr() < 1.0E-8) {
             return;
         }
         Vec3 dir = want.normalize();
-        Vec3 blended = dir;
-        if (currentSpeed > 1.0E-4) {
-            Vec3 curDir = current.normalize();
-            blended = new Vec3(
-                    Mth.lerp(TURN, curDir.x, dir.x),
-                    Mth.lerp(TURN, curDir.y, dir.y),
-                    Mth.lerp(TURN, curDir.z, dir.z)
-            );
-            if (blended.lengthSqr() < 1.0E-8) {
-                blended = dir;
-            } else {
-                blended = blended.normalize();
-            }
-        }
-        this.setDeltaMovement(blended.scale(this.speed));
+        Vec3 heading = currentSpeed > 1.0E-4 ? turnToward(current.normalize(), dir, MAX_TURN_RAD) : dir;
+        this.setDeltaMovement(heading.scale(this.speed));
         this.hasImpulse = true;
         this.updateRotation();
+    }
+
+    /** Time to the collision point, or 0 (pure pursuit) when the target cannot be caught. */
+    static double interceptTime(Vec3 rel, Vec3 vel, double speed) {
+        double a = vel.dot(vel) - speed * speed;
+        double b = 2.0 * rel.dot(vel);
+        double c = rel.dot(rel);
+        if (Math.abs(a) < 1.0E-6) {
+            return b < 0 ? -c / b : 0.0;
+        }
+        double disc = b * b - 4 * a * c;
+        if (disc < 0) {
+            return 0.0;
+        }
+        double sq = Math.sqrt(disc);
+        double t1 = (-b - sq) / (2 * a);
+        double t2 = (-b + sq) / (2 * a);
+        double t = t1 > 0 && (t2 <= 0 || t1 < t2) ? t1 : t2;
+        return t > 0 ? t : 0.0;
+    }
+
+    /** Rotates {@code cur} toward {@code want} by at most {@code max} radians; also turns when want is straight behind. */
+    static Vec3 turnToward(Vec3 cur, Vec3 want, double max) {
+        double cos = Mth.clamp(cur.dot(want), -1.0, 1.0);
+        double angle = Math.acos(cos);
+        if (angle <= max) {
+            return want;
+        }
+        Vec3 perp = want.subtract(cur.scale(cos));
+        if (perp.lengthSqr() < 1.0E-8) {
+            // want is exactly behind: pick any side to start the turn
+            perp = cur.cross(Math.abs(cur.y) < 0.9 ? new Vec3(0, 1, 0) : new Vec3(1, 0, 0));
+        }
+        perp = perp.normalize();
+        return cur.scale(Math.cos(max)).add(perp.scale(Math.sin(max))).normalize();
     }
 
     private static Closest closestPoints(Vec3 p1, Vec3 q1, Vec3 p2, Vec3 q2) {
