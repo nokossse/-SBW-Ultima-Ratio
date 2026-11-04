@@ -172,7 +172,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
         Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5);
         String sourceId = "block_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
 
-        var vehicles = new RadarScanner.RadarConfig(player, center, (wider ? 2048 : 1024) * RANGE_MULT, SWEEP_ANGLE, be.tick * DEGREES_PER_TICK, 0.0,
+        var vehicles = new RadarScanner.RadarConfig(player, center, (wider ? 2 : 1) * com.nokosse.ultimaratio.UltimaRatioConfig.GF300_RANGE.get(), SWEEP_ANGLE, be.tick * DEGREES_PER_TICK, 0.0,
                 RadarScanner.SearchType.VEHICLES, null, null, true, true, sourceId, true);
         RadarScanner.INSTANCE.sendRadarConfig(vehicles, level);
         RadarScanner.INSTANCE.scan(level, vehicles).sendToClients(player, level, vehicles.getShareWithTeammates());

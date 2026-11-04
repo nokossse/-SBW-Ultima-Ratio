@@ -3,7 +3,11 @@ package com.nokosse.ultimaratio.entity;
 import com.atsuishio.superbwarfare.block.entity.FuMO25BlockEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.tools.RadarScanner;
+import com.nokosse.ultimaratio.init.ModGameRules;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
+import java.util.Comparator;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -16,11 +20,13 @@ final class MobileRadar {
     private static final double SWEEP_ANGLE = 150.0;
 
     private static final int OPERATOR_SEAT = 1;
+    private static final TicketType<ChunkPos> RADAR_TICKET =
+            TicketType.create("ultimaratio_radar", Comparator.comparingLong(ChunkPos::toLong), 60);
 
-    private final double range;
+    private final net.minecraftforge.common.ForgeConfigSpec.DoubleValue range;
     private boolean active;
 
-    MobileRadar(double range) {
+    MobileRadar(net.minecraftforge.common.ForgeConfigSpec.DoubleValue range) {
         this.range = range;
     }
 
@@ -36,6 +42,10 @@ final class MobileRadar {
             return;
         }
         if (!drain(vehicle)) return;
+        if (vehicle.tickCount % 5 == 0 && level.getGameRules().getBoolean(ModGameRules.RADAR_CHUNK_LOADING)) {
+            ChunkPos here = vehicle.chunkPosition();
+            level.getChunkSource().addRegionTicket(RADAR_TICKET, here, 3, here);
+        }
         // recipient of the scan: operator seat, then driver, then whoever switched the radar on
         Player player = vehicle.getNthEntity(OPERATOR_SEAT) instanceof Player p ? p
                 : vehicle.getNthEntity(0) instanceof Player d ? d : fallback;
@@ -65,6 +75,7 @@ final class MobileRadar {
     }
 
     private void scan(VehicleEntity vehicle, ServerLevel level, Player player) {
+        double range = this.range.get();
         Vec3 center = vehicle.position().add(0, 3.5, 0);
         double yRot = (vehicle.tickCount % CYCLE_TICKS) * (360.0 / CYCLE_TICKS);
         String sourceId = "vehicle_" + vehicle.getId();

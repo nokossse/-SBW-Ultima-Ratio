@@ -32,7 +32,7 @@ public class MambaRadarEntity extends VehicleEntity {
     public static final String FOLD_ANIM = "fold";
     public static final int DEPLOY_ANIM_TICKS = 160;
 
-    private final MobileRadar mobileRadar = new MobileRadar(500.0);
+    private final MobileRadar mobileRadar = new MobileRadar(com.nokosse.ultimaratio.UltimaRatioConfig.ARABEL_RADAR_RANGE);
     private UUID radarActivator;
     private boolean clientDeployed;
     private int clientDeployStartTick = -1;

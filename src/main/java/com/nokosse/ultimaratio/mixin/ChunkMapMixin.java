@@ -1,6 +1,8 @@
 package com.nokosse.ultimaratio.mixin;
 
 import com.nokosse.ultimaratio.event.VsrRemote;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.core.SectionPos;
 import net.minecraft.server.level.ChunkMap;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,23 +18,25 @@ import org.spongepowered.asm.mixin.injection.Redirect;
  */
 @Mixin(ChunkMap.class)
 public abstract class ChunkMapMixin {
-    @Redirect(
+    @WrapOperation(
             method = {"move(Lnet/minecraft/server/level/ServerPlayer;)V", "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getBlockX()I")
     )
-    private int ultimaratio$viewBlockX(ServerPlayer player) {
-        return VsrRemote.viewEntity(player).getBlockX();
+    private int ultimaratio$viewBlockX(ServerPlayer player, Operation<Integer> original) {
+        Entity view = VsrRemote.viewEntity(player);
+        return view == player ? original.call(player) : view.getBlockX();
     }
 
-    @Redirect(
+    @WrapOperation(
             method = {"move(Lnet/minecraft/server/level/ServerPlayer;)V", "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V"},
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;getBlockZ()I")
     )
-    private int ultimaratio$viewBlockZ(ServerPlayer player) {
-        return VsrRemote.viewEntity(player).getBlockZ();
+    private int ultimaratio$viewBlockZ(ServerPlayer player, Operation<Integer> original) {
+        Entity view = VsrRemote.viewEntity(player);
+        return view == player ? original.call(player) : view.getBlockZ();
     }
 
-    @Redirect(
+    @WrapOperation(
             method = {
                     "move(Lnet/minecraft/server/level/ServerPlayer;)V",
                     "updatePlayerStatus(Lnet/minecraft/server/level/ServerPlayer;Z)V",
@@ -40,8 +44,8 @@ public abstract class ChunkMapMixin {
             },
             at = @At(value = "INVOKE", target = "Lnet/minecraft/core/SectionPos;of(Lnet/minecraft/world/level/entity/EntityAccess;)Lnet/minecraft/core/SectionPos;")
     )
-    private SectionPos ultimaratio$viewSection(EntityAccess entity) {
-        return SectionPos.of(entity instanceof ServerPlayer player ? VsrRemote.viewEntity(player) : entity);
+    private SectionPos ultimaratio$viewSection(EntityAccess entity, Operation<SectionPos> original) {
+        return original.call(entity instanceof ServerPlayer player && VsrRemote.viewEntity(player) != player ? VsrRemote.viewEntity(player) : entity);
     }
 
     @Redirect(

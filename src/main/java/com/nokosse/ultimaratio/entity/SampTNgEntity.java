@@ -32,7 +32,7 @@ public class SampTNgEntity extends VehicleEntity {
     public static final String FOLD_ANIM = "fold_radar";
     public static final int DEPLOY_ANIM_TICKS = 60;
 
-    private final MobileRadar mobileRadar = new MobileRadar(1000.0);
+    private final MobileRadar mobileRadar = new MobileRadar(com.nokosse.ultimaratio.UltimaRatioConfig.SAMPT_NG_RADAR_RANGE);
     private UUID radarActivator;
     private boolean clientDeployed;
     private int clientDeployStartTick = -1;

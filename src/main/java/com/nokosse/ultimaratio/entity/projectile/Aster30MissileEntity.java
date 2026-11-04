@@ -16,7 +16,8 @@ import net.minecraft.world.phys.Vec3;
 public class Aster30MissileEntity extends Ru9m100MissileEntity {
     private static final ResourceLocation MODEL =
             new ResourceLocation("ultimaratio", "projectile/aster_30_missile");
-    private static final int BOOST_TICKS = 18;
+    /** Vertical climb to clear the launcher before it steers (was 18 ticks of weak push before the engine). */
+    private static final int BOOST_TICKS = 6;
     // blocs/tick: Kalibr/Scalp/Hades volent jusqu'a ~25 b/t (Mach 1.5), l'Aster doit les depasser
     private static final double MAX_SPEED = 40.0;
     private static final double ACCEL = 2.0;
@@ -64,8 +65,11 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         this.setLost(false);
         this.setTargetUUID(uuid);
 
+        // engine lit from the first tick (no cold ejection): climb straight at full thrust, then steer
         if (this.tickCount > BOOST_TICKS) {
             this.steerToIntercept(target);
+        } else {
+            this.thrustStraight();
         }
 
         if (this.tickCount <= this.getNoHitTicks()) {
@@ -81,6 +85,19 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         }
     }
 
+    private void thrustStraight() {
+        Vec3 current = this.getDeltaMovement();
+        if (current.lengthSqr() < 1.0E-8) {
+            return;
+        }
+        this.speed = Math.min(MAX_SPEED, Math.max(this.speed, current.length()) + ACCEL);
+        this.setDeltaMovement(current.normalize().scale(this.speed));
+        this.hasImpulse = true;
+        if (this.tickCount <= 10) {
+            this.hugeMissileTrail(); // the parent only draws the engine flame after tick 10
+        }
+    }
+
     private void steerToIntercept(Entity target) {
         Vec3 here = this.position();
         Vec3 there = target.position();
@@ -90,7 +107,9 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         this.speed = Math.min(MAX_SPEED, Math.max(this.speed, currentSpeed) + ACCEL);
 
         double range = here.distanceTo(there);
-        double eta = this.speed > 1.0E-4 ? range / this.speed : 0.0;
+        // lead with the speed the Aster will reach, not its speed right after the boost (~4 b/t): that overshot the
+        // lead by hundreds of blocks and sent it the wrong way when the threat came in close
+        double eta = range / MAX_SPEED;
         Vec3 intercept = there.add(targetVel.scale(eta));
         Vec3 want = intercept.subtract(here);
         if (want.lengthSqr() < 1.0E-8) {

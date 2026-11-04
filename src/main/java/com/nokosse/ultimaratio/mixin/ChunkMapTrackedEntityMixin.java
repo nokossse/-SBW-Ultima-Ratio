@@ -1,7 +1,10 @@
 package com.nokosse.ultimaratio.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.nokosse.ultimaratio.event.VsrRemote;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,11 +40,12 @@ public abstract class ChunkMapTrackedEntityMixin {
     @Shadow
     abstract int getEffectiveRange();
 
-    @Redirect(
+    @WrapOperation(
             method = "updatePlayer(Lnet/minecraft/server/level/ServerPlayer;)V",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerPlayer;position()Lnet/minecraft/world/phys/Vec3;")
     )
-    private Vec3 ultimaratio$viewPosition(ServerPlayer player) {
-        return VsrRemote.viewEntity(player).position();
+    private Vec3 ultimaratio$viewPosition(ServerPlayer player, Operation<Vec3> original) {
+        Entity view = VsrRemote.viewEntity(player);
+        return view == player ? original.call(player) : view.position();
     }
 }

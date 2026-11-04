@@ -22,6 +22,11 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "rafale_30mm_fire"))
     );
 
+    public static final RegistryObject<SoundEvent> SAMPT_FIRE = REGISTRY.register(
+            "sampt_fire",
+            () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "sampt_fire"))
+    );
+
     public static final RegistryObject<SoundEvent> CAESAR_FIRE = REGISTRY.register(
             "caesar_fire",
             () -> SoundEvent.createVariableRangeEvent(new ResourceLocation(UltimaRatio.MODID, "caesar_fire"))

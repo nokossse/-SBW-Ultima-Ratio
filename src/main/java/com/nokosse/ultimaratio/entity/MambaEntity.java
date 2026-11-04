@@ -2,6 +2,7 @@ package com.nokosse.ultimaratio.entity;
 
 import com.atsuishio.superbwarfare.client.animation.AnimationPlayType;
 import com.nokosse.ultimaratio.UltimaRatioConfig;
+import com.nokosse.ultimaratio.init.ModGameRules;
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationContext;
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
@@ -33,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 public class MambaEntity extends SpArtilleryEntity {
     public static final EntityDataAccessor<Integer> PHASE =
@@ -47,6 +49,8 @@ public class MambaEntity extends SpArtilleryEntity {
 
     /** Auto-fire only on targets at least this many blocks above the launcher's Y. */
     private static final double AUTO_RANGE = 512.0;
+    /** Safety net: an enemy missile this close is engaged even with no radar covering it (radar-spotted ones have no limit). */
+    private static final double MISSILE_RANGE = 1000.0;
     private static final int AUTO_COOLDOWN_TICKS = 60;
     private static final int AUTO_RETARGET_TICKS = 200;
 
@@ -158,9 +162,14 @@ public class MambaEntity extends SpArtilleryEntity {
         }
         Player ownerPlayer = this.owner == null ? null : this.level().getPlayerByUUID(this.owner);
         double minY = this.getY() + UltimaRatioConfig.SAMPT_MIN_TARGET_HEIGHT.get();
-        Entity target = this.level()
-                .getEntities(this, this.getBoundingBox().inflate(AUTO_RANGE), e -> this.isAutoTarget(e, ownerPlayer, minY))
-                .stream()
+        // enemy missiles: the whole team's radar picture, anywhere on the map, not just what is near the launcher
+        Stream<Entity> radarMissiles = ownerPlayer == null || !(this.level() instanceof ServerLevel server)
+                ? Stream.empty() : RadarPicture.missilesFor(server, ownerPlayer).stream();
+        Entity target = Stream.concat(this.level()
+                        .getEntities(this, this.getBoundingBox().inflate(MISSILE_RANGE),
+                                e -> this.isAutoTarget(e, ownerPlayer, minY)
+                                        && (!(e instanceof MissileProjectile) || e.distanceToSqr(this) <= MISSILE_RANGE * MISSILE_RANGE))
+                        .stream(), radarMissiles.filter(e -> this.isAutoTarget(e, ownerPlayer, minY)))
                 .min(Comparator.comparingDouble(this::distanceToSqr))
                 .orElse(null);
         if (target == null) {
@@ -172,7 +181,9 @@ public class MambaEntity extends SpArtilleryEntity {
     }
 
     private boolean isAutoTarget(Entity e, @Nullable Player ownerPlayer, double minY) {
-        if (!e.isAlive() || e.getY() < minY || e.distanceToSqr(this) > AUTO_RANGE * AUTO_RANGE) {
+        // a missile is a threat at any height and range (it dives under minY on the way in)
+        if (!e.isAlive() || !(e instanceof MissileProjectile)
+                && (e.getY() < minY || e.distanceToSqr(this) > AUTO_RANGE * AUTO_RANGE)) {
             return false;
         }
         // do not stack missiles on a target already engaged
@@ -182,18 +193,19 @@ public class MambaEntity extends SpArtilleryEntity {
         if (e instanceof Enemy) {
             return true;
         }
-        // SBW missiles only (no bullets, no swarm drones, never our own ASTER-30), not fired by an ally
+        boolean allies = this.level().getGameRules().getBoolean(ModGameRules.SAMPT_TARGET_ALLIES);
+        // SBW missiles only (no bullets, no swarm drones, never our own ASTER-30), not fired by an ally (unless the game rule says so)
         if (e instanceof MissileProjectile m) {
             if (m instanceof SwarmDroneEntity || m instanceof Aster30MissileEntity) {
                 return false;
             }
             // no shooter (e.g. /summon) counts as hostile
             Entity shooter = m.getOwner();
-            return shooter == null || (shooter != ownerPlayer && (ownerPlayer == null || !shooter.isAlliedTo(ownerPlayer)));
+            return shooter == null || (shooter != ownerPlayer && (allies || ownerPlayer == null || !shooter.isAlliedTo(ownerPlayer)));
         }
-        // enemy vehicle: crewed and not friendly to the owner
+        // enemy vehicle: crewed and not friendly to the owner (unless the game rule says so)
         return e instanceof VehicleEntity v && v != this && !v.getPassengers().isEmpty()
-                && ownerPlayer != null && !SeekTool.IS_FRIENDLY.test(ownerPlayer, v)
+                && ownerPlayer != null && (allies || !SeekTool.IS_FRIENDLY.test(ownerPlayer, v))
                 && v.getPassengers().stream().noneMatch(p -> p == ownerPlayer);
     }
 
