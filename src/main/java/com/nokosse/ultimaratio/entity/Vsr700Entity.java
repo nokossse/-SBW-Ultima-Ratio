@@ -6,13 +6,17 @@ import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.google.common.collect.Iterables;
+import com.nokosse.ultimaratio.UltimaRatioConfig;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import com.nokosse.ultimaratio.event.VsrRemote;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.TicketType;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -29,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4d;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +43,9 @@ import java.util.UUID;
  * riding it, so SBW's own helicopter engine, controls, camera and HUD all apply unchanged.
  */
 public class Vsr700Entity extends VehicleEntity {
+    /** Keeps the drone's own chunks ticking when nobody flies it (expires after 60 ticks without a refresh). */
+    private static final TicketType<ChunkPos> DRONE_TICKET =
+            TicketType.create("ultimaratio_drone", Comparator.comparingLong(ChunkPos::toLong), 60);
     /** Client only: the local operator and the VSR700 they fly, set by VsrClientEvents. */
     @Nullable
     public static volatile Entity clientPilot;
@@ -259,6 +267,12 @@ public class Vsr700Entity extends VehicleEntity {
 
     @Override
     public void tick() {
+        if (level() instanceof ServerLevel server && tickCount % 5 == 0 && !isWreck() && UltimaRatioConfig.DRONE_CHUNK_LOADING.get()
+                && server.getGameRules().getBoolean(com.nokosse.ultimaratio.init.ModGameRules.DRONE_CHUNK_LOADING)) {
+            // every 5 ticks: a loitering Reaper crosses a couple of chunks per second; radius 3 keeps its chunk and the ring around it ticking
+            ChunkPos here = chunkPosition();
+            server.getChunkSource().addRegionTicket(DRONE_TICKET, here, 3, here);
+        }
         // SBW's helicopter engine only runs its hover logic for a pilot. Operator gone with the hover on: it sees
         // a pilot touching nothing (the drone itself stands in), so it behaves exactly as with a hands-off pilot.
         hoverStandIn = !level().isClientSide && getPilot() == null && getHoverMode() && getEngineStartOver()

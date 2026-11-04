@@ -16,6 +16,15 @@
       }
     ]
   },
+  "sampt_fire": {
+    "sounds": [
+      {
+        "name": "ultimaratio:sampt_fire",
+        "attenuation_distance": 512,
+        "stream": false
+      }
+    ]
+  },
   "caesar_fire": {
     "sounds": [
       {

@@ -92,6 +92,13 @@
     },
     {
       "HidePassenger": true,
+      "CameraPos": {
+        "UseSimulate3P": true,
+        "Simulate3PPos": [
+          6,
+          1
+        ]
+      },
       "Transform": "Vehicle",
       "Position": [
         0.9775,
@@ -103,8 +110,6 @@
       "Orientation": 90,
       "MinPitch": -45,
       "MaxPitch": 45,
-      "MinYaw": -50,
-      "MaxYaw": 50,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [
@@ -112,10 +117,18 @@
           0.3,
           -4.255
         ]
-      }
+      },
+      "BanHand": true
     },
     {
       "HidePassenger": true,
+      "CameraPos": {
+        "UseSimulate3P": true,
+        "Simulate3PPos": [
+          6,
+          1
+        ]
+      },
       "Transform": "Vehicle",
       "Position": [
         0.9775,
@@ -127,8 +140,6 @@
       "Orientation": 90,
       "MinPitch": -45,
       "MaxPitch": 45,
-      "MinYaw": -50,
-      "MaxYaw": 50,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [
@@ -136,10 +147,18 @@
           0.3,
           -4.255
         ]
-      }
+      },
+      "BanHand": true
     },
     {
       "HidePassenger": true,
+      "CameraPos": {
+        "UseSimulate3P": true,
+        "Simulate3PPos": [
+          6,
+          1
+        ]
+      },
       "Transform": "Vehicle",
       "Position": [
         -0.9775,
@@ -151,8 +170,6 @@
       "Orientation": -90,
       "MinPitch": -45,
       "MaxPitch": 45,
-      "MinYaw": -50,
-      "MaxYaw": 50,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [
@@ -160,10 +177,18 @@
           0.3,
           -4.255
         ]
-      }
+      },
+      "BanHand": true
     },
     {
       "HidePassenger": true,
+      "CameraPos": {
+        "UseSimulate3P": true,
+        "Simulate3PPos": [
+          6,
+          1
+        ]
+      },
       "Transform": "Vehicle",
       "Position": [
         -0.9775,
@@ -175,8 +200,6 @@
       "Orientation": -90,
       "MinPitch": -45,
       "MaxPitch": 45,
-      "MinYaw": -50,
-      "MaxYaw": 50,
       "DismountInfo": {
         "Transform": "Vehicle",
         "Position": [
@@ -184,7 +207,8 @@
           0.3,
           -4.255
         ]
-      }
+      },
+      "BanHand": true
     }
   ],
   "Weapons": {

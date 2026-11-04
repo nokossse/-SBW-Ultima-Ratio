@@ -115,8 +115,8 @@
         "BoundUpWithAmmoAmount": true
       },
       "SoundInfo": {
-        "Fire1P": "superbwarfare:happiest_ghast_missile_fire",
-        "Fire3P": "superbwarfare:happiest_ghast_missile_fire",
+        "Fire1P": "ultimaratio:sampt_fire",
+        "Fire3P": "ultimaratio:sampt_fire",
         "VehicleReload3p": "superbwarfare:bomb_reload",
         "VehicleReloadSoundTime": 11,
         "Change": "superbwarfare:into_missile",

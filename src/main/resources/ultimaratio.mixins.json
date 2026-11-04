@@ -15,7 +15,8 @@
     "Agm65Mixin",
     "SbwPilotMessagesMixin",
     "SbwStopRidingMixin",
-    "VehicleEntityMixin"
+    "VehicleEntityMixin",
+    "RadarScannerMixin"
   ],
   "client": [
     "ClientLevelMixin",

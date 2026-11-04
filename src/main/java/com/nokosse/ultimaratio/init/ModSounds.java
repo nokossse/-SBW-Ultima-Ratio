@@ -22,6 +22,11 @@ public class ModSounds {
             () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "rafale_30mm_fire"))
     );
 
+    public static final DeferredHolder<SoundEvent, SoundEvent> SAMPT_FIRE = REGISTRY.register(
+            "sampt_fire",
+            () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "sampt_fire"))
+    );
+
     public static final DeferredHolder<SoundEvent, SoundEvent> CAESAR_FIRE = REGISTRY.register(
             "caesar_fire",
             () -> SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "caesar_fire"))
