@@ -6,7 +6,7 @@
   "info.ultimaratio.caesar": "The CAESAR Mk1 is the French self-propelled howitzer: a 155 mm/52-calibre gun on a 6x6 truck, built to shoot and move off before counter-battery fire arrives. As soon as the gunner aims, the crew lowers the rear spades and steadies the truck (5 s) before the gun can lay; pressing forward or back packs it up again (5 s). Fires armour-piercing, high-explosive, cluster and white-phosphorus shells, one about every 7 s. Can be laid with an Artillery Indicator.",
 
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
-  "info.ultimaratio.mamba": "The SAMP/T MAMBA is the Franco-Italian long-range air-defence launcher: eight ASTER-30 missiles that intercept aircraft, drones, cruise and ballistic missiles. With the gunner aboard and the truck stopped, it steadies itself and raises its launcher (about 20 s); it only fires deployed and packs up when driven. Shift + right click it (the first player becomes its owner) to switch its automatic mode: unmanned, it then engages enemy aircraft and hostile mobs above it, and every enemy missile a friendly radar sees. Reload: 60 s.",
+  "info.ultimaratio.mamba": "The SAMP/T MAMBA is the Franco-Italian long-range air-defence launcher: eight ASTER-30 missiles that intercept aircraft, drones, cruise and ballistic missiles. With the gunner aboard and the truck stopped, it steadies itself and raises its launcher (about 20 s); it only fires deployed and packs up when driven. Shift + right click it (the first player becomes its owner; their team can switch it too) to switch its automatic mode: unmanned, it then engages enemy aircraft and hostile mobs above it, and every enemy missile a friendly radar sees. Reload: 60 s.",
   "weapon.ultimaratio.aster_30": "ASTER-30",
   "entity.ultimaratio.aster_30_missile": "ASTER-30",
 
@@ -47,7 +47,7 @@
   "weapon.ultimaratio.mistral": "Mistral",
 
   "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
-  "info.ultimaratio.serval_lad": "The VBMR-L Serval LAD is the counter-drone version of the Serval: a roof turret with a 30 mm ARX30 cannon firing grapeshot (or anti-air shells). Crew it from the gunner seat, or Shift + right click it (the first player becomes its owner) to switch on the automatic turret: unmanned, it shoots small hostile drones (FPV and swarm drones) and phantoms within 50 blocks. The rear steps fold down when it stops.",
+  "info.ultimaratio.serval_lad": "The VBMR-L Serval LAD is the counter-drone version of the Serval: a roof turret with a 30 mm ARX30 cannon firing grapeshot (or anti-air shells). Crew it from the gunner seat, or Shift + right click it (the first player becomes its owner; their team can switch it too) to switch on the automatic turret: unmanned, it shoots small hostile drones (FPV and swarm drones) and phantoms within 50 blocks. The rear steps fold down when it stops.",
   "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
 
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -100,6 +100,7 @@
   "des.ultimaratio.gf300.2": "with a longer range and a wider sector.",
   "des.ultimaratio.gf300.3": "Feed it FE; right click it to choose its mode.",
 
+  "tips.ultimaratio.auto.other_team": "Only its owner's team can switch this",
   "tips.ultimaratio.radar.no_energy": "Not enough energy to deploy the radar",
   "tips.ultimaratio.vsr.out_of_range": "Drone out of range: link lost",
   "tips.ultimaratio.vsr.destroyed": "Drone destroyed: link lost",

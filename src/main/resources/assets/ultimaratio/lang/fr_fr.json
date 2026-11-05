@@ -6,7 +6,7 @@
   "info.ultimaratio.caesar": "Le CAESAR Mk1 est le canon automoteur français : un obusier de 155 mm/52 calibres sur camion 6x6, conçu pour tirer et quitter la position avant la riposte de contre-batterie. Dès que le tireur vise, l'équipage abaisse les bêches arrière et stabilise le camion (5 s) avant que la pièce puisse pointer ; avancer ou reculer le replie (5 s). Tire des obus perforants, explosifs, à sous-munitions et au phosphore blanc, un toutes les 7 s environ. Peut être pointé avec un indicateur d'artillerie.",
 
   "entity.ultimaratio.mamba": "SAMP/T MAMBA",
-  "info.ultimaratio.mamba": "Le SAMP/T MAMBA est le lanceur de défense aérienne longue portée franco-italien : huit missiles ASTER-30 qui interceptent avions, drones, missiles de croisière et missiles balistiques. Tireur à bord et camion à l'arrêt, il se stabilise puis dresse son lanceur (20 s environ) ; il ne tire que déployé et se replie dès qu'on roule. Shift + clic droit (le premier joueur en devient le propriétaire) bascule le mode automatique : sans tireur, il engage alors les aéronefs ennemis et les monstres au-dessus de lui, ainsi que tout missile ennemi vu par un radar allié. Rechargement : 60 s.",
+  "info.ultimaratio.mamba": "Le SAMP/T MAMBA est le lanceur de défense aérienne longue portée franco-italien : huit missiles ASTER-30 qui interceptent avions, drones, missiles de croisière et missiles balistiques. Tireur à bord et camion à l'arrêt, il se stabilise puis dresse son lanceur (20 s environ) ; il ne tire que déployé et se replie dès qu'on roule. Shift + clic droit (le premier joueur en devient le propriétaire ; son équipe peut aussi le basculer) bascule le mode automatique : sans tireur, il engage alors les aéronefs ennemis et les monstres au-dessus de lui, ainsi que tout missile ennemi vu par un radar allié. Rechargement : 60 s.",
   "weapon.ultimaratio.aster_30": "ASTER-30",
   "entity.ultimaratio.aster_30_missile": "ASTER-30",
 
@@ -47,7 +47,7 @@
   "weapon.ultimaratio.mistral": "Mistral",
 
   "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
-  "info.ultimaratio.serval_lad": "Le VBMR-L Serval LAD est la version de lutte anti-drones du Serval : une tourelle de toit armée d'un canon ARX30 de 30 mm tirant de la mitraille (ou des obus antiaériens). Servez-la depuis la place du tireur, ou Shift + clic droit (le premier joueur en devient le propriétaire) pour activer la tourelle automatique : sans tireur, elle abat les petits drones hostiles (FPV et essaims) et les phantoms dans un rayon de 50 blocs. Le marchepied arrière se déploie à l'arrêt.",
+  "info.ultimaratio.serval_lad": "Le VBMR-L Serval LAD est la version de lutte anti-drones du Serval : une tourelle de toit armée d'un canon ARX30 de 30 mm tirant de la mitraille (ou des obus antiaériens). Servez-la depuis la place du tireur, ou Shift + clic droit (le premier joueur en devient le propriétaire ; son équipe peut aussi le basculer) pour activer la tourelle automatique : sans tireur, elle abat les petits drones hostiles (FPV et essaims) et les phantoms dans un rayon de 50 blocs. Le marchepied arrière se déploie à l'arrêt.",
   "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
 
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -100,6 +100,7 @@
   "des.ultimaratio.gf300.2": "avec une portée plus longue et un secteur plus large.",
   "des.ultimaratio.gf300.3": "Alimentez-le en FE ; clic droit pour choisir son mode.",
 
+  "tips.ultimaratio.auto.other_team": "Seule l'équipe du propriétaire peut le basculer",
   "tips.ultimaratio.radar.no_energy": "Pas assez d'énergie pour déployer le radar",
   "tips.ultimaratio.vsr.out_of_range": "Drone hors de portée : liaison perdue",
   "tips.ultimaratio.vsr.destroyed": "Drone détruit : liaison perdue",

@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationConte
 import com.atsuishio.superbwarfare.client.animation.entity.VehicleAnimationInstance;
 import com.atsuishio.superbwarfare.entity.vehicle.base.SpArtilleryEntity;
 import com.atsuishio.superbwarfare.tools.ParticleTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -135,7 +136,10 @@ public class MambaEntity extends SpArtilleryEntity {
         return 4.94375;
     }
 
-    /** Same as the CIWS: shift + right click from outside toggles ACTIVE/INACTIVE (first user becomes the owner). */
+    /**
+     * Like the CIWS: shift + right click from outside toggles ACTIVE/INACTIVE. The first user becomes the owner; the
+     * owner and their team may switch it.
+     */
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (this.hasAutoMode() && player.isCrouching() && !this.isWreck() && !this.getLocked()
@@ -143,8 +147,12 @@ public class MambaEntity extends SpArtilleryEntity {
             if (this.owner == null) {
                 this.owner = player.getUUID();
             }
-            if (!player.getUUID().equals(this.owner)) {
-                return InteractionResult.PASS;
+            if (!OwnerTeam.canControl(this.level(), this.owner, player)) {
+                if (!this.level().isClientSide) {
+                    player.displayClientMessage(Component.translatable("tips.ultimaratio.auto.other_team")
+                            .withStyle(ChatFormatting.RED), true);
+                }
+                return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
             if (!this.level().isClientSide) {
                 boolean auto = !this.isAuto();
