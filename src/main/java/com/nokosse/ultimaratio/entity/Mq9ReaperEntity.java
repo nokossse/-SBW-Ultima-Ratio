@@ -18,7 +18,7 @@ import org.joml.Quaternionf;
 import java.util.List;
 
 /**
- * General Atomics MQ-9 Reaper: the VSR700's remote pilot (VSR Monitor, see Vsr700Entity) on SBW's aircraft flight
+ * General Atomics MQ-9 Reaper: the VSR700's remote pilot (Ground Control Station, see Vsr700Entity) on SBW's aircraft flight
  * model. Released by its operator in the air it circles around that point with SBW's own loiter; the landing gear
  * clips are played like the Rafale's.
  */

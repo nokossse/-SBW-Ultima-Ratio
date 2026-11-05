@@ -1,7 +1,6 @@
 package com.nokosse.ultimaratio.client.renderer;
 
 import com.atsuishio.superbwarfare.client.model.entity.VehicleModelInstance;
-import com.atsuishio.superbwarfare.client.renderer.entity.GeoVehicleRenderer;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BoneState;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -9,9 +8,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 
-public class ThundartRenderer extends GeoVehicleRenderer<VehicleEntity> {
-    private static final float STEER_LOCK_MULT = 1.35F;
-    private static final float VOLANT_TURNS = 12.0F;
+public class ThundartRenderer extends TruckRenderer<VehicleEntity> {
 
     /** Absolute Blockbench pivots (geo Y/Z). Rods extend along local -Z. */
     private static final float BARREL_Y = 34.2F;
@@ -28,11 +25,6 @@ public class ThundartRenderer extends GeoVehicleRenderer<VehicleEntity> {
     }
 
     @Override
-    public boolean hideForTurretControllerWhileZooming() {
-        return true;
-    }
-
-    @Override
     public void transformCustomModelPart(
             VehicleEntity entity,
             VehicleModelInstance instance,
@@ -41,32 +33,14 @@ public class ThundartRenderer extends GeoVehicleRenderer<VehicleEntity> {
             float partialTicks
     ) {
         super.transformCustomModelPart(entity, instance, poseStack, entityYaw, partialTicks);
-        this.hideBone(instance, "hitboxes");
-        this.hideBone(instance, "hitbox_collision");
-        this.hideBone(instance, "hitbox_damage");
-
-        float steer = Mth.lerp(partialTicks, entity.getRudderRotO(), entity.getRudderRot());
-        float lock = steer * STEER_LOCK_MULT;
-        float leftSpin = this.getLeftWheelRot();
-        float rightSpin = this.getRightWheelRot();
-        for (BoneState bone : instance.getBoneGroups().getLeftWheels()) {
-            if (bone != null && bone.rotation != null) {
-                bone.rotation.rotationX(1.5F * leftSpin);
-            }
-        }
-        for (BoneState bone : instance.getBoneGroups().getRightWheels()) {
-            if (bone != null && bone.rotation != null) {
-                bone.rotation.rotationX(1.5F * rightSpin);
-            }
-        }
-        this.steerFront(instance.getBone("wheelL0Turn"), lock, leftSpin);
-        this.steerFront(instance.getBone("wheelR0Turn"), lock, rightSpin);
+        hideBones(instance, "hitboxes", "hitbox_collision", "hitbox_damage");
+        this.driveTruck(entity, instance, partialTicks, 1F, 1F);
 
         float pitch = Mth.clamp(
                 -this.getTurretXRot(),
                 entity.getTurretMinPitch(),
                 entity.getTurretMaxPitch()
-        ) * 0.017453292f;
+        ) * Mth.DEG_TO_RAD;
         BoneState barrel = instance.getBone("barrel");
         if (barrel != null && barrel.rotation != null) {
             barrel.rotation.rotationX(pitch);
@@ -75,12 +49,6 @@ public class ThundartRenderer extends GeoVehicleRenderer<VehicleEntity> {
             }
         }
         this.aimCannonRams(instance, pitch);
-
-        BoneState volant = instance.getBone("volant");
-        if (volant != null && volant.rotation != null) {
-            volant.rotation.set(volant.definition().bindRotation());
-            volant.rotation.rotateZ(VOLANT_TURNS * steer);
-        }
     }
 
     /**
@@ -108,25 +76,5 @@ public class ThundartRenderer extends GeoVehicleRenderer<VehicleEntity> {
             Vector3f bind = bone.definition().bindEulerRotation();
             bone.rotationInEuler.set(xRad, bind.y, bind.z);
         }
-    }
-
-    private void hideBone(VehicleModelInstance instance, String name) {
-        BoneState bone = instance.getBone(name);
-        if (bone == null) {
-            return;
-        }
-        bone.visible = false;
-        bone.x = 0.0F;
-        bone.y = -4096.0F;
-        bone.z = 0.0F;
-    }
-
-    private void steerFront(BoneState bone, float steer, float spin) {
-        if (bone == null || bone.rotation == null) {
-            return;
-        }
-        bone.rotation.set(bone.definition().bindRotation());
-        bone.rotation.rotateY(steer);
-        bone.rotation.rotateX(1.5F * spin);
     }
 }

@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ContainerLevelAccess;
 
-/** Menu du FuMO25 (meme ecran radar), seule la validite du bloc change. */
+/** The FuMO-25's menu (same radar screen); only the block it stays valid for changes. */
 public class Gf300Menu extends FuMO25Menu {
     public Gf300Menu(int id, Inventory inventory, ContainerLevelAccess access, ContainerEnergyData data) {
         super(id, inventory, access, data);
@@ -15,7 +15,7 @@ public class Gf300Menu extends FuMO25Menu {
 
     @Override
     public boolean stillValid(Player player) {
-        // 12 blocs : le radar fait 6 de long, le controleur peut etre loin du joueur
+        // 12 blocks: the radar is 6 long, so the controller cell can be far from the player
         return this.getAccess().evaluate((level, pos) -> level.getBlockState(pos).is(ModBlocks.GF300.get())
                 && player.distanceToSqr(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5) <= 144, true);
     }

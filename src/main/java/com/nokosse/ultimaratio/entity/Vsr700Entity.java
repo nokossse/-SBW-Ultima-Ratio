@@ -5,11 +5,10 @@ import com.atsuishio.superbwarfare.data.gun.GunProp;
 import com.atsuishio.superbwarfare.entity.vehicle.base.VehicleEntity;
 import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
-import com.google.common.collect.Iterables;
 import com.nokosse.ultimaratio.UltimaRatioConfig;
+import com.nokosse.ultimaratio.init.ModGameRules;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import com.nokosse.ultimaratio.event.VsrRemote;
-import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,8 +16,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.level.ChunkPos;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Inventory;
@@ -32,13 +29,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector4d;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
 import java.util.UUID;
 
 /**
- * Airbus VSR700: an SBW helicopter that nobody can board, flown from a VSR Monitor. While the operator
+ * Airbus VSR700: an SBW helicopter that nobody can board, flown from a Ground Control Station. While the operator
  * flies, both sides treat them as the pilot in seat 0 (getFirstPassenger / getSeatIndex) without them
  * riding it, so SBW's own helicopter engine, controls, camera and HUD all apply unchanged.
  */
@@ -72,9 +67,12 @@ public class Vsr700Entity extends VehicleEntity {
     /** Operator the drone is linked to (saved). */
     @Nullable
     private UUID controller;
+    /** Name of the last operator's team (saved): an unlinked or offline-operated drone keeps its side. */
+    @Nullable
+    private String lastTeam;
     /** Server only: true during tick() while the drone hovers with nobody at the controls, see getFirstPassenger. */
     private boolean hoverStandIn;
-    /** Server only: the operator while their monitor is in use, see VsrRemote. */
+    /** Server only: the operator while they fly it from a GCS, see VsrRemote. */
     @Nullable
     private ServerPlayer operator;
 
@@ -159,33 +157,6 @@ public class Vsr700Entity extends VehicleEntity {
         return false;
     }
 
-    @Override
-    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand) {
-        ItemStack stack = player.getItemInHand(hand);
-        if (!(stack.getItem() instanceof VsrMonitorItem)) {
-            return super.interact(player, hand);
-        }
-        if (player.isShiftKeyDown()) {
-            return super.interact(player, hand);
-        }
-        if (level().isClientSide) {
-            return InteractionResult.SUCCESS;
-        }
-        if (controller != null && hasLiveLink()) {
-            // one monitor per drone, even for the same operator
-            player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.already_linked").withStyle(ChatFormatting.RED), true);
-            return InteractionResult.CONSUME;
-        }
-        if (VsrMonitorItem.getLinked(stack) != null) {
-            player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.monitor_busy").withStyle(ChatFormatting.RED), true);
-            return InteractionResult.CONSUME;
-        }
-        controller = player.getUUID();
-        VsrMonitorItem.link(stack, getStringUUID());
-        player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.linked").withStyle(ChatFormatting.GREEN), true);
-        return InteractionResult.CONSUME;
-    }
-
     /** True while the pilot's selected weapon is the laser (the one that only gives a free camera). */
     public boolean isLaserSelected(Entity pilot) {
         GunData data = getGunData(pilot);
@@ -198,54 +169,19 @@ public class Vsr700Entity extends VehicleEntity {
         return data != null && "weapon.ultimaratio.vsr_laser".equals(data.get(GunProp.NAME));
     }
 
-    public void clearController() {
-        controller = null;
-    }
-
     /** Taken over from a GCS (VsrRemote). */
     public void setController(UUID controller) {
         this.controller = controller;
     }
 
-    /** Monitors of this player linked to this drone (inventory and offhand). */
-    private List<ItemStack> linkedMonitors(ServerPlayer player) {
-        String id = getStringUUID();
-        List<ItemStack> found = new ArrayList<>();
-        for (ItemStack stack : Iterables.concat(player.getInventory().items, player.getInventory().offhand)) {
-            if (stack.getItem() instanceof VsrMonitorItem && id.equals(VsrMonitorItem.getLinked(stack))) {
-                found.add(stack);
-            }
-        }
-        return found;
-    }
-
-    /**
-     * The link holds while the controller still carries a monitor linked to this drone (an offline controller
-     * keeps theirs). A link whose monitor is gone (dropped, destroyed, relinked) is stale and does not block a new one.
-     */
-    private boolean hasLiveLink() {
-        if (controller == null) {
-            return false;
-        }
-        ServerPlayer player = level().getServer() == null ? null : level().getServer().getPlayerList().getPlayer(controller);
-        return player == null || !linkedMonitors(player).isEmpty() || VsrRemote.flying(player) == this;
-    }
-
-    /**
-     * Cuts the operator's link (crash, signal lost): the controller is cleared and every VSR Monitor linked to
-     * this drone switches off and forgets it.
-     */
+    /** Cuts the operator's link (crash, signal lost, out of range): the controller is cleared and told why. */
     public void disconnectOperator(@Nullable Component message) {
         if (level().isClientSide || controller == null) {
             return;
         }
         ServerPlayer player = level().getServer() == null ? null : level().getServer().getPlayerList().getPlayer(controller);
         controller = null;
-        if (player == null) {
-            return;
-        }
-        linkedMonitors(player).forEach(VsrMonitorItem::unlink);
-        if (message != null) {
+        if (player != null && message != null) {
             player.displayClientMessage(message.copy().withStyle(ChatFormatting.RED), true);
         }
     }
@@ -268,7 +204,7 @@ public class Vsr700Entity extends VehicleEntity {
     @Override
     public void tick() {
         if (level() instanceof ServerLevel server && tickCount % 5 == 0 && !isWreck() && UltimaRatioConfig.DRONE_CHUNK_LOADING.get()
-                && server.getGameRules().getBoolean(com.nokosse.ultimaratio.init.ModGameRules.DRONE_CHUNK_LOADING)) {
+                && server.getGameRules().getBoolean(ModGameRules.DRONE_CHUNK_LOADING)) {
             // every 5 ticks: a loitering Reaper crosses a couple of chunks per second; radius 3 keeps its chunk and the ring around it ticking
             ChunkPos here = chunkPosition();
             server.getChunkSource().addRegionTicket(DRONE_TICKET, here, 3, here);
@@ -294,12 +230,6 @@ public class Vsr700Entity extends VehicleEntity {
         if (controller != null && (isWreck() || getHealth() <= 0)) {
             disconnectOperator(Component.translatable("tips.ultimaratio.vsr.destroyed"));
         }
-        if (controller != null && tickCount % 5 == 0) {
-            ServerPlayer operatorPlayer = level().getServer() == null ? null : level().getServer().getPlayerList().getPlayer(controller);
-            if (operatorPlayer != null) {
-                linkedMonitors(operatorPlayer).forEach(monitor -> VsrMonitorItem.setDronePos(monitor, position()));
-            }
-        }
         // SBW's JSON radar scans for the last driver and stops without one: set while the drone is linked and
         // alive (SBW alone would forget it after 10 s without a real passenger), cleared for a wreck or unlinked drone
         setLastDriverUUID(controller != null ? controller.toString() : "undefined");
@@ -321,7 +251,28 @@ public class Vsr700Entity extends VehicleEntity {
         if (pilot == null && controller != null) {
             pilot = level().getPlayerByUUID(controller);
         }
-        return pilot != null ? pilot.getTeam() : super.getTeam();
+        if (pilot != null && pilot.getTeam() != null) {
+            lastTeam = pilot.getTeam().getName();
+            return pilot.getTeam();
+        }
+        PlayerTeam own = super.getTeam();
+        return own != null || lastTeam == null ? own : level().getScoreboard().getPlayerTeam(lastTeam);
+    }
+
+    /**
+     * Flying a drone is reserved to its operator and to the operator's scoreboard team. A drone with no known team
+     * belongs to its controller alone (servers whose sides are not scoreboard teams), and is free to take only while
+     * nobody controls it (never flown, or its link was cut).
+     */
+    public boolean canBeOperatedBy(Player player) {
+        if (player.getUUID().equals(controller)) {
+            return true;
+        }
+        PlayerTeam side = getTeam();
+        if (side == null) {
+            return controller == null;
+        }
+        return side.isAlliedTo(player.getTeam());
     }
 
     @Override
@@ -358,7 +309,7 @@ public class Vsr700Entity extends VehicleEntity {
         if (pilot.level().isClientSide) {
             return pilot == clientPilot ? clientPiloted : null;
         }
-        return pilot instanceof ServerPlayer player ? com.nokosse.ultimaratio.event.VsrRemote.flying(player) : null;
+        return pilot instanceof ServerPlayer player ? VsrRemote.flying(player) : null;
     }
 
     @Override
@@ -367,11 +318,15 @@ public class Vsr700Entity extends VehicleEntity {
         if (controller != null) {
             compound.putUUID("VsrController", controller);
         }
+        if (lastTeam != null) {
+            compound.putString("VsrTeam", lastTeam);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         controller = compound.hasUUID("VsrController") ? compound.getUUID("VsrController") : null;
+        lastTeam = compound.contains("VsrTeam") ? compound.getString("VsrTeam") : null;
     }
 }

@@ -22,7 +22,7 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
             ResourceLocation.fromNamespaceAndPath("ultimaratio", "projectile/aster_30_missile");
     /** Vertical climb to clear the launcher before it steers (was 18 ticks of weak push before the engine). */
     private static final int BOOST_TICKS = 6;
-    // blocs/tick: Kalibr/Scalp/Hades volent jusqu'a ~25 b/t (Mach 1.5), l'Aster doit les depasser
+    /** Blocks/tick: the Kalibr, SCALP and HADES fly up to ~25 b/t (Mach 1.5), the Aster must outrun them. */
     private static final double MAX_SPEED = 40.0;
     private static final double ACCEL = 2.0;
     /** Max heading change per tick (20 deg): a hard but bounded turn, so a miss loops back instead of spiralling. */
@@ -32,7 +32,7 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
     private static final int GROUND_SMOKE_TICKS = 4;
     private static final int TRAIL_SMOKE_TICKS = 25;
 
-    // la classe parente reecrit la vitesse a chaque tick, on garde la notre
+    /** The parent class rewrites the speed every tick: ours is kept here. */
     private double speed;
 
     public Aster30MissileEntity(EntityType<? extends Aster30MissileEntity> type, Level level) {
@@ -90,7 +90,7 @@ public class Aster30MissileEntity extends Ru9m100MissileEntity {
         Closest closest = closestPoints(from, this.position(), targetFrom, target.position());
         if (closest.distance <= PROXIMITY) {
             this.causeExplode(closest.point);
-            // l'explosion ne suffit pas a stopper un missile a 25 b/t: on le detruit sans sa charge
+            // the blast alone does not stop a missile flying at 25 b/t: it is destroyed without its warhead going off
             target.discard();
             this.discard();
         }

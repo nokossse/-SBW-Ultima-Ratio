@@ -29,7 +29,8 @@
     "BetterFpsDistMixin",
     "EngineSoundMixin",
     "TacticalMapScreenMixin",
-    "MapEntityRendererMixin"
+    "MapEntityRendererMixin",
+    "ContainerBlockItemRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

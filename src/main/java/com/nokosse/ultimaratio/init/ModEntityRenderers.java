@@ -13,11 +13,10 @@ import com.nokosse.ultimaratio.client.renderer.HadesRenderer;
 import com.nokosse.ultimaratio.client.renderer.KeraxRenderer;
 import com.nokosse.ultimaratio.client.renderer.LeclercAzurRenderer;
 import com.nokosse.ultimaratio.client.renderer.LeclercXlrRenderer;
-import com.nokosse.ultimaratio.client.renderer.MambaRadarRenderer;
 import com.nokosse.ultimaratio.client.renderer.MambaRenderer;
 import com.nokosse.ultimaratio.client.renderer.Mq9ReaperRenderer;
 import com.nokosse.ultimaratio.client.renderer.RafaleRenderer;
-import com.nokosse.ultimaratio.client.renderer.SampTNgRenderer;
+import com.nokosse.ultimaratio.client.renderer.RadarTruckRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRenderer;
 import com.nokosse.ultimaratio.client.renderer.ThundartRocketRenderer;
 import com.nokosse.ultimaratio.client.renderer.As350Renderer;
@@ -40,12 +39,10 @@ import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.item.ItemProperties;
 import com.nokosse.ultimaratio.client.screen.Vsr700Screen;
-import net.minecraft.resources.ResourceLocation;
 import com.nokosse.ultimaratio.inventory.Mq9Menu;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
-import com.nokosse.ultimaratio.item.VsrMonitorItem;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.common.EventBusSubscriber;
 
 @EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
@@ -55,8 +52,8 @@ public class ModEntityRenderers {
         event.registerEntityRenderer(ModEntities.CAESAR.get(), CaesarRenderer::new);
         event.registerEntityRenderer(ModEntities.MAMBA.get(), MambaRenderer::new);
         event.registerEntityRenderer(ModEntities.HADES.get(), HadesRenderer::new);
-        event.registerEntityRenderer(ModEntities.MAMBA_RADAR.get(), MambaRadarRenderer::new);
-        event.registerEntityRenderer(ModEntities.SAMP_T_NG.get(), SampTNgRenderer::new);
+        event.registerEntityRenderer(ModEntities.MAMBA_RADAR.get(), RadarTruckRenderer::arabel);
+        event.registerEntityRenderer(ModEntities.SAMP_T_NG.get(), RadarTruckRenderer::groundFire);
         event.registerEntityRenderer(ModEntities.THUNDART.get(), ThundartRenderer::new);
         event.registerEntityRenderer(ModEntities.RENAULT_KERAX.get(), KeraxRenderer::new);
         event.registerEntityRenderer(ModEntities.VBMR.get(), VbmrRenderer::new);
@@ -96,10 +93,6 @@ public class ModEntityRenderers {
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        // Linked screen texture on the VSR Monitor, like SBW's drone monitor
-        event.enqueueWork(() -> ItemProperties.register(ModBlocks.VSR_MONITOR.get(),
-                ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "linked"),
-                (stack, level, entity, seed) -> VsrMonitorItem.getLinked(stack) != null ? 1 : 0));
     }
 
     @SubscribeEvent

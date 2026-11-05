@@ -164,12 +164,12 @@ final class DhLaser {
         return new Hit(new BlockPos(x, y, z), location);
     }
 
-    /** Throttled: the range trace runs every frame the mouse moves. */
+    /** Debug log, throttled: the range trace runs every frame the mouse moves. */
     private static void log(String message) {
         long now = System.nanoTime();
         if (now - lastLog > LOG_INTERVAL_NANOS) {
             lastLog = now;
-            UltimaRatio.LOGGER.info("[UR laser/DH] {}", message);
+            UltimaRatio.LOGGER.debug("[UR laser/DH] {}", message);
         }
     }
 }

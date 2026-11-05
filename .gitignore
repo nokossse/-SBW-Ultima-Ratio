@@ -124,3 +124,9 @@ run-1.21.1/
 libs/*.jar
 
 run-1.21.1/
+
+# Ultima Ratio scratch folders
+__pycache__/
+_sbw_extract/
+_tmp_cls/
+/data/

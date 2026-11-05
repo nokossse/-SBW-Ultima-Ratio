@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.init.ModTags;
 import com.atsuishio.superbwarfare.tools.RangeTool;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.atsuishio.superbwarfare.tools.VectorTool;
+import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -29,7 +30,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.UUID;
 
-/** VBMR-L Serval LAD: with nobody in the gunner seat and auto mode on, the ARX30 shoots hostile drones and phantoms around it. */
+/**
+ * VBMR-L Serval LAD (counter-drone): with nobody in the gunner seat and auto mode on, the ARX30 shoots small hostile
+ * drones (SBW's FPV and swarm drones) and phantoms around it. Larger UAVs such as the VSR700 and MQ-9 are left to
+ * air defence.
+ */
 public class ServalLadEntity extends ServalEntity {
     public static final EntityDataAccessor<Boolean> AUTO =
             SynchedEntityData.defineId(ServalLadEntity.class, EntityDataSerializers.BOOLEAN);
@@ -78,7 +83,10 @@ public class ServalLadEntity extends ServalEntity {
         }
     }
 
-    /** Same as the CIWS: shift + right click toggles the automatic turret (first user becomes the owner). */
+    /**
+     * Like the CIWS: shift + right click toggles the automatic turret. The first user becomes the owner; the owner and
+     * their team may switch it.
+     */
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
         if (player.isCrouching() && !this.isWreck() && !this.getLocked()
@@ -86,8 +94,12 @@ public class ServalLadEntity extends ServalEntity {
             if (this.owner == null) {
                 this.owner = player.getUUID();
             }
-            if (!player.getUUID().equals(this.owner)) {
-                return InteractionResult.PASS;
+            if (!OwnerTeam.canControl(this.level(), this.owner, player)) {
+                if (!this.level().isClientSide) {
+                    player.displayClientMessage(Component.translatable("tips.ultimaratio.auto.other_team")
+                            .withStyle(ChatFormatting.RED), true);
+                }
+                return InteractionResult.sidedSuccess(this.level().isClientSide);
             }
             if (!this.level().isClientSide) {
                 boolean auto = !this.isAuto();

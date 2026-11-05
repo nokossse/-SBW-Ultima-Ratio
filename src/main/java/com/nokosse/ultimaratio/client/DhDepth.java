@@ -85,7 +85,7 @@ final class DhDepth {
             long now = System.nanoTime();
             if (now - lastLog > 2_000_000_000L) { // throttled: one read per frame
                 lastLog = now;
-                UltimaRatio.LOGGER.info("[UR laser/DH] depth {} -> {} m (proj {} {} {})", depth, Math.round(distance), projZ, projConst, projW);
+                UltimaRatio.LOGGER.debug("[UR laser/DH] depth {} -> {} m (proj {} {} {})", depth, Math.round(distance), projZ, projConst, projW);
             }
             return Double.isFinite(distance) && distance > 0 ? distance : UNKNOWN;
         } catch (RuntimeException e) {

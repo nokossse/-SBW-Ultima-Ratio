@@ -9,7 +9,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import com.nokosse.ultimaratio.UltimaRatio;
 
 
-/** Server to client: the drone flown from a GCS (its UUID), or "" once the link ends. The monitor keeps this in its NBT instead. */
+/** Server to client: the drone flown from a GCS (its UUID), or "" once the link ends. */
 public class GcsPilotMessage implements CustomPacketPayload {
     public static final Type<GcsPilotMessage> TYPE =
             new Type<>(ResourceLocation.fromNamespaceAndPath(UltimaRatio.MODID, "gcs_pilot"));
