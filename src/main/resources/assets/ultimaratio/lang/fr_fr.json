@@ -65,6 +65,7 @@
   "tips.ultimaratio.vsr.linked": "Drone lié",
   "tips.ultimaratio.vsr.unlinked": "Drone délié",
   "tips.ultimaratio.vsr.already_linked": "Ce drone est déjà lié à un monitor",
+  "tips.ultimaratio.vsr.enemy_drone": "Ce drone appartient à une autre équipe",
   "tips.ultimaratio.vsr.monitor_busy": "Ce monitor est déjà lié à un drone",
   "tips.ultimaratio.vsr.out_of_range": "Drone hors de portée : liaison perdue",
   "tips.ultimaratio.vsr.destroyed": "Drone détruit : liaison perdue",

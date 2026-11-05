@@ -96,7 +96,7 @@ public final class VsrRemote {
         }
         Integer id = MAP_SELECTED.get(player.getUUID());
         if (id != null && player.serverLevel().getEntity(id) instanceof Mq9ReaperEntity reaper && reaper.isAlive()
-                && (reaper.getController() == null || reaper.getController().equals(player.getUUID()))) {
+                && (reaper.getController() == null ? reaper.canBeOperatedBy(player) : reaper.getController().equals(player.getUUID()))) {
             return reaper;
         }
         return null;
@@ -104,10 +104,9 @@ public final class VsrRemote {
 
     /** Drones a player may fly from a GCS: theirs, unlinked ones or a teammate's that nobody flies, within the drone's range. */
     private static boolean canFlyFromGcs(ServerPlayer player, Vsr700Entity vsr) {
-        UUID controller = vsr.getController();
         Entity pilot = vsr.getPilot();
         return vsr.isAlive() && !vsr.isWreck() && (pilot == null || pilot == player)
-                && (controller == null || controller.equals(player.getUUID()) || (vsr.getTeam() != null && vsr.isAlliedTo(player)))
+                && vsr.canBeOperatedBy(player)
                 && vsr.distanceToSqr(player) <= vsr.maxRange() * vsr.maxRange();
     }
 

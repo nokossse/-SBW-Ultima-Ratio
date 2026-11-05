@@ -72,6 +72,9 @@ public class Vsr700Entity extends VehicleEntity {
     /** Operator the drone is linked to (saved). */
     @Nullable
     private UUID controller;
+    /** Name of the last operator's team (saved): an unlinked or offline-operated drone keeps its side. */
+    @Nullable
+    private String lastTeam;
     /** Server only: true during tick() while the drone hovers with nobody at the controls, see getFirstPassenger. */
     private boolean hoverStandIn;
     /** Server only: the operator while their monitor is in use, see VsrRemote. */
@@ -178,6 +181,10 @@ public class Vsr700Entity extends VehicleEntity {
         }
         if (VsrMonitorItem.getLinked(stack) != null) {
             player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.monitor_busy").withStyle(ChatFormatting.RED), true);
+            return InteractionResult.CONSUME;
+        }
+        if (!canBeOperatedBy(player)) {
+            player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.enemy_drone").withStyle(ChatFormatting.RED), true);
             return InteractionResult.CONSUME;
         }
         controller = player.getUUID();
@@ -321,7 +328,24 @@ public class Vsr700Entity extends VehicleEntity {
         if (pilot == null && controller != null) {
             pilot = level().getPlayerByUUID(controller);
         }
-        return pilot != null ? pilot.getTeam() : super.getTeam();
+        if (pilot != null && pilot.getTeam() != null) {
+            lastTeam = pilot.getTeam().getName();
+            return pilot.getTeam();
+        }
+        Team own = super.getTeam();
+        return own != null || lastTeam == null ? own : level().getScoreboard().getPlayerTeam(lastTeam);
+    }
+
+    /**
+     * Flying or linking a drone is reserved to its operator and to the operator's side. A drone with no known side
+     * (never flown, or no scoreboard teams on the server) is free to take.
+     */
+    public boolean canBeOperatedBy(Player player) {
+        if (player.getUUID().equals(controller)) {
+            return true;
+        }
+        Team side = getTeam();
+        return side == null || side.isAlliedTo(player.getTeam());
     }
 
     @Override
@@ -367,11 +391,15 @@ public class Vsr700Entity extends VehicleEntity {
         if (controller != null) {
             compound.putUUID("VsrController", controller);
         }
+        if (lastTeam != null) {
+            compound.putString("VsrTeam", lastTeam);
+        }
     }
 
     @Override
     public void readAdditionalSaveData(@NotNull CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         controller = compound.hasUUID("VsrController") ? compound.getUUID("VsrController") : null;
+        lastTeam = compound.contains("VsrTeam") ? compound.getString("VsrTeam") : null;
     }
 }
