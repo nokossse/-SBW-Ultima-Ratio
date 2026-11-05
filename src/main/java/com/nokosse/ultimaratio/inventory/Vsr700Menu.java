@@ -5,7 +5,7 @@ import com.nokosse.ultimaratio.init.ModMenus;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 
-/** The VSR700's single-slot magazine menu: one cell for its Kh-39, plus the player inventory. */
+/** The VSR700's single-slot magazine menu: one cell for its Mistral missiles, plus the player inventory. */
 public class Vsr700Menu extends AbstractVehicleContainerMenu {
     public Vsr700Menu(int id, Inventory inventory, int entityId) {
         this(ModMenus.VSR700.get(), id, inventory, entityId);

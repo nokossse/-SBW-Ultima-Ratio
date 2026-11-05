@@ -51,7 +51,7 @@ public class Gf300BlockEntityRenderer implements BlockEntityRenderer<Gf300BlockE
         }
         float length = deploy != null && deploy.getSpecifiedEndTimeS() > 0 ? deploy.getSpecifiedEndTimeS() : 3f;
 
-        // deploiement : on joue deploy_radar a l'endroit (alimente) ou a l'envers (replie = fold_radar)
+        // deployment: deploy_radar plays forward while powered and backward to fold
         float now = (be.getLevel().getGameTime() + partialTick) / 20f;
         if (be.deployTime < 0) {
             be.deployTime = powered ? length : 0;
@@ -74,7 +74,7 @@ public class Gf300BlockEntityRenderer implements BlockEntityRenderer<Gf300BlockE
         poseStack.pushPose();
         poseStack.translate(0.5, 0.0, 0.5);
         poseStack.mulPose(Axis.YP.rotationDegrees(180f - state.getValue(Gf300Block.FACING).toYRot()));
-        // l'origine du modele est entre la 3e et la 4e case de la longueur ; le controleur est la 4e
+        // the model's origin is between the 3rd and 4th cell of the length; the controller is the 4th
         poseStack.translate(0.0, 0.0, -0.5);
 
         instance.renderToBuffer(poseStack, buffer.getBuffer(RenderType.entityTranslucent(TEXTURE)), packedLight, packedOverlay);

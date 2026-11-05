@@ -6,14 +6,16 @@ import com.atsuishio.superbwarfare.tools.RadarScanner;
 import com.nokosse.ultimaratio.init.ModGameRules;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.TicketType;
-import net.minecraft.world.level.ChunkPos;
-import java.util.Comparator;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.Comparator;
 
 /**
- * Radar mobile : secteur 150, un tour / 5 s, portee fixee par vehicule. Actif tant que le vehicule le deploie et qu'il reste
- * de l'energie ; consommation x2.
+ * Truck-mounted radar: a 150 degree sector, one turn every 5 s, range set per vehicle. It scans while the vehicle
+ * deploys it and energy lasts, at twice the FuMO-25's energy cost.
  */
 final class MobileRadar {
     private static final int CYCLE_TICKS = 100;
@@ -23,10 +25,10 @@ final class MobileRadar {
     private static final TicketType<ChunkPos> RADAR_TICKET =
             TicketType.create("ultimaratio_radar", Comparator.comparingLong(ChunkPos::toLong), 60);
 
-    private final net.minecraftforge.common.ForgeConfigSpec.DoubleValue range;
+    private final ForgeConfigSpec.DoubleValue range;
     private boolean active;
 
-    MobileRadar(net.minecraftforge.common.ForgeConfigSpec.DoubleValue range) {
+    MobileRadar(ForgeConfigSpec.DoubleValue range) {
         this.range = range;
     }
 
@@ -34,7 +36,7 @@ final class MobileRadar {
         return active;
     }
 
-    /** Switch-driven radar: scans only while {@code deployed}; {@link #isActive()} turns false once energy runs out. */
+    /** Scans only while {@code deployed}; {@link #isActive()} turns false once energy runs out. */
     void tick(VehicleEntity vehicle, boolean deployed, Player fallback) {
         if (!(vehicle.level() instanceof ServerLevel level)) return;
         if (!deployed || vehicle.isWreck()) {
@@ -50,21 +52,6 @@ final class MobileRadar {
         Player player = vehicle.getNthEntity(OPERATOR_SEAT) instanceof Player p ? p
                 : vehicle.getNthEntity(0) instanceof Player d ? d : fallback;
         if (player != null) scan(vehicle, level, player);
-    }
-
-    void tick(VehicleEntity vehicle) {
-        if (!(vehicle.level() instanceof ServerLevel level)) return;
-        if (vehicle.isWreck()) {
-            active = false;
-            return;
-        }
-        // radar actif seulement si la place 3 (index 2) est occupee par un joueur : c'est lui l'operateur
-        if (!(vehicle.getNthEntity(OPERATOR_SEAT) instanceof Player player)) {
-            active = false;
-            return;
-        }
-        if (!drain(vehicle)) return;
-        scan(vehicle, level, player);
     }
 
     private boolean drain(VehicleEntity vehicle) {

@@ -23,8 +23,6 @@ public class CaesarEntity extends SpArtilleryEntity {
             SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> PACKING =
             SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> STAB_BLEND =
-            SynchedEntityData.defineId(CaesarEntity.class, EntityDataSerializers.FLOAT);
 
     private static final String STAB_ANIM = "stabilization";
     private static final String PACK_ANIM = "stabilization_pack";
@@ -70,10 +68,6 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.entityData.set(PACKING, value);
     }
 
-    public float getStabBlend() {
-        return this.entityData.get(STAB_BLEND);
-    }
-
     public boolean blocksDriving() {
         return this.isStabilized() || this.isStabilizing() || this.isPacking();
     }
@@ -84,7 +78,6 @@ public class CaesarEntity extends SpArtilleryEntity {
         this.entityData.define(STABILIZED, false);
         this.entityData.define(STABILIZING, false);
         this.entityData.define(PACKING, false);
-        this.entityData.define(STAB_BLEND, 0.0F);
     }
 
     @Override
@@ -145,7 +138,6 @@ public class CaesarEntity extends SpArtilleryEntity {
     public void baseTick() {
         super.baseTick();
         this.tickStabilization();
-        this.updateStabBlend();
         if (this.level().isClientSide) {
             this.tickStabilizationAnimation();
             this.tickReloadAnimation();
@@ -191,23 +183,6 @@ public class CaesarEntity extends SpArtilleryEntity {
         if (!this.level().isClientSide && gunner != null && this.gunnerWantsToAim(gunner)) {
             this.startStabilization();
         }
-    }
-
-    private void updateStabBlend() {
-        if (this.level().isClientSide) {
-            return;
-        }
-        float blend;
-        if (this.isPacking()) {
-            blend = this.packTicks / (float) STAB_DURATION_TICKS;
-        } else if (this.isStabilizing()) {
-            blend = 1.0F - this.stabilizeTicks / (float) STAB_DURATION_TICKS;
-        } else if (this.isStabilized()) {
-            blend = 1.0F;
-        } else {
-            blend = 0.0F;
-        }
-        this.entityData.set(STAB_BLEND, blend);
     }
 
     /** Slew barrel/yaw back to travel rest (10° up) like the FH77 when packing up. */

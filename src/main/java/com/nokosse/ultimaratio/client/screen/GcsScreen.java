@@ -11,16 +11,18 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 
-/** The GCS's drone list: one button per drone of the player's side, nearest first. */
+/** The GCS's drone list: one button per drone of the player's side, nearest first; the mouse wheel scrolls a long list. */
 public class GcsScreen extends Screen {
-    // shortcut: no scrolling, drones past the 10th are not listed; add a scroll list if a side ever fields more
     private static final int MAX_ROWS = 10;
     private final BlockPos pos;
     private List<GcsListMessage.Entry> drones;
     private int refreshTicks;
+    /** Index of the first drone shown. */
+    private int scroll;
 
     private GcsScreen(BlockPos pos, List<GcsListMessage.Entry> drones) {
         super(Component.translatable("gui.ultimaratio.gcs.title"));
@@ -46,11 +48,20 @@ public class GcsScreen extends Screen {
         }
     }
 
+    private int rows() {
+        return Math.min(drones.size(), MAX_ROWS);
+    }
+
+    private int top() {
+        return height / 2 - rows() * 12;
+    }
+
     @Override
     protected void init() {
-        int top = height / 2 - Math.min(drones.size(), MAX_ROWS) * 12;
-        for (int i = 0; i < Math.min(drones.size(), MAX_ROWS); i++) {
-            GcsListMessage.Entry drone = drones.get(i);
+        scroll = Mth.clamp(scroll, 0, Math.max(0, drones.size() - MAX_ROWS));
+        int top = top();
+        for (int i = 0; i < rows(); i++) {
+            GcsListMessage.Entry drone = drones.get(scroll + i);
             addRenderableWidget(Button.builder(Component.literal(drone.name() + "  -  " + drone.distance() + " m"), b -> {
                 ModNetwork.CHANNEL.sendToServer(new GcsSelectMessage(pos, drone.drone()));
                 onClose();
@@ -59,14 +70,29 @@ public class GcsScreen extends Screen {
         // the GCS has its own map: no tactical terminal needed
         addRenderableWidget(Button.builder(Component.translatable("gui.ultimaratio.gcs.map"),
                 b -> Minecraft.getInstance().setScreen(new TacticalMapScreen()))
-                .bounds(width / 2 - 100, top + Math.min(drones.size(), MAX_ROWS) * 24 + 8, 200, 20).build());
+                .bounds(width / 2 - 100, top + rows() * 24 + 8, 200, 20).build());
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        int before = scroll;
+        scroll = Mth.clamp(scroll - (int) Math.signum(delta), 0, Math.max(0, drones.size() - MAX_ROWS));
+        if (scroll != before) {
+            rebuildWidgets();
+        }
+        return true;
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         renderBackground(graphics);
-        int top = height / 2 - Math.min(drones.size(), MAX_ROWS) * 12;
+        int top = top();
         graphics.drawCenteredString(font, title, width / 2, top - 20, 0xFFFFFF);
+        if (drones.size() > MAX_ROWS) {
+            // which part of the list is shown, under the title: the wheel scrolls it
+            graphics.drawCenteredString(font, (scroll + 1) + "-" + (scroll + MAX_ROWS) + " / " + drones.size(),
+                    width / 2, top - 10, 0xAAAAAA);
+        }
         if (drones.isEmpty()) {
             graphics.drawCenteredString(font, Component.translatable("gui.ultimaratio.gcs.none"), width / 2, height / 2, 0xAAAAAA);
         }

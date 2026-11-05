@@ -68,7 +68,9 @@ public class GcsBlock extends BaseEntityBlock {
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack) {
-        level.setBlock(otherHalf(pos, state), state.setValue(SECOND, true), Block.UPDATE_ALL);
+        if (!level.isClientSide) {
+            level.setBlock(otherHalf(pos, state), state.setValue(SECOND, true), Block.UPDATE_ALL);
+        }
     }
 
     @Override

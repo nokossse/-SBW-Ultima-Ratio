@@ -30,8 +30,8 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Ground control station for the VSR700. Right click the drone to link it, right click in the air to take or
- * release the controls, sneak + right click in the air to unlink (sneak + right click on the drone opens its
+ * Hand-held control station for the VSR700 and the MQ-9. Right click the drone to link it, right click in the air to
+ * take or release the controls, sneak + right click in the air to unlink (sneak + right click on the drone opens its
  * inventory). The flying itself is handled by VsrRemote.
  */
 public class VsrMonitorItem extends Item {
@@ -45,6 +45,20 @@ public class VsrMonitorItem extends Item {
     @Nullable
     public static String getLinked(ItemStack stack) {
         return stack.getTag() != null && stack.getTag().contains(LINKED) ? stack.getTag().getString(LINKED) : null;
+    }
+
+    /** The linked drone's UUID, or null when unlinked or when the NBT does not hold a valid UUID. */
+    @Nullable
+    public static UUID getLinkedUuid(ItemStack stack) {
+        String id = getLinked(stack);
+        if (id == null) {
+            return null;
+        }
+        try {
+            return UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
     }
 
     public static boolean isUsing(ItemStack stack) {
@@ -70,7 +84,9 @@ public class VsrMonitorItem extends Item {
         if (player.isShiftKeyDown()) {
             // Sneak + right click in the air: unlink
             if (level instanceof ServerLevel serverLevel) {
-                if (serverLevel.getEntity(UUID.fromString(getLinked(stack))) instanceof Vsr700Entity vsr) {
+                UUID linked = getLinkedUuid(stack);
+                if (linked != null && serverLevel.getEntity(linked) instanceof Vsr700Entity vsr
+                        && player.getUUID().equals(vsr.getController())) {
                     vsr.clearController();
                 }
                 unlink(stack);
@@ -89,11 +105,12 @@ public class VsrMonitorItem extends Item {
     /** A monitor whose drone is gone, or now belongs to someone else, forgets it (the drone's side is cut in Vsr700Entity). */
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity holder, int slot, boolean selected) {
-        String id = getLinked(stack);
-        if (id == null || !(level instanceof ServerLevel serverLevel) || !(holder instanceof Player player) || holder.tickCount % 20 != 0) {
+        if (getLinked(stack) == null || !(level instanceof ServerLevel serverLevel) || !(holder instanceof Player player)
+                || holder.tickCount % 20 != 0) {
             return;
         }
-        if (serverLevel.getEntity(UUID.fromString(id)) instanceof Vsr700Entity vsr
+        UUID linked = getLinkedUuid(stack);
+        if (linked == null || serverLevel.getEntity(linked) instanceof Vsr700Entity vsr
                 && (!vsr.isAlive() || !player.getUUID().equals(vsr.getController()))) {
             unlink(stack);
         }
@@ -112,13 +129,22 @@ public class VsrMonitorItem extends Item {
         return builder.build();
     }
 
-    /** Distance to the linked drone and its coordinates (kept up to date by Vsr700Entity), like the drone monitor. */
+    /**
+     * Unlinked: how to use it. Linked: distance to the drone and its coordinates (kept up to date by Vsr700Entity), like
+     * SBW's drone monitor.
+     */
     @OnlyIn(Dist.CLIENT)
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         CompoundTag tag = stack.getTag();
         Player player = Minecraft.getInstance().player;
-        if (tag == null || player == null || !tag.contains(LINKED) || !tag.contains("PosX") || !tag.contains("PosY") || !tag.contains("PosZ")) {
+        if (tag == null || !tag.contains(LINKED)) {
+            tooltip.add(Component.translatable("des.ultimaratio.vsr_monitor.usage_1").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("des.ultimaratio.vsr_monitor.usage_2").withStyle(ChatFormatting.GRAY));
+            tooltip.add(Component.translatable("des.ultimaratio.vsr_monitor.usage_3").withStyle(ChatFormatting.GRAY));
+            return;
+        }
+        if (player == null || !tag.contains("PosX") || !tag.contains("PosY") || !tag.contains("PosZ")) {
             return;
         }
         Vec3 drone = new Vec3(tag.getDouble("PosX"), tag.getDouble("PosY"), tag.getDouble("PosZ"));

@@ -201,14 +201,8 @@ public final class VsrRemote {
                 || !player.isAlive()) {
             return null;
         }
-        String id = VsrMonitorItem.getLinked(stack);
-        if (id == null) {
-            return null;
-        }
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(id);
-        } catch (IllegalArgumentException e) {
+        UUID uuid = VsrMonitorItem.getLinkedUuid(stack);
+        if (uuid == null) {
             return null;
         }
         Entity entity = player.serverLevel().getEntity(uuid);
@@ -224,15 +218,8 @@ public final class VsrRemote {
         if (!(stack.getItem() instanceof VsrMonitorItem) || !VsrMonitorItem.isUsing(stack)) {
             return;
         }
-        String id = VsrMonitorItem.getLinked(stack);
-        Entity entity = null;
-        if (id != null) {
-            try {
-                entity = player.serverLevel().getEntity(UUID.fromString(id));
-            } catch (IllegalArgumentException ignored) {
-                // stale or corrupt link: treated as lost
-            }
-        }
+        UUID linked = VsrMonitorItem.getLinkedUuid(stack); // null for a stale or corrupt link: treated as lost
+        Entity entity = linked == null ? null : player.serverLevel().getEntity(linked);
         if (!(entity instanceof Vsr700Entity vsr) || !vsr.isAlive() || vsr.isWreck()) {
             VsrMonitorItem.unlink(stack);
             player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.signal_lost").withStyle(ChatFormatting.RED), true);

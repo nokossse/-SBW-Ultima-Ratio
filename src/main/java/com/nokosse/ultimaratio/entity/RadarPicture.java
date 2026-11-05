@@ -26,6 +26,8 @@ public final class RadarPicture {
     private RadarPicture() {}
 
     public static void report(ServerLevel level, Player radarOwner, List<Integer> hostileIds) {
+        // purged here too: with no SAMP/T on auto nobody reads the picture, and old tracks would pile up all session
+        forgetOld(level);
         for (int id : hostileIds) {
             if (level.getEntity(id) instanceof MissileProjectile) {
                 TRACKS.put(id, new Track(radarOwner.getUUID(), level.getGameTime()));
@@ -33,9 +35,14 @@ public final class RadarPicture {
         }
     }
 
+    private static void forgetOld(ServerLevel level) {
+        // a negative age is a track left by the previous world of this game session: forget it as well
+        TRACKS.values().removeIf(t -> level.getGameTime() - t.seen() > TTL_TICKS || level.getGameTime() < t.seen());
+    }
+
     /** Missiles detected by a radar friendly to {@code side}, wherever they are on the map. */
     public static List<Entity> missilesFor(ServerLevel level, Player side) {
-        TRACKS.values().removeIf(t -> level.getGameTime() - t.seen() > TTL_TICKS);
+        forgetOld(level);
         return TRACKS.entrySet().stream()
                 .filter(e -> {
                     Player radar = level.getPlayerByUUID(e.getValue().radarOwner());

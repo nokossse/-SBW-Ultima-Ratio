@@ -38,9 +38,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 /**
- * Thales GF300 : radar multi-blocs 3 (largeur) x 3 (hauteur) x 6 (longueur), meme fonctionnement que le FuMO25.
- * Chaque cellule est ce bloc ; CX/CY/CZ donnent sa place dans le gabarit, le controleur est en (1, 0, 3).
- * Le modele regarde vers le NORD (-z du modele) quand FACING = NORTH.
+ * Thales GF300: a 3 (wide) x 3 (high) x 6 (long) multiblock radar that works like the FuMO-25.
+ * Every cell is this block; CX/CY/CZ give its place in the template, the controller is at (1, 0, 3).
+ * The model looks NORTH (the model's -z) when FACING = NORTH.
  */
 public class Gf300Block extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -52,7 +52,7 @@ public class Gf300Block extends BaseEntityBlock {
     public static final int SIZE_X = 3, SIZE_Y = 3, SIZE_Z = 6;
     private static final int CTRL_X = 1, CTRL_Y = 0, CTRL_Z = 3;
 
-    /** Bone "hitbox" de GF300.geo.json (1/16 de bloc, origine du modele = entre la 3e et la 4e case de longueur). */
+    /** The "hitbox" bone of gf300.geo.json (1/16 block; model origin = between the 3rd and 4th cell of the length). */
     private static final double[][] HITBOX = {
             {-21, 0, -48.125, 21, 35, 49.875},
             {-6, 5, -52.125, 6, 20, -48.125},
@@ -68,9 +68,9 @@ public class Gf300Block extends BaseEntityBlock {
                 .setValue(CX, CTRL_X).setValue(CY, CTRL_Y).setValue(CZ, CTRL_Z));
     }
 
-    // --- gabarit -----------------------------------------------------------------------------------------------
+    // --- template ----------------------------------------------------------------------------------------------
 
-    /** Deplacement local (dx = lateral, dz = longueur du modele) tourne vers le monde. */
+    /** Local offset (dx = sideways, dz = along the model) turned to the world. */
     private static double worldX(Direction f, double dx, double dz) {
         return switch (f) {
             case WEST -> dz;
@@ -119,7 +119,7 @@ public class Gf300Block extends BaseEntityBlock {
         }
     }
 
-    // --- placement / destruction -------------------------------------------------------------------------------
+    // --- placing / breaking ------------------------------------------------------------------------------------
 
     @Override
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
@@ -177,13 +177,13 @@ public class Gf300Block extends BaseEntityBlock {
         return InteractionResult.CONSUME;
     }
 
-    // --- formes : celles du bone "hitbox" ; collision decoupee par cellule, contour = hitbox entiere ------------
+    // --- shapes: the "hitbox" bone's; collision cut per cell, outline = the whole hitbox -----------------------
 
-    /** Union des cuboides de hitbox vus depuis la cellule, tournee vers le monde ; clamp = limite a la cellule. */
+    /** Union of the hitbox cuboids seen from the cell, turned to the world; clamp = cut to the cell. */
     private static VoxelShape hitboxShape(Direction f, int cx, int cy, int cz, boolean clamp) {
         VoxelShape shape = Shapes.empty();
         for (double[] b : HITBOX) {
-            // coordonnees locales relatives au coin min de la cellule, en blocs
+            // local coordinates from the cell's min corner, in blocks
             double x0 = b[0] / 16 - (cx - 1.5), x1 = b[3] / 16 - (cx - 1.5);
             double y0 = b[1] / 16 - cy, y1 = b[4] / 16 - cy;
             double z0 = b[2] / 16 - (cz - 3), z1 = b[5] / 16 - (cz - 3);
@@ -192,7 +192,7 @@ public class Gf300Block extends BaseEntityBlock {
                 x1 = Math.min(x1, 1); y1 = Math.min(y1, 1); z1 = Math.min(z1, 1);
                 if (x0 >= x1 || y0 >= y1 || z0 >= z1) continue;
             }
-            // rotation autour du centre de la cellule
+            // turned around the cell's centre
             double ax = worldX(f, x0 - 0.5, z0 - 0.5) + 0.5, bx = worldX(f, x1 - 0.5, z1 - 0.5) + 0.5;
             double az = worldZ(f, x0 - 0.5, z0 - 0.5) + 0.5, bz = worldZ(f, x1 - 0.5, z1 - 0.5) + 0.5;
             shape = Shapes.or(shape, Shapes.box(Math.min(ax, bx), y0, Math.min(az, bz),
@@ -226,7 +226,7 @@ public class Gf300Block extends BaseEntityBlock {
 
     // --- block entity ------------------------------------------------------------------------------------------
 
-    /** BE sur la couche au sol : elle accepte l'energie sur toute sa surface et la renvoie au controleur. */
+    /** Block entities on the ground layer: the whole footprint takes energy and hands it to the controller. */
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return state.getValue(CY) == 0 ? new Gf300BlockEntity(pos, state) : null;

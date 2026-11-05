@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ContainerBlockItemRendererMixin {
 
     @Inject(method = "renderByItem", at = @At("HEAD"), cancellable = true, require = 0)
-    private void ur$hideCrate(ItemStack stack, ItemDisplayContext ctx, PoseStack pose,
+    private void ultimaratio$hideCrate(ItemStack stack, ItemDisplayContext ctx, PoseStack pose,
                               MultiBufferSource buffer, int light, int overlay, CallbackInfo ci) {
         if (ctx == ItemDisplayContext.GUI && UrContainerIcon.getIcon(stack) != null) ci.cancel();
     }

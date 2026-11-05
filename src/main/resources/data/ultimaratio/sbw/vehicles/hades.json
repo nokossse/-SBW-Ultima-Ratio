@@ -180,7 +180,7 @@
   "VehicleIcon": "superbwarfare:textures/vehicle_icon/truck_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "VehicleContainerType": "Medium",
-  "Type": "AA",
+  "Type": "Artillery",
   "CollisionLevel": {
     "Level": 4,
     "PowerLimits": [

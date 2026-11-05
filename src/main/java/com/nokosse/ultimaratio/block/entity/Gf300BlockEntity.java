@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.network.dataslot.ContainerEnergyData;
 import com.atsuishio.superbwarfare.tools.RadarScanner;
 import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.github.mcmodderanchor.simplebedrockmodel.v2.common.model.runtime.BakedModelInstance;
+import com.nokosse.ultimaratio.UltimaRatioConfig;
 import com.nokosse.ultimaratio.block.Gf300Block;
 import com.nokosse.ultimaratio.init.ModBlocks;
 import com.nokosse.ultimaratio.inventory.Gf300Menu;
@@ -43,11 +44,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 /**
- * Logique du GF300, calquee sur FuMO25BlockEntity (energie, mode, rotation, scan via RadarScanner). Le controleur
- * porte l'etat ; les autres cellules du sol ne font que relayer l'energie vers lui.
+ * The GF300's logic, modelled on FuMO25BlockEntity (energy, mode, rotation, scan through RadarScanner). The controller
+ * holds the state; the other ground cells only pass energy on to it.
  */
 public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
-    // GF300 : portee x1.25 par rapport au FuMO25, secteur de 150 degres, un tour toutes les 5 s
+    // GF300: vehicle range from the gf300Range config (1.25 x the FuMO-25 by default), 150 degree sector, one turn every 5 s
     public static final int CYCLE_TICKS = 100;
     public static final float DEGREES_PER_TICK = 360f / CYCLE_TICKS;
     private static final double RANGE_MULT = 1.25;
@@ -61,7 +62,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
     private int tick;
     private @Nullable UUID ownerUUID;
 
-    // etat de rendu cote client
+    // client render state
     public @Nullable BakedModelInstance modelInstance;
     public float deployTime = -1;
     public float lastRenderTime;
@@ -113,7 +114,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
         return tick;
     }
 
-    // --- serveur -----------------------------------------------------------------------------------------------
+    // --- server ------------------------------------------------------------------------------------------------
 
     public static void serverTick(Level level, BlockPos pos, BlockState state, Gf300BlockEntity be) {
         int stored = be.energy.getEnergyStored();
@@ -172,7 +173,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
         Vec3 center = new Vec3(pos.getX() + 0.5, pos.getY() + 3.5, pos.getZ() + 0.5);
         String sourceId = "block_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ();
 
-        var vehicles = new RadarScanner.RadarConfig(player, center, (wider ? 2 : 1) * com.nokosse.ultimaratio.UltimaRatioConfig.GF300_RANGE.get(), SWEEP_ANGLE, be.tick * DEGREES_PER_TICK, 0.0,
+        var vehicles = new RadarScanner.RadarConfig(player, center, (wider ? 2 : 1) * UltimaRatioConfig.GF300_RANGE.get(), SWEEP_ANGLE, be.tick * DEGREES_PER_TICK, 0.0,
                 RadarScanner.SearchType.VEHICLES, null, null, true, true, sourceId, true);
         RadarScanner.INSTANCE.sendRadarConfig(vehicles, level);
         RadarScanner.INSTANCE.scan(level, vehicles).sendToClients(player, level, vehicles.getShareWithTeammates());
@@ -201,7 +202,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
         return new Gf300Menu(id, inventory, ContainerLevelAccess.create(this.level, this.worldPosition), dataAccess);
     }
 
-    // --- energie : toute la couche au sol relaie vers le controleur ---------------------------------------------
+    // --- energy: the whole ground layer passes it on to the controller ----------------------------------------
 
     @Override
     public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
@@ -261,7 +262,7 @@ public class Gf300BlockEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
 
-    /** Le modele depasse largement la case du controleur : sans ca il disparait des que celle-ci quitte l'ecran. */
+    /** The model reaches far past the controller cell: without this it vanishes as soon as that cell leaves the screen. */
     @Override
     public @NotNull AABB getRenderBoundingBox() {
         return new AABB(this.worldPosition).inflate(8);

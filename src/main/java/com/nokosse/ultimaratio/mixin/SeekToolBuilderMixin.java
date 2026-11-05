@@ -1,5 +1,6 @@
 package com.nokosse.ultimaratio.mixin;
 
+import com.atsuishio.superbwarfare.tools.SeekTool;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Final;
@@ -18,7 +19,7 @@ import java.util.function.Predicate;
  * it, not from the operator's body, which may be hundreds of blocks away) and never picks the drone itself as a
  * target. Everything else is SBW's own filtering.
  */
-@Mixin(targets = "com.atsuishio.superbwarfare.tools.SeekTool$Builder", remap = false)
+@Mixin(value = SeekTool.Builder.class, remap = false)
 public abstract class SeekToolBuilderMixin {
     @Shadow
     @Final

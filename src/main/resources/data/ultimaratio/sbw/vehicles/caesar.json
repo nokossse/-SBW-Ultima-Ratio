@@ -293,7 +293,7 @@
   "VehicleIcon": "ultimaratio:textures/vehicle_icon/caesar_icon.png",
   "ContainerIcon": "superbwarfare:textures/gui/vehicle/type/land.png",
   "VehicleContainerType": "Small",
-  "Type": "Tank",
+  "Type": "Artillery",
   "CollisionLevel": {
     "Level": 4,
     "PowerLimits": [

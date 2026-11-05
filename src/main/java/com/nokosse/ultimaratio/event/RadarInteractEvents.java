@@ -1,7 +1,7 @@
 package com.nokosse.ultimaratio.event;
 
 import com.nokosse.ultimaratio.UltimaRatio;
-import com.nokosse.ultimaratio.entity.MambaRadarEntity;
+import com.nokosse.ultimaratio.entity.RadarVehicleEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
@@ -12,12 +12,12 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
 /**
- * Shift + right click on the ARABEL is ours: run the deploy toggle first and cancel the event, so other
- * mods listening at a lower priority (Simple Radar Systems opens its GF-300 GUI there) never see it.
+ * Shift + right click on a SAMP/T radar truck (ARABEL, NG) is ours: run the deploy toggle first and cancel the event,
+ * so other mods listening at a lower priority (Simple Radar Systems opens its GF-300 GUI there) never see it.
  */
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID)
-public final class MambaRadarInteractEvents {
-    private MambaRadarInteractEvents() {
+public final class RadarInteractEvents {
+    private RadarInteractEvents() {
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -31,7 +31,7 @@ public final class MambaRadarInteractEvents {
     }
 
     private static void claim(PlayerInteractEvent event, Entity target, Player player, InteractionHand hand) {
-        if (target instanceof MambaRadarEntity radar && player.isShiftKeyDown()) {
+        if (target instanceof RadarVehicleEntity radar && player.isShiftKeyDown()) {
             InteractionResult result = radar.interact(player, hand);
             event.setCanceled(true);
             event.setCancellationResult(result);

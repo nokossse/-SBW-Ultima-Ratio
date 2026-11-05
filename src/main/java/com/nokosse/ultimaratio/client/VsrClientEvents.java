@@ -309,8 +309,9 @@ public final class VsrClientEvents {
     public static void onMouseButton(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         Vsr700Entity vsr = Vsr700Entity.clientPiloted;
+        var mark = ModKeyMappings.MARK.getKey();
         if (vsr == null || mc.player == null || mc.screen != null || event.getAction() != GLFW.GLFW_PRESS
-                || event.getButton() != ModKeyMappings.MARK.getKey().getValue()) {
+                || mark.getType() != InputConstants.Type.MOUSE || event.getButton() != mark.getValue()) {
             return;
         }
         ItemStack offhand = mc.player.getOffhandItem();
@@ -477,7 +478,10 @@ public final class VsrClientEvents {
         graphics.drawCenteredString(mc.font, range, cx, cy + 14, color);
     }
 
-    /** While flying, clicks never reach the world around the body: right click only toggles the monitor. */
+    /**
+     * While flying, clicks never reach the world around the body: right click only toggles the monitor. Flying from a
+     * GCS, whatever the hand holds (food, a bow...) is not used either.
+     */
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
         Minecraft mc = Minecraft.getInstance();
@@ -486,7 +490,8 @@ public final class VsrClientEvents {
         }
         event.setCanceled(true);
         event.setSwingHand(false);
-        if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND) {
+        if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND
+                && mc.player.getMainHandItem().getItem() instanceof VsrMonitorItem) {
             mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
         }
     }

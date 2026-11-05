@@ -1,5 +1,6 @@
 {
   "mortar_fire": {
+    "subtitle": "subtitles.ultimaratio.mortar_fire",
     "sounds": [
       {
         "name": "ultimaratio:mortar_fire",
@@ -8,6 +9,7 @@
     ]
   },
   "rafale_30mm_fire": {
+    "subtitle": "subtitles.ultimaratio.rafale_30mm_fire",
     "sounds": [
       {
         "name": "ultimaratio:rafale_30mm_fire",
@@ -17,6 +19,7 @@
     ]
   },
   "sampt_fire": {
+    "subtitle": "subtitles.ultimaratio.sampt_fire",
     "sounds": [
       {
         "name": "ultimaratio:sampt_fire",
@@ -26,6 +29,7 @@
     ]
   },
   "caesar_fire": {
+    "subtitle": "subtitles.ultimaratio.caesar_fire",
     "sounds": [
       {
         "name": "ultimaratio:caesar_fire",

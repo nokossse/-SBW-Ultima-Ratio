@@ -47,12 +47,14 @@ public class MambaEntity extends SpArtilleryEntity {
     public static final EntityDataAccessor<Boolean> AUTO =
             SynchedEntityData.defineId(MambaEntity.class, EntityDataSerializers.BOOLEAN);
 
-    /** Auto-fire only on targets at least this many blocks above the launcher's Y. */
+    /** Aircraft and vehicles are engaged out to this distance (missiles: see MISSILE_RANGE and the radar picture). */
     private static final double AUTO_RANGE = 512.0;
     /** Safety net: an enemy missile this close is engaged even with no radar covering it (radar-spotted ones have no limit). */
     private static final double MISSILE_RANGE = 1000.0;
     private static final int AUTO_COOLDOWN_TICKS = 60;
     private static final int AUTO_RETARGET_TICKS = 200;
+    /** The idle search (a wide entity query) runs every other tick. */
+    private static final int AUTO_SEARCH_INTERVAL = 2;
 
     private UUID owner;
     private UUID lastAutoTarget;
@@ -72,7 +74,6 @@ public class MambaEntity extends SpArtilleryEntity {
 
     private static final int STAB_DURATION_TICKS = 200;
     private static final int DEPLOY_DURATION_TICKS = 247;
-    private static final double SILO_LENGTH = 4.94375;
 
     private int clientPhase = PHASE_IDLE;
 
@@ -95,10 +96,6 @@ public class MambaEntity extends SpArtilleryEntity {
 
     public void setPhaseTicks(int ticks) {
         this.entityData.set(PHASE_TICKS, ticks);
-    }
-
-    public boolean isReadyToFire() {
-        return this.isDeployed();
     }
 
     /** Fully deployed battery: cannot drive, can fire. Same as PHASE_READY. */
@@ -128,10 +125,20 @@ public class MambaEntity extends SpArtilleryEntity {
         return this.entityData.get(AUTO);
     }
 
+    /** Launchers that can fire on their own (the MAMBA); the HADES is a surface-to-surface missile and cannot. */
+    protected boolean hasAutoMode() {
+        return true;
+    }
+
+    /** Length of a launch tube: the back blast comes out of its rear end. */
+    protected double siloLength() {
+        return 4.94375;
+    }
+
     /** Same as the CIWS: shift + right click from outside toggles ACTIVE/INACTIVE (first user becomes the owner). */
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
-        if (player.isCrouching() && !this.isWreck() && !this.getLocked()
+        if (this.hasAutoMode() && player.isCrouching() && !this.isWreck() && !this.getLocked()
                 && !player.getMainHandItem().is(ModTags.Items.TOOLS_CROWBAR)) {
             if (this.owner == null) {
                 this.owner = player.getUUID();
@@ -154,7 +161,8 @@ public class MambaEntity extends SpArtilleryEntity {
     }
 
     private void tickAutoFire() {
-        if (!this.isAuto() || !this.isDeployed() || this.isWreck()
+        if (!this.hasAutoMode() || !this.isAuto() || !this.isDeployed() || this.isWreck()
+                || this.tickCount % AUTO_SEARCH_INTERVAL != 0
                 || this.getNthEntity(this.getTurretControllerIndex()) != null
                 || this.tickCount - this.lastAutoShotTick < AUTO_COOLDOWN_TICKS
                 || this.getAmmoCount("Main") <= 0) {
@@ -214,8 +222,6 @@ public class MambaEntity extends SpArtilleryEntity {
         super.addAdditionalSaveData(compound);
         compound.putInt("Phase", this.getPhase());
         compound.putInt("PhaseTicks", this.getPhaseTicks());
-        compound.putBoolean("Deployed", this.isDeployed());
-        compound.putBoolean("Undeployed", this.isUndeployed());
         compound.putBoolean("Auto", this.isAuto());
         if (this.owner != null) {
             compound.putUUID("AutoOwner", this.owner);
@@ -408,7 +414,7 @@ public class MambaEntity extends SpArtilleryEntity {
         }
         Vec3 exit = this.getShootPos("Main", 1.0F);
         Vec3 vec = this.getShootVec("Main", 1.0F);
-        Vec3 entry = exit.subtract(vec.normalize().scale(SILO_LENGTH));
+        Vec3 entry = exit.subtract(vec.normalize().scale(this.siloLength()));
         ParticleTool.spawnBigCannonMuzzleParticles(vec.scale(-1.0), entry, serverLevel, this);
     }
 

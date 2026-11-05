@@ -29,7 +29,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Comparator;
 import java.util.UUID;
 
-/** VBMR-L Serval LAD: with nobody in the gunner seat and auto mode on, the ARX30 shoots hostile drones and phantoms around it. */
+/**
+ * VBMR-L Serval LAD (counter-drone): with nobody in the gunner seat and auto mode on, the ARX30 shoots hostile drones
+ * (SBW's drones and swarm drones, this addon's VSR700 and MQ-9) and phantoms around it.
+ */
 public class ServalLadEntity extends ServalEntity {
     public static final EntityDataAccessor<Boolean> AUTO =
             SynchedEntityData.defineId(ServalLadEntity.class, EntityDataSerializers.BOOLEAN);
@@ -169,6 +172,11 @@ public class ServalLadEntity extends ServalEntity {
         } else if (e instanceof SwarmDroneEntity swarm) {
             Entity shooter = swarm.getOwner();
             hostile = shooter == null || !this.isFriendly(ownerPlayer, shooter, swarm);
+        } else if (e instanceof Vsr700Entity drone) {
+            // VSR700 / MQ-9: flying and not of the owner's side (Vsr700Entity.getTeam is its operator's team)
+            UUID operator = drone.getController();
+            Entity controller = operator == null ? null : this.level().getPlayerByUUID(operator);
+            hostile = !drone.onGround() && !drone.isWreck() && !this.isFriendly(ownerPlayer, controller, drone);
         } else {
             return false;
         }

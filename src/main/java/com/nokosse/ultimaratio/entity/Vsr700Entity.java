@@ -7,6 +7,7 @@ import com.atsuishio.superbwarfare.entity.vehicle.utils.VehicleVecUtils;
 import com.atsuishio.superbwarfare.event.ClientMouseHandler;
 import com.google.common.collect.Iterables;
 import com.nokosse.ultimaratio.UltimaRatioConfig;
+import com.nokosse.ultimaratio.init.ModGameRules;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
 import com.nokosse.ultimaratio.event.VsrRemote;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
@@ -275,7 +276,7 @@ public class Vsr700Entity extends VehicleEntity {
     @Override
     public void tick() {
         if (level() instanceof ServerLevel server && tickCount % 5 == 0 && !isWreck() && UltimaRatioConfig.DRONE_CHUNK_LOADING.get()
-                && server.getGameRules().getBoolean(com.nokosse.ultimaratio.init.ModGameRules.DRONE_CHUNK_LOADING)) {
+                && server.getGameRules().getBoolean(ModGameRules.DRONE_CHUNK_LOADING)) {
             // every 5 ticks: a loitering Reaper crosses a couple of chunks per second; radius 3 keeps its chunk and the ring around it ticking
             ChunkPos here = chunkPosition();
             server.getChunkSource().addRegionTicket(DRONE_TICKET, here, 3, here);
@@ -382,7 +383,7 @@ public class Vsr700Entity extends VehicleEntity {
         if (pilot.level().isClientSide) {
             return pilot == clientPilot ? clientPiloted : null;
         }
-        return pilot instanceof ServerPlayer player ? com.nokosse.ultimaratio.event.VsrRemote.flying(player) : null;
+        return pilot instanceof ServerPlayer player ? VsrRemote.flying(player) : null;
     }
 
     @Override

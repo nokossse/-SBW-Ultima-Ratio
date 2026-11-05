@@ -15,12 +15,16 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 
 public class TigreRenderer extends GeoVehicleRenderer<TigreEntity> {
     private static final String GLASS_BONE = "move_translucent";
     // Gunner (seat 1), 9M120 (weapon 1): SBW would show that missile on the dummy, we show a Kh-39 instead.
     private static final String KH39_DUMMY_BONE = "dummy_1_1_1";
+
+    /** Never-spawned Kh-39 drawn on the dummy bone, made once per level instead of once per frame. */
+    private Entity kh39;
 
     public TigreRenderer(EntityRendererProvider.Context context) {
         super(context);
@@ -105,24 +109,24 @@ public class TigreRenderer extends GeoVehicleRenderer<TigreEntity> {
         if (entity.isWreck() || data == null || bone == null || data.ammo.get() <= 0) {
             return;
         }
-        EntityType.byString("superbwarfare:kh_39").ifPresent(type -> {
-            var missile = type.create(entity.level());
-            if (missile == null) {
+        if (this.kh39 == null || this.kh39.level() != entity.level()) {
+            this.kh39 = EntityType.byString("superbwarfare:kh_39").map(type -> type.create(entity.level())).orElse(null);
+            if (this.kh39 == null) {
                 return;
             }
-            missile.tickCount = 1;
-            if (missile instanceof FastThrowableProjectile p) {
+            this.kh39.tickCount = 1;
+            if (this.kh39 instanceof FastThrowableProjectile p) {
                 p.setSyncedTick(1); // the projectile renderer hides it while syncedTick is low
             }
-            poseStack.pushPose();
-            poseStack.mulPoseMatrix(bone.getGlobalTransform(instance));
-            var def = bone.definition();
-            poseStack.translate(def.pivotX(), def.pivotY(), def.pivotZ());
-            // Same scale and offset as the Kh-39 on SBW's Mi-28.
-            poseStack.scale(0.75F, 0.75F, 0.75F);
-            poseStack.mulPose(Axis.YP.rotationDegrees(180F));
-            this.entityRenderDispatcher.render(missile, 0, -0.385, -1.62, entityYaw, partialTicks, poseStack, buffer, packedLight);
-            poseStack.popPose();
-        });
+        }
+        poseStack.pushPose();
+        poseStack.mulPoseMatrix(bone.getGlobalTransform(instance));
+        var def = bone.definition();
+        poseStack.translate(def.pivotX(), def.pivotY(), def.pivotZ());
+        // Same scale and offset as the Kh-39 on SBW's Mi-28.
+        poseStack.scale(0.75F, 0.75F, 0.75F);
+        poseStack.mulPose(Axis.YP.rotationDegrees(180F));
+        this.entityRenderDispatcher.render(this.kh39, 0, -0.385, -1.62, entityYaw, partialTicks, poseStack, buffer, packedLight);
+        poseStack.popPose();
     }
 }

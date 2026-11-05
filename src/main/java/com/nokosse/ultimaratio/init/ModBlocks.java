@@ -6,7 +6,7 @@ import com.nokosse.ultimaratio.block.entity.Gf300BlockEntity;
 import com.nokosse.ultimaratio.block.GcsBlock;
 import com.nokosse.ultimaratio.block.entity.GcsBlockEntity;
 import com.nokosse.ultimaratio.item.VsrMonitorItem;
-import net.minecraft.world.item.BlockItem;
+import com.nokosse.ultimaratio.item.DescribedBlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -25,11 +25,11 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> GF300 = BLOCKS.register("gf300", Gf300Block::new);
     public static final RegistryObject<Item> GF300_ITEM =
-            ITEMS.register("gf300", () -> new BlockItem(GF300.get(), new Item.Properties()));
+            ITEMS.register("gf300", () -> new DescribedBlockItem(GF300.get(), new Item.Properties(), "gf300", 3));
     public static final RegistryObject<Item> VSR_MONITOR = ITEMS.register("vsr_monitor", VsrMonitorItem::new);
     public static final RegistryObject<Block> GCS = BLOCKS.register("gcs", GcsBlock::new);
     public static final RegistryObject<Item> GCS_ITEM =
-            ITEMS.register("gcs", () -> new BlockItem(GCS.get(), new Item.Properties().stacksTo(1)));
+            ITEMS.register("gcs", () -> new DescribedBlockItem(GCS.get(), new Item.Properties().stacksTo(1), "gcs", 3));
     public static final RegistryObject<BlockEntityType<GcsBlockEntity>> GCS_BE = BLOCK_ENTITIES.register("gcs",
             () -> BlockEntityType.Builder.of(GcsBlockEntity::new, GCS.get()).build(null));
     public static final RegistryObject<BlockEntityType<Gf300BlockEntity>> GF300_BE = BLOCK_ENTITIES.register("gf300",

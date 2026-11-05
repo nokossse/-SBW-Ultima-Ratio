@@ -7,6 +7,7 @@ modId = "${mod_id}"
 version = "${mod_version}"
 displayName = "${mod_name}"
 authors = "${mod_authors}"
+credits = "Per-vehicle credits are shown on each vehicle crate. Built on Superb Warfare by Atsuishio, Roki27, Light_Quanta and contributors."
 description = '''${mod_description}'''
 
 [[dependencies."${mod_id}"]]
@@ -51,6 +52,7 @@ versionRange = "[2.5.1,)"
 ordering = "NONE"
 side = "CLIENT"
 
+# Simple Radar Systems (optional): its GUI also listens to shift + right click on entities, see RadarInteractEvents
 [[dependencies."${mod_id}"]]
 modId = "srs"
 mandatory = false
