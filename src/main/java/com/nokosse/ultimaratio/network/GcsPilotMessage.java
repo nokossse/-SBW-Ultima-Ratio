@@ -8,7 +8,7 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-/** Server to client: the drone flown from a GCS (its UUID), or "" once the link ends. The monitor keeps this in its NBT instead. */
+/** Server to client: the drone flown from a GCS (its UUID), or "" once the link ends. */
 public class GcsPilotMessage {
     private final String drone;
 

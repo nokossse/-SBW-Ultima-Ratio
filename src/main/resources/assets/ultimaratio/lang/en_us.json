@@ -47,7 +47,7 @@
   "weapon.ultimaratio.mistral": "Mistral",
 
   "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
-  "info.ultimaratio.serval_lad": "The VBMR-L Serval LAD is the counter-drone version of the Serval: a roof turret with a 30 mm ARX30 cannon firing grapeshot (or anti-air shells). Crew it from the gunner seat, or Shift + right click it (the first player becomes its owner) to switch on the automatic turret: unmanned, it shoots hostile drones and phantoms within 50 blocks. The rear steps fold down when it stops.",
+  "info.ultimaratio.serval_lad": "The VBMR-L Serval LAD is the counter-drone version of the Serval: a roof turret with a 30 mm ARX30 cannon firing grapeshot (or anti-air shells). Crew it from the gunner seat, or Shift + right click it (the first player becomes its owner) to switch on the automatic turret: unmanned, it shoots small hostile drones (FPV and swarm drones) and phantoms within 50 blocks. The rear steps fold down when it stops.",
   "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
 
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -78,23 +78,17 @@
   "info.ultimaratio.as350": "The AS350 Écureuil is a light single-engine utility helicopter, fast and agile. Unarmed: a pilot, a passenger beside them and two more in the back.",
 
   "entity.ultimaratio.vsr700": "VSR700",
-  "info.ultimaratio.vsr700": "The Airbus VSR700 is an unmanned tactical helicopter derived from the Cabri G2. Nobody boards it: fly it from a VSR Monitor or a Ground Control Station while your body stays where you stand, still vulnerable. Weapons: two Mistral missiles that follow where the drone points (1) and a laser designator (2), a zoomable sensor camera that holds the point it looks at. A small radar shows what flies around it. The link is lost beyond 2500 blocks.",
+  "info.ultimaratio.vsr700": "The Airbus VSR700 is an unmanned tactical helicopter derived from the Cabri G2. Nobody boards it: fly it from a Ground Control Station while your body stays at the desk, still vulnerable. Weapons: two Mistral missiles that follow where the drone points (1) and a laser designator (2), a zoomable sensor camera that holds the point it looks at. A small radar shows what flies around it. The link is lost beyond 2500 blocks.",
   "weapon.ultimaratio.vsr_laser": "Laser designator",
 
   "entity.ultimaratio.mq9_reaper": "MQ-9 Reaper",
-  "info.ultimaratio.mq9_reaper": "The General Atomics MQ-9 Reaper is the medium-altitude long-endurance drone of the French Air and Space Force: one turboprop pushing from the rear and a sensor ball under the nose. Flown like the VSR700 from a VSR Monitor or a Ground Control Station, but as an airplane: take off, fly and land it from where you stand. Weapons: two AGM-114 Hellfire missiles that ride the sensor camera's line of sight (1), two GBU-12 bombs (2) and the laser designator (3). Let go of the controls in the air and it circles over that point; it can also be sent somewhere from the tactical map. The landing-gear key retracts the gear. The link is lost beyond 5000 blocks.",
+  "info.ultimaratio.mq9_reaper": "The General Atomics MQ-9 Reaper is the medium-altitude long-endurance drone of the French Air and Space Force: one turboprop pushing from the rear and a sensor ball under the nose. Flown like the VSR700 from a Ground Control Station, but as an airplane: take off, fly and land it from the desk. Weapons: two AGM-114 Hellfire missiles that ride the sensor camera's line of sight (1), two GBU-12 bombs (2) and the laser designator (3). Let go of the controls in the air and it circles over that point; it can also be sent somewhere from the tactical map. The landing-gear key retracts the gear. The link is lost beyond 5000 blocks.",
   "weapon.ultimaratio.hellfire": "AGM-114 Hellfire",
   "weapon.ultimaratio.gbu_12": "GBU-12 Paveway II",
 
-  "item.ultimaratio.vsr_monitor": "VSR Monitor",
-  "des.ultimaratio.vsr_monitor": "Drone distance: %1$s",
-  "des.ultimaratio.vsr_monitor.usage_1": "Right click a VSR700 or MQ-9 to link it.",
-  "des.ultimaratio.vsr_monitor.usage_2": "Right click in the air to take or release the controls.",
-  "des.ultimaratio.vsr_monitor.usage_3": "Sneak + right click in the air to unlink.",
-
   "block.ultimaratio.gcs": "Ground Control Station",
-  "des.ultimaratio.gcs.1": "Right click it to fly any drone of your side in range,",
-  "des.ultimaratio.gcs.2": "no monitor needed. The dismount key or walking away lets go.",
+  "des.ultimaratio.gcs.1": "Right click it to fly a VSR700 or MQ-9 of your side in range.",
+  "des.ultimaratio.gcs.2": "The dismount key or walking away from the desk lets go.",
   "des.ultimaratio.gcs.3": "Needs a little FE to run.",
   "gui.ultimaratio.gcs.title": "Select a drone",
   "gui.ultimaratio.gcs.none": "No drone of your side in range",
@@ -107,11 +101,6 @@
   "des.ultimaratio.gf300.3": "Feed it FE; right click it to choose its mode.",
 
   "tips.ultimaratio.radar.no_energy": "Not enough energy to deploy the radar",
-  "tips.ultimaratio.vsr.linked": "Drone linked",
-  "tips.ultimaratio.vsr.unlinked": "Drone unlinked",
-  "tips.ultimaratio.vsr.already_linked": "This drone is already linked to a monitor",
-  "tips.ultimaratio.vsr.enemy_drone": "This drone belongs to another team",
-  "tips.ultimaratio.vsr.monitor_busy": "This monitor is already linked to a drone",
   "tips.ultimaratio.vsr.out_of_range": "Drone out of range: link lost",
   "tips.ultimaratio.vsr.destroyed": "Drone destroyed: link lost",
   "tips.ultimaratio.vsr.signal_lost": "Drone signal lost",

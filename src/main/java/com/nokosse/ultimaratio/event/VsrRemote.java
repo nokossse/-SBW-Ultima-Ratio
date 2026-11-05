@@ -5,7 +5,6 @@ import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
 import com.nokosse.ultimaratio.block.GcsBlock;
-import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import com.nokosse.ultimaratio.network.GcsListMessage;
 import com.nokosse.ultimaratio.network.GcsPilotMessage;
 import com.nokosse.ultimaratio.network.ModNetwork;
@@ -20,7 +19,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.TicketType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
@@ -36,7 +34,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Server side of the VSR700 remote control. While an operator flies:
+ * Server side of the VSR700 / MQ-9 remote control, flown from a Ground Control Station. While an operator flies:
  * <ul>
  *     <li>the chunk map treats the drone's position as theirs (ChunkMapMixin): chunks load, generate, tick
  *     and stream around the drone exactly as around a player;</li>
@@ -193,49 +191,12 @@ public final class VsrRemote {
         return null;
     }
 
-    /** The VSR700 this player is flying right now: monitor in main hand, in use, linked to them. */
-    @Nullable
-    public static Vsr700Entity findPiloted(ServerPlayer player) {
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof VsrMonitorItem) || !VsrMonitorItem.isUsing(stack)
-                || !player.isAlive()) {
-            return null;
-        }
-        UUID uuid = VsrMonitorItem.getLinkedUuid(stack);
-        if (uuid == null) {
-            return null;
-        }
-        Entity entity = player.serverLevel().getEntity(uuid);
-        if (entity instanceof Vsr700Entity vsr && vsr.isAlive() && player.getUUID().equals(vsr.getController())) {
-            return vsr;
-        }
-        return null;
-    }
-
-    /** A monitor in use whose drone is gone (removed, crashed, unloaded) switches off and is unlinked. */
-    private static void dropDeadLink(ServerPlayer player) {
-        ItemStack stack = player.getMainHandItem();
-        if (!(stack.getItem() instanceof VsrMonitorItem) || !VsrMonitorItem.isUsing(stack)) {
-            return;
-        }
-        UUID linked = VsrMonitorItem.getLinkedUuid(stack); // null for a stale or corrupt link: treated as lost
-        Entity entity = linked == null ? null : player.serverLevel().getEntity(linked);
-        if (!(entity instanceof Vsr700Entity vsr) || !vsr.isAlive() || vsr.isWreck()) {
-            VsrMonitorItem.unlink(stack);
-            player.displayClientMessage(Component.translatable("tips.ultimaratio.vsr.signal_lost").withStyle(ChatFormatting.RED), true);
-        }
-    }
-
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
         if (event.phase != TickEvent.Phase.END || !(event.player instanceof ServerPlayer player)) {
             return;
         }
-        dropDeadLink(player);
-        Vsr700Entity vsr = findPiloted(player);
-        if (vsr == null) {
-            vsr = gcsPiloted(player);
-        }
+        Vsr700Entity vsr = gcsPiloted(player);
         Vsr700Entity previous = PILOTS.get(player.getUUID());
         if (vsr == null && previous == null) {
             return;
@@ -258,7 +219,7 @@ public final class VsrRemote {
             }
         }
         if (vsr != null && vsr.distanceToSqr(player) > vsr.maxRange() * vsr.maxRange()) {
-            // Out of range: the link is cut, the monitor switches off and forgets the drone
+            // Out of range: the link is cut and the GCS lets go of the drone
             vsr.disconnectOperator(Component.translatable("tips.ultimaratio.vsr.out_of_range"));
             vsr = null;
         }
@@ -319,10 +280,6 @@ public final class VsrRemote {
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            ItemStack stack = player.getMainHandItem();
-            if (stack.getItem() instanceof VsrMonitorItem) {
-                stack.getOrCreateTag().putBoolean(VsrMonitorItem.USING, false);
-            }
             MAP_SELECTED.remove(player.getUUID());
             dropGcsLink(player);
             Vsr700Entity vsr = PILOTS.remove(player.getUUID());

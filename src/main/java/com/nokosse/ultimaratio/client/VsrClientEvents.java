@@ -9,7 +9,6 @@ import com.atsuishio.superbwarfare.tools.EntityFindUtil;
 import com.nokosse.ultimaratio.UltimaRatio;
 import com.nokosse.ultimaratio.entity.Mq9ReaperEntity;
 import com.nokosse.ultimaratio.entity.Vsr700Entity;
-import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import com.nokosse.ultimaratio.network.ModNetwork;
 import com.nokosse.ultimaratio.network.VsrMarkMessage;
 import com.nokosse.ultimaratio.network.ReaperAimMessage;
@@ -20,7 +19,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.Util;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
@@ -45,9 +43,9 @@ import org.lwjgl.glfw.GLFW;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Client side of the VSR700 remote control: while the monitor is in use, the local player is made the
+ * Client side of the VSR700 / MQ-9 remote control: while a drone is flown from a GCS, the local player is made the
  * drone's virtual pilot (Vsr700Entity.clientPilot + EntityVehicleMixin), and SBW does the rest exactly as
- * for a seated helicopter pilot. SBW's dismount key or right click releases the controls.
+ * for a seated pilot. SBW's dismount key releases the controls.
  */
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID, value = Dist.CLIENT)
 public final class VsrClientEvents {
@@ -110,16 +108,13 @@ public final class VsrClientEvents {
         gcsDrone = "";
     }
 
-    /** The drone flown: the monitor in use in main hand, else the one picked at a GCS. */
+    /** The drone flown from a GCS, if it is loaded on this side. */
     @Nullable
     private static Vsr700Entity linkedInUse(LocalPlayer player) {
-        ItemStack stack = player.getMainHandItem();
-        String id = stack.getItem() instanceof VsrMonitorItem && VsrMonitorItem.isUsing(stack) ? VsrMonitorItem.getLinked(stack)
-                : gcsDrone.isEmpty() ? null : gcsDrone;
-        if (!player.isAlive() || id == null) {
+        if (!player.isAlive() || gcsDrone.isEmpty()) {
             return null;
         }
-        Entity entity = EntityFindUtil.findEntity(player.level(), id);
+        Entity entity = EntityFindUtil.findEntity(player.level(), gcsDrone);
         return entity instanceof Vsr700Entity vsr && vsr.isAlive() ? vsr : null;
     }
 
@@ -349,14 +344,14 @@ public final class VsrClientEvents {
     }
 
     /**
-     * The monitor cannot attack. Cancelled last: a cancelled event never reaches the handlers after it, and SBW's
-     * (which fires the vehicle's weapon on this very button) must see the click first.
+     * The operator's body cannot attack. Cancelled last: a cancelled event never reaches the handlers after it, and
+     * SBW's (which fires the vehicle's weapon on this very button) must see the click first.
      */
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onAttackButton(InputEvent.MouseButton.Pre event) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null && mc.screen == null
-                && (mc.player.getMainHandItem().getItem() instanceof VsrMonitorItem || mc.player == Vsr700Entity.clientPilot)
+                && mc.player == Vsr700Entity.clientPilot
                 && mc.options.keyAttack.matchesMouse(event.getButton())) {
             event.setCanceled(true);
         }
@@ -478,21 +473,12 @@ public final class VsrClientEvents {
         graphics.drawCenteredString(mc.font, range, cx, cy + 14, color);
     }
 
-    /**
-     * While flying, clicks never reach the world around the body: right click only toggles the monitor. Flying from a
-     * GCS, whatever the hand holds (food, a bow...) is not used either.
-     */
+    /** While flying, clicks never reach the world around the body: whatever the hand holds (food, a bow...) is not used. */
     @SubscribeEvent
     public static void onInteractionKey(InputEvent.InteractionKeyMappingTriggered event) {
-        Minecraft mc = Minecraft.getInstance();
-        if (Vsr700Entity.clientPiloted == null || mc.player == null || mc.gameMode == null) {
-            return;
-        }
-        event.setCanceled(true);
-        event.setSwingHand(false);
-        if (event.isUseItem() && event.getHand() == InteractionHand.MAIN_HAND
-                && mc.player.getMainHandItem().getItem() instanceof VsrMonitorItem) {
-            mc.gameMode.useItem(mc.player, InteractionHand.MAIN_HAND);
+        if (Vsr700Entity.clientPiloted != null) {
+            event.setCanceled(true);
+            event.setSwingHand(false);
         }
     }
 }

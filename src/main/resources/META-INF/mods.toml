@@ -51,11 +51,3 @@ mandatory = true
 versionRange = "[2.5.1,)"
 ordering = "NONE"
 side = "CLIENT"
-
-# Simple Radar Systems (optional): its GUI also listens to shift + right click on entities, see RadarInteractEvents
-[[dependencies."${mod_id}"]]
-modId = "srs"
-mandatory = false
-versionRange = "*"
-ordering = "NONE"
-side = "BOTH"

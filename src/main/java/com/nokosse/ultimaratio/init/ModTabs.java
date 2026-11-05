@@ -20,7 +20,6 @@ public class ModTabs {
                     .icon(() -> ContainerBlockItem.createInstance(ModEntities.CAESAR.get()))
                     .displayItems((params, output) -> {
                         ModEntities.VEHICLES.forEach(vehicle -> output.accept(ContainerBlockItem.createInstance(vehicle.get())));
-                        output.accept(ModBlocks.VSR_MONITOR.get());
                         output.accept(ModBlocks.GCS_ITEM.get());
                         output.accept(ModBlocks.GF300_ITEM.get());
                     })

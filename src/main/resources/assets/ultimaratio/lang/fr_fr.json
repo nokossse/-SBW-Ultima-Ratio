@@ -47,7 +47,7 @@
   "weapon.ultimaratio.mistral": "Mistral",
 
   "entity.ultimaratio.serval_lad": "VBMR-L Serval LAD",
-  "info.ultimaratio.serval_lad": "Le VBMR-L Serval LAD est la version de lutte anti-drones du Serval : une tourelle de toit armée d'un canon ARX30 de 30 mm tirant de la mitraille (ou des obus antiaériens). Servez-la depuis la place du tireur, ou Shift + clic droit (le premier joueur en devient le propriétaire) pour activer la tourelle automatique : sans tireur, elle abat les drones hostiles et les phantoms dans un rayon de 50 blocs. Le marchepied arrière se déploie à l'arrêt.",
+  "info.ultimaratio.serval_lad": "Le VBMR-L Serval LAD est la version de lutte anti-drones du Serval : une tourelle de toit armée d'un canon ARX30 de 30 mm tirant de la mitraille (ou des obus antiaériens). Servez-la depuis la place du tireur, ou Shift + clic droit (le premier joueur en devient le propriétaire) pour activer la tourelle automatique : sans tireur, elle abat les petits drones hostiles (FPV et essaims) et les phantoms dans un rayon de 50 blocs. Le marchepied arrière se déploie à l'arrêt.",
   "weapon.ultimaratio.arx30_gs": "30 mm ARX30 GS",
 
   "entity.ultimaratio.leclerc_xlr": "Leclerc XLR",
@@ -78,23 +78,17 @@
   "info.ultimaratio.as350": "L'AS350 Écureuil est un hélicoptère utilitaire léger monomoteur, rapide et agile. Non armé : un pilote, un passager à côté de lui et deux autres à l'arrière.",
 
   "entity.ultimaratio.vsr700": "VSR700",
-  "info.ultimaratio.vsr700": "L'Airbus VSR700 est un hélicoptère tactique sans pilote dérivé du Cabri G2. Personne n'y monte : il se pilote depuis un moniteur VSR ou une station de contrôle au sol pendant que votre corps reste sur place, toujours vulnérable. Armement : deux missiles Mistral qui suivent la direction du drone (1) et un désignateur laser (2), une caméra zoomable qui reste fixée sur le point visé. Un petit radar montre ce qui vole autour de lui. La liaison est perdue au-delà de 2500 blocs.",
+  "info.ultimaratio.vsr700": "L'Airbus VSR700 est un hélicoptère tactique sans pilote dérivé du Cabri G2. Personne n'y monte : il se pilote depuis une station de contrôle au sol pendant que votre corps reste au pupitre, toujours vulnérable. Armement : deux missiles Mistral qui suivent la direction du drone (1) et un désignateur laser (2), une caméra zoomable qui reste fixée sur le point visé. Un petit radar montre ce qui vole autour de lui. La liaison est perdue au-delà de 2500 blocs.",
   "weapon.ultimaratio.vsr_laser": "Désignateur laser",
 
   "entity.ultimaratio.mq9_reaper": "MQ-9 Reaper",
-  "info.ultimaratio.mq9_reaper": "Le General Atomics MQ-9 Reaper est le drone MALE de l'Armée de l'Air et de l'Espace : un turbopropulseur à hélice propulsive et une boule optronique sous le nez. Il se pilote comme le VSR700 depuis un moniteur VSR ou une station de contrôle au sol, mais en avion : décollage, vol et atterrissage depuis l'endroit où vous êtes. Armement : deux missiles AGM-114 Hellfire qui suivent l'axe de la caméra (1), deux bombes GBU-12 (2) et le désignateur laser (3). Lâchez les commandes en vol et il tourne au-dessus de ce point ; il peut aussi être envoyé quelque part depuis la carte tactique. La touche de train rentre le train d'atterrissage. La liaison est perdue au-delà de 5000 blocs.",
+  "info.ultimaratio.mq9_reaper": "Le General Atomics MQ-9 Reaper est le drone MALE de l'Armée de l'Air et de l'Espace : un turbopropulseur à hélice propulsive et une boule optronique sous le nez. Il se pilote comme le VSR700 depuis une station de contrôle au sol, mais en avion : décollage, vol et atterrissage depuis le pupitre. Armement : deux missiles AGM-114 Hellfire qui suivent l'axe de la caméra (1), deux bombes GBU-12 (2) et le désignateur laser (3). Lâchez les commandes en vol et il tourne au-dessus de ce point ; il peut aussi être envoyé quelque part depuis la carte tactique. La touche de train rentre le train d'atterrissage. La liaison est perdue au-delà de 5000 blocs.",
   "weapon.ultimaratio.hellfire": "AGM-114 Hellfire",
   "weapon.ultimaratio.gbu_12": "GBU-12 Paveway II",
 
-  "item.ultimaratio.vsr_monitor": "Moniteur VSR",
-  "des.ultimaratio.vsr_monitor": "Distance du drone : %1$s",
-  "des.ultimaratio.vsr_monitor.usage_1": "Clic droit sur un VSR700 ou un MQ-9 pour le lier.",
-  "des.ultimaratio.vsr_monitor.usage_2": "Clic droit dans le vide pour prendre ou lâcher les commandes.",
-  "des.ultimaratio.vsr_monitor.usage_3": "Accroupi + clic droit dans le vide pour délier.",
-
   "block.ultimaratio.gcs": "Station de contrôle au sol",
-  "des.ultimaratio.gcs.1": "Clic droit pour piloter un drone de votre camp à portée,",
-  "des.ultimaratio.gcs.2": "sans moniteur. La touche Descendre ou s'éloigner le relâche.",
+  "des.ultimaratio.gcs.1": "Clic droit pour piloter un VSR700 ou un MQ-9 de votre camp à portée.",
+  "des.ultimaratio.gcs.2": "La touche Descendre ou s'éloigner du pupitre le relâche.",
   "des.ultimaratio.gcs.3": "Doit être alimentée en FE (très peu).",
   "gui.ultimaratio.gcs.title": "Choisir un drone",
   "gui.ultimaratio.gcs.none": "Aucun drone de votre camp à portée",
@@ -107,11 +101,6 @@
   "des.ultimaratio.gf300.3": "Alimentez-le en FE ; clic droit pour choisir son mode.",
 
   "tips.ultimaratio.radar.no_energy": "Pas assez d'énergie pour déployer le radar",
-  "tips.ultimaratio.vsr.linked": "Drone lié",
-  "tips.ultimaratio.vsr.unlinked": "Drone délié",
-  "tips.ultimaratio.vsr.already_linked": "Ce drone est déjà lié à un moniteur",
-  "tips.ultimaratio.vsr.enemy_drone": "Ce drone appartient à une autre équipe",
-  "tips.ultimaratio.vsr.monitor_busy": "Ce moniteur est déjà lié à un drone",
   "tips.ultimaratio.vsr.out_of_range": "Drone hors de portée : liaison perdue",
   "tips.ultimaratio.vsr.destroyed": "Drone détruit : liaison perdue",
   "tips.ultimaratio.vsr.signal_lost": "Signal du drone perdu",

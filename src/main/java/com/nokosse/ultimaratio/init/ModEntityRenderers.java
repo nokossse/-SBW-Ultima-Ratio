@@ -38,12 +38,9 @@ import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.renderer.item.ItemProperties;
 import com.nokosse.ultimaratio.client.screen.Vsr700Screen;
-import net.minecraft.resources.ResourceLocation;
 import com.nokosse.ultimaratio.inventory.Mq9Menu;
 import com.nokosse.ultimaratio.inventory.Vsr700Menu;
-import com.nokosse.ultimaratio.item.VsrMonitorItem;
 import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = UltimaRatio.MODID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
@@ -87,12 +84,8 @@ public class ModEntityRenderers {
 
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event) {
-        // Linked screen texture on the VSR Monitor, like SBW's drone monitor
         event.enqueueWork(() -> MenuScreens.register(ModMenus.VSR700.get(), Vsr700Screen<Vsr700Menu>::new));
         event.enqueueWork(() -> MenuScreens.register(ModMenus.MQ9.get(), Vsr700Screen<Mq9Menu>::new));
-        event.enqueueWork(() -> ItemProperties.register(ModBlocks.VSR_MONITOR.get(),
-                new ResourceLocation(UltimaRatio.MODID, "linked"),
-                (stack, level, entity, seed) -> VsrMonitorItem.getLinked(stack) != null ? 1 : 0));
     }
 
     @SubscribeEvent
