@@ -260,15 +260,19 @@ public class Vsr700Entity extends VehicleEntity {
     }
 
     /**
-     * Flying a drone is reserved to its operator and to the operator's side. A drone with no known side
-     * (never flown, or no scoreboard teams on the server) is free to take.
+     * Flying a drone is reserved to its operator and to the operator's scoreboard team. A drone with no known team
+     * belongs to its controller alone (servers whose sides are not scoreboard teams), and is free to take only while
+     * nobody controls it (never flown, or its link was cut).
      */
     public boolean canBeOperatedBy(Player player) {
         if (player.getUUID().equals(controller)) {
             return true;
         }
         Team side = getTeam();
-        return side == null || side.isAlliedTo(player.getTeam());
+        if (side == null) {
+            return controller == null;
+        }
+        return side.isAlliedTo(player.getTeam());
     }
 
     @Override
